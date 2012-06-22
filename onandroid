@@ -1,5 +1,5 @@
 echo "##########################################"
-echo "Online Nandroid Backup v2.0"
+echo "Online Nandroid Backup v2.1"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery. It can"
 echo "  be run via adb shell or terminal"
@@ -178,16 +178,23 @@ echo ""
 
 # Backup .android_secure
 echo -e "`date +%T` Backing up .android_secure...\c"
-cd /sdcard
+mount -o remount rw //
+mkdir /mnt/sdcard4nandroid
+mount /dev/block/vold/179:1 /mnt/sdcard4nandroid
+cd /mnt/sdcard4nandroid
 tar -cf $path/$name/.android_secure.vfat.tar .android_secure &
 while [ `pidof tar` ]; do
 	echo -n "."
 	sleep 2
 done
 echo ""
-cd $path/$name
-# Wait 2 seconds, as md5sum seems to fail due to some unknown reason
+# Wait 2 seconds before we umount device
 sleep 2
+umount -l /mnt/sdcard4nandroid
+cd /mnt
+rmdir sdcard4nandroid
+mount -o remount ro //
+cd $path/$name
 
 # Generate md5
 echo -e "`date +%T` Generating md5sum...\c"
