@@ -1,5 +1,5 @@
 echo "##########################################"
-echo "Online Nandroid Backup v4.0"
+echo "Online Nandroid Backup v4.1"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery."
 echo "* This tool backups /system , /data , "
@@ -170,7 +170,7 @@ busybox mount -o remount,rw /
 busybox mkdir -p $sdcard_temp_mount
 busybox mount $sdcardm $sdcard_temp_mount
 cd $sdcard_temp_mount
-u_as=`busybox du -m .android_secure | busybox cut -f 1`
+u_as=`busybox du -m .android_secure | busybox tail -1 | busybox cut -f 1`
 
 # sd-ext partition size
 # Check if sd-ext is mounted
