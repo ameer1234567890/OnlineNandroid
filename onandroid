@@ -1,11 +1,7 @@
 echo "##########################################"
-echo "Online Nandroid Backup v3.4"
+echo "Online Nandroid Backup v3.5"
 echo "* A tool to perform a nandroid backup"
-echo "  without booting into recovery. It can"
-echo "  be run via adb shell or terminal"d
-echo "  emulator in Android, thus allowing"
-echo "  you to do a live nandroid backup"
-echo "  within Android."
+echo "  without booting into recovery."
 echo "* This tool backups /system , /data , "
 echo "  /cache , .android_secure & sd-ext"
 echo "  partitions."
@@ -32,7 +28,7 @@ logmsg(){
 	dtime=`busybox date +%T`
 	echo -e "$dtime $message"
 	echo "$dtime $message" >>$logfile
-	if [ "`which log`" != "" ]; then
+	if [ "`busybox which log`" != "" ]; then
 		log -p i -t onandroid "$message"
 	fi
 }
@@ -103,7 +99,7 @@ fi
 if [ $rem_power == -1 ]; then
 	logmsg "Unable to check power status! Taking a chance here..."
 elif [ $rem_power -gt $req_power ]; then
-	logmsg "Sufficient power available! Continuing..."
+	logmsg "Sufficient power available!"
 else
 	logmsg "Sufficient power not available! Exiting..."
 	exit 1
@@ -116,13 +112,13 @@ if [ "$is_sdcard_mounted" == "" ]; then
 	logmsg "SD card not found! Exiting..."
 	exit 1
 else
-	logmsg "SD card found! Continuing..."
+	logmsg "SD card found!"
 fi
 
 # Check for root permissions
 logmsg "Checking for root permissions..."
 if [ "`busybox id -u`" == "0" ]; then
-	logmsg "Root permissions aquired! Continuing..."
+	logmsg "Root permissions aquired!"
 else
 	logmsg "Could not aquire root permissions! Exiting..."
 	exit 1
@@ -130,21 +126,21 @@ fi
 
 # Check for required tools
 logmsg "Checking for required tools..."
-if [ "`which mkyaffs2image`" == "" ]; then
+if [ "`busybox which mkyaffs2image`" == "" ]; then
 	logmsg "Error: mkyaffs2image not found in path! Exiting..."
 	exit 1
 fi
-md5sum=`which md5sum`
+md5sum=`busybox which md5sum`
 if [ "$md5sum" == "" ]; then
 	logmsg "Error: md5sum not found in path! Exiting..."
 	exit 1
 fi
-tar==`which tar`
+tar==`busybox which tar`
 if [ "$tar" == "" ]; then
 	logmsg "Error: tar not found in path! Exiting..."
 	exit 1
 fi
-logmsg "All required tools available! Continuing..."
+logmsg "All required tools available!"
 
 # Disk space check (in MB)
 logmsg "Checking disk space..."
@@ -215,7 +211,7 @@ if [ $freespace -lt $req_space ]; then
 	logmsg "Not enough disk space! Exiting..."
 	exit 1
 else
-	logmsg "Necessary disk space available! Continuing..."
+	logmsg "Necessary disk space available!"
 fi
 
 # Change to backup directory
@@ -242,7 +238,6 @@ fi
 busybox rm -- $name/.nandroidwritable
 
 logmsg "Backing up to $path/$name"
-logmsg "Opening backup directory..."
 cd -- $name
 
 # Backup system
