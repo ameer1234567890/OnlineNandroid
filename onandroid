@@ -1,5 +1,5 @@
 echo "##########################################"
-echo "Online Nandroid Backup v3.6"
+echo "Online Nandroid Backup v3.7"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery."
 echo "* This tool backups /system , /data , "
@@ -84,11 +84,25 @@ fi
 # Start timer
 start_time=`busybox date +%s`
 
+# Check for root permissions
+logmsg "Checking for root permissions..."
+if [ "`busybox id -u`" == "0" ]; then
+	logmsg "Root permissions aquired!"
+else
+	logmsg "Could not aquire root permissions! Exiting..."
+	exit 1
+fi
+
 # Analyse power status
 logmsg "Analysing power..."
 if [ -f /sys/class/power_supply/bq27520/capacity ]; then
-	rem_power=`cat /sys/class/power_supply/bq27520/capacity`
-	if [ `cat /sys/class/power_supply/ac/online` == "1" ]; then
+	rem_power=`busybox cat /sys/class/power_supply/bq27520/capacity`
+	if [ `busybox cat /sys/class/power_supply/ac/online` == "1" ]; then
+		rem_power=100
+	fi
+elif [ -f /sys/class/power_supply/battery/capacity ]; then
+	rem_power=`busybox cat /sys/class/power_supply/battery/capacity`
+	if [ `busybox cat /sys/class/power_supply/ac/online` == "1" ]; then
 		rem_power=100
 	fi
 else
@@ -113,15 +127,6 @@ if [ "$is_sdcard_mounted" == "" ]; then
 	exit 1
 else
 	logmsg "SD card found!"
-fi
-
-# Check for root permissions
-logmsg "Checking for root permissions..."
-if [ "`busybox id -u`" == "0" ]; then
-	logmsg "Root permissions aquired!"
-else
-	logmsg "Could not aquire root permissions! Exiting..."
-	exit 1
 fi
 
 # Check for required tools
