@@ -1,14 +1,5 @@
-# Usage instructions
-if [ $# -gt 0 ]; then
-	if [ $1 == "--help" ]; then
-		echo "Usage: 'onandroid desired_backup_name'"
-		echo "Note: A default backup name consisting of the current date and time is used if no backup name is provided."
-		exit 0
-	fi
-fi
-
 echo "##########################################"
-echo "Online Nandroid Backup v1.3"
+echo "Online Nandroid Backup v2.0"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery. It can"
 echo "  be run via adb shell or terminal"
@@ -18,18 +9,78 @@ echo "  within Android."
 echo "* This tool backups /system , /data , "
 echo "  /cache & .android_secure partitions."
 echo "* It is fully compatible with nandroid."
-echo "* Pass an argument to customize"
-echo "  backup name."
+echo "* Type 'onandroid --help' for usage"
+echo "  instructions."
 echo "* Created by Ameer Dawood"
 echo "##########################################"
 echo ""
 
+# Define constants
+path="/sdcard/clockworkmod/backup"
+safety=7
+name="none"
+tz="u"
+
+# Process arguments
+if [ $# -gt 0 ]; then
+	if [ $1 == "--help" ]; then
+		# Display usage instructions
+		clear
+		echo ""
+		echo "Usage: onandroid [OPTIONS] [NAME]"
+		echo ""
+		echo "Performs a nandroid backup with the NAME provided, or a default backup name consisting of the current date and time"
+		echo ""
+		echo "		-h		Generate backup name with phone timezone"
+		echo "		-u		Generate backup name with UTC time (default)"
+		echo ""
+		exit 0
+	elif [ $1 == "-h" ]; then
+		# Set timezone to home/phone timezone
+		tz="h"
+		if [ $# -gt 1 ]; then
+			echo "`date +%T` Custom backup name not allowed with timezone modifier! Continuing with default backup name!"
+		fi
+	elif [ $1 == "-u" ]; then
+		# Set timezone to UTC
+		tz="u"
+		if [ $# -gt 1 ]; then
+			echo "`date +%T` Custom backup name not allowed with timezone modifier! Continuing with default backup name!"
+		fi
+	else
+		if [ $# -gt 1 ]; then
+			echo "`date +%T` Spaces not allowed in backup name! Continuing with default backup name!"
+		else
+			# Grab custom backup name
+			name=$1
+		fi
+	fi
+fi
+
+# Set default backup name (with date)
+if [ $tz == "h" ]; then
+	def_name=`date +%Y-%m-%d.%H.%M.%S`
+else
+	def_name=`date -u +%Y-%m-%d.%H.%M.%S`
+fi
+
+# Set backup name to default if backup name was not provided
+if [ $name == "none" ]; then
+	name=$def_name
+fi
+
 # Start timer
 start_time=`date +%s`
 
-# Define constants
-def_name=`date -u +%Y-%m-%d.%H.%M.%S`
-path="/sdcard/clockworkmod/backup"
+# Check for root permissions
+echo "`date +%T` Checking for root permissions..."
+uid=`whoami`
+if [ $uid == "root" ]; then
+	echo "`date +%T` Root permissions aquired!"
+else
+	echo "`date +%T` Could not aquire root permissions!"
+	exit 1
+fi
 
 # Check for required tools
 echo "`date +%T` Checking for required tools..."
@@ -48,11 +99,9 @@ if [ "$tar" == "" ]; then
 	echo "`date +%T` Error: tar not found in path."
 	exit 1
 fi
-sleep 1
 echo "`date +%T` All required tools available."
 
 # Disk space check (in MB)
-safety=7
 echo "`date +%T` Checking disk space..."
 entry=`df -m /system | tail -1`
 u_system=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
@@ -77,40 +126,28 @@ fi
 # Change to backup directory
 cd $path
 
-# Deny file names with spaces
-if [ $# -gt 1 ]; then
-	echo "`date +%T` Filenames with spaces are not allowed!"
-	name=$def_name
-else
-	name="$1"
-fi
-
-# Grab backup name, if provided, or generate name with current date & time
-if [ $# == 0 ]; then
-	name=$def_name
-else
-	name="$1"
-fi
-
 # Create directory for backup
 echo "`date +%T` Creating backup directory..."
 if [ ! -d $name ]; then 
-	mkdir -p $name
+	mkdir -p -- $name
 	if [ ! -d $name ]; then 
 		echo "`date +%T` Error: Cannot create $name"
 		exit 1
 	fi
 else
-	touch $name/.nandroidwritable
-	if [ ! -e $name/.nandroidwritable ]; then
-		echo "`date +%T` Error: Cannot write to $name"
-		exit 1
-	fi
-	rm $name/.nandroidwritable
+	echo "`date +%T` Error: $name already exists! Exiting!"
+	exit 1
 fi
+touch -- $name/.nandroidwritable
+if [ ! -e $name/.nandroidwritable ]; then
+	echo "`date +%T` Error: Cannot write to $name"
+	exit 1
+fi
+rm -- $name/.nandroidwritable
+
 echo "`date +%T` Backing up to $path/$name"
 echo "`date +%T` Opening backup directory..."
-cd $name
+cd -- $name
 
 # Backup system
 echo -e "`date +%T` Backing up /system...\c"
