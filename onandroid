@@ -1,14 +1,16 @@
 #!/sbin/sh
 
 # Usage instructions
-if [ $1 == "--help" ]; then
-	echo "Usage: 'onandroid desired_backup_name'"
-	echo "Note: A default backup name consisting of the current date and time is used if no backup name is provided."
-	exit 0
+if [ $# -gt 0 ]; then
+	if [ $1 == "--help" ]; then
+		echo "Usage: 'onandroid desired_backup_name'"
+		echo "Note: A default backup name consisting of the current date and time is used if no backup name is provided."
+		exit 0
+	fi
 fi
 
 echo "##########################################"
-echo "Online Nandroid Backup v1.0"
+echo "Online Nandroid Backup v1.1"
 echo "* A tool to perform a nandroid backup"
 echo "    without booting into recovery. It can"
 echo "    be run via adb shell or terminal"
