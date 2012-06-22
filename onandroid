@@ -1,8 +1,8 @@
 echo "##########################################"
-echo "Online Nandroid Backup v3.2"
+echo "Online Nandroid Backup v3.3"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery. It can"
-echo "  be run via adb shell or terminal"
+echo "  be run via adb shell or terminal"d
 echo "  emulator in Android, thus allowing"
 echo "  you to do a live nandroid backup"
 echo "  within Android."
@@ -26,13 +26,15 @@ sdcard_temp_mount="/mnt/sdcard4nandroid"
 logfile=/data/local/tmp/onandroid.log
 
 # Logging function
-[ -f $logfile ] && rm $logfile
+[ -f $logfile ] && busybox rm $logfile
 logmsg(){
 	message="$*"
-	dtime=`date +%T`
+	dtime=`busybox date +%T`
 	echo -e "$dtime $message"
 	echo "$dtime $message" >>$logfile
-	log -p i -t onandroid "$message"
+	if [ "`which log`" != "" ]; then
+		log -p i -t onandroid "$message"
+	fi
 }
 
 # Process arguments
@@ -53,17 +55,17 @@ if [ $# -gt 0 ]; then
 		# Set timezone to home/phone timezone
 		tz="h"
 		if [ $# -gt 1 ]; then
-			logmsg "Custom backup name not allowed with timezone modifier! Continuing with default backup name!"
+			logmsg "Custom backup name not allowed with timezone modifier! Continuing with default backup name..."
 		fi
 	elif [ $1 == "-u" ]; then
 		# Set timezone to UTC
 		tz="u"
 		if [ $# -gt 1 ]; then
-			logmsg "Custom backup name not allowed with timezone modifier! Continuing with default backup name!"
+			logmsg "Custom backup name not allowed with timezone modifier! Continuing with default backup name..."
 		fi
 	else
 		if [ $# -gt 1 ]; then
-			logmsg "Spaces not allowed in backup name! Continuing with default backup name!"
+			logmsg "Spaces not allowed in backup name! Continuing with default backup name..."
 		else
 			# Grab custom backup name
 			name=$1
@@ -73,9 +75,9 @@ fi
 
 # Set default backup name (with date)
 if [ $tz == "h" ]; then
-	def_name=`date +%Y-%m-%d.%H.%M.%S`
+	def_name=`busybox date +%Y-%m-%d.%H.%M.%S`
 else
-	def_name=`date -u +%Y-%m-%d.%H.%M.%S`
+	def_name=`busybox date -u +%Y-%m-%d.%H.%M.%S`
 fi
 
 # Set backup name to default if backup name was not provided
@@ -84,7 +86,7 @@ if [ $name == "none" ]; then
 fi
 
 # Start timer
-start_time=`date +%s`
+start_time=`busybox date +%s`
 
 # Analyse power status
 logmsg "Analysing power..."
@@ -108,7 +110,7 @@ fi
 
 # Check if SD card is mounted
 logmsg "Searching for SD card..."
-is_sdcard_mounted=`mount | grep "sdcard.*vfat" | cut -d ' ' -f 1`
+is_sdcard_mounted=`busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 1`
 if [ "$is_sdcard_mounted" == "" ]; then
 	logmsg "SD card not found! Exiting..."
 	exit 1
@@ -118,7 +120,7 @@ fi
 
 # Check for root permissions
 logmsg "Checking for root permissions..."
-if [ "`id -u`" == "0" -o "`id`" == "uid=0(root) gid=0(root)" ]; then
+if [ "`busybox id -u`" == "0" ]; then
 	logmsg "Root permissions aquired! Continuing..."
 else
 	logmsg "Could not aquire root permissions! Exiting..."
@@ -127,19 +129,8 @@ fi
 
 # Check for required tools
 logmsg "Checking for required tools..."
-mkyaffs2image=`which mkyaffs2image`
-if [ "$mkyaffs2image" == "" ]; then
+if [ "`which mkyaffs2image`" == "" ]; then
 	logmsg "Error: mkyaffs2image not found in path! Exiting..."
-	exit 1
-fi
-md5sum=`which md5sum`
-if [ "$md5sum" == "" ]; then
-	logmsg "Error: md5sum not found in path! Exiting..."
-	exit 1
-fi
-tar==`which tar`
-if [ "$tar" == "" ]; then
-	logmsg "Error: tar not found in path! Exiting..."
 	exit 1
 fi
 logmsg "All required tools available! Continuing..."
@@ -148,29 +139,34 @@ logmsg "All required tools available! Continuing..."
 logmsg "Checking disk space..."
 
 # /system partition size
-entry=`df -m /system | tail -1`
-u_system=`echo $entry | cut -d' ' -f 3 | cut -d '%' -f 1`
+entry=`busybox df -m /system | busybox tail -1`
+u_system=`echo $entry | busybox cut -d' ' -f 3 | busybox cut -d '%' -f 1`
 
 # /data partition size
-entry=`df -m /data | tail -1`
-u_data=`echo $entry | cut -d' ' -f 3 | cut -d '%' -f 1`
+entry=`busybox df -m /data | busybox tail -1`
+u_data=`echo $entry | busybox cut -d' ' -f 3 | busybox cut -d '%' -f 1`
 
 # /cache partition size
-entry=`df -m /cache | tail -1`
-u_cache=`echo $entry | cut -d' ' -f 3 | cut -d '%' -f 1`
+entry=`busybox df -m /cache | busybox tail -1`
+u_cache=`echo $entry | busybox cut -d' ' -f 3 | busybox cut -d '%' -f 1`
 
 # .android_secure partition size
+# Determine mount command's output format
+if [ `busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 2` == "on" ]; then
+	sdcardm=`busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 3`
+else
+	sdcardm=`busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 2`
+fi
 # Mount sdcard into a temporary location for accessing .android_secure partition
-sdcard_vold_id=`mount | grep "sdcard.*vfat" | cut -d ' ' -f 1`
-mount -o remount,rw /
-mkdir -p $sdcard_temp_mount
-mount $sdcard_vold_id $sdcard_temp_mount
+busybox mount -o remount,rw /
+busybox mkdir -p $sdcard_temp_mount
+busybox mount $sdcardm $sdcard_temp_mount
 cd $sdcard_temp_mount
-u_as=`du -m .android_secure | cut -f 1`
+u_as=`busybox du -m .android_secure | busybox cut -f 1`
 
 # sd-ext partition size
 # Check if sd-ext is mounted
-is_sdext_mounted=`mount | grep "ext.*ext" | cut -d ' ' -f 1`
+is_sdext_mounted=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 1`
 if [ "$is_sdext_mounted" == "" ]; then
 	sdext_exists=0
 else
@@ -178,28 +174,28 @@ else
 fi
 if [ $sdext_exists == 1 ]; then
 	# Determine mount command's output format
-	if [ `mount | grep "ext.*ext" | cut -d ' ' -f 2` == "on" ]; then
-		extv=`mount | grep "ext.*ext" | cut -d ' ' -f 5`
-		extd=`mount | grep "ext.*ext" | cut -d ' ' -f 3 | cut -d '/' -f 2`
-		extm=`mount | grep "ext.*ext" | cut -d ' ' -f 3`
+	if [ `busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 2` == "on" ]; then
+		extv=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 5`
+		extd=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 3 | busybox cut -d '/' -f 2`
+		extm=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 3`
 	else
-		extv=`mount | grep "ext.*ext" | cut -d ' ' -f 3`
-		extd=`mount | grep "ext.*ext" | cut -d ' ' -f 2 | cut -d '/' -f 2`
-		extm=`mount | grep "ext.*ext" | cut -d ' ' -f 2`
+		extv=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 3`
+		extd=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 2 | busybox cut -d '/' -f 2`
+		extm=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 2`
 	fi
 	# Grab sd-ext mount point
-	entry=`df -m $extm | tail -1`
-	u_ext=`echo $entry | cut -d ' ' -f 3 | cut -d '%' -f 1`
+	entry=`busybox df -m $extm | busybox tail -1`
+	u_ext=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
 else
 	u_ext=0
 fi
 
 # Required space calculation
-req_space=`expr $u_system + $u_data + $u_cache + $u_as + $u_ext + $safety`
+req_space=`busybox expr $u_system + $u_data + $u_cache + $u_as + $u_ext + $safety`
 
 # Available space calculation
-entry=`df -m /mnt/sdcard | tail -1`
-freespace=`echo $entry | cut -d ' ' -f 3 | cut -d '%' -f 1`
+entry=`busybox df -m /sdcard | busybox tail -1`
+freespace=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
 
 # Announce available space and required space
 logmsg "SD Card Free Space: $freespace MB"
@@ -212,13 +208,13 @@ else
 fi
 
 # Change to backup directory
-mkdir -p $path
+busybox mkdir -p $path
 cd $path
 
 # Create directory for backup
 logmsg "Creating backup directory..."
 if [ ! -d $name ]; then 
-	mkdir -p -- $name
+	busybox mkdir -p -- $name
 	if [ ! -d $name ]; then 
 		logmsg "Error: Cannot create $name"
 		exit 1
@@ -227,12 +223,12 @@ else
 	logmsg "Error: $name already exists! Exiting..."
 	exit 1
 fi
-touch -- $name/.nandroidwritable
+busybox touch -- $name/.nandroidwritable
 if [ ! -e $name/.nandroidwritable ]; then
 	logmsg "Error: Cannot write to $name ! Exiting..."
 	exit 1
 fi
-rm -- $name/.nandroidwritable
+busybox rm -- $name/.nandroidwritable
 
 logmsg "Backing up to $path/$name"
 logmsg "Opening backup directory..."
@@ -241,35 +237,35 @@ cd -- $name
 # Backup system
 logmsg "Backing up /system...\c"
 mkyaffs2image /system system.yaffs2.img &
-while [ `pidof mkyaffs2image` ]; do
+while [ `busybox pidof mkyaffs2image` ]; do
 	echo -n "."
 	sleep 2
 done
 echo ""
 
 # Backup data
-echo -e "`date +%T` Backing up /data...\c"
+logmsg "Backing up /data...\c"
 mkyaffs2image /data data.yaffs2.img &
-while [ `pidof mkyaffs2image` ]; do
+while [ `busybox pidof mkyaffs2image` ]; do
 	echo -n "."
 	sleep 2
 done
 echo ""
 
 # Backup cache
-echo -e "`date +%T` Backing up /cache...\c"
+logmsg "Backing up /cache...\c"
 mkyaffs2image /cache cache.yaffs2.img &
-while [ `pidof mkyaffs2image` ]; do
+while [ `busybox pidof mkyaffs2image` ]; do
 	echo -n "."
 	sleep 2
 done
 echo ""
 
 # Backup .android_secure
-echo -e "`date +%T` Backing up .android_secure...\c"
+logmsg "Backing up .android_secure...\c"
 cd /mnt/sdcard4nandroid
-tar -cf $path/$name/.android_secure.vfat.tar .android_secure &
-while [ `pidof tar` ]; do
+busybox tar -cf $path/$name/.android_secure.vfat.tar .android_secure &
+while [ `busybox pidof tar` ]; do
 	echo -n "."
 	sleep 2
 done
@@ -278,18 +274,18 @@ echo ""
 # Unmount temporary sdcard mount as .android_secure backup is complete
 # Wait 2 seconds before we umount device
 sleep 2
-umount -l $sdcard_temp_mount
-rmdir $sdcard_temp_mount
-mount -o remount,ro /
+busybox umount -l $sdcard_temp_mount
+busybox rmdir $sdcard_temp_mount
+busybox mount -o remount,ro /
 
 # Backup sd-ext
 if [ $sdext_exists == 1 ]; then
 	# Grab ext version
-	echo -e "`date +%T` Backing up sd-ext...\c"
+	logmsg "Backing up sd-ext...\c"
 	cd $extm
 	cd ..
-	tar -cf $path/$name/sd-ext.$extv.tar $extd &
-	while [ `pidof tar` ]; do
+	busybox tar -cf $path/$name/sd-ext.$extv.tar $extd &
+	while [ `busybox pidof tar` ]; do
 		echo -n "."
 		sleep 2
 	done
@@ -299,21 +295,21 @@ else
 fi
 
 # Generate md5
-echo -e "`date +%T` Generating md5sum...\c"
+logmsg "Generating md5sum...\c"
 cd $path/$name
-md5sum .android_secure.vfat.tar * > nandroid.md5 &
-while [ `pidof md5sum` ]; do
+busybox md5sum .android_secure.vfat.tar * > nandroid.md5 &
+while [ `busybox pidof md5sum` ]; do
 	echo -n "."
 	sleep 2
 done
 echo ""
 
 # End timer
-end_time=`date +%s`
-elapsed=`expr $end_time - $start_time`
+end_time=`busybox date +%s`
+elapsed=`busybox expr $end_time - $start_time`
 
 # Calculate elapsed time and Announce
-e_min=`expr $elapsed / 60`
-e_sec=`expr $e_min \* 60`
-e_sec=`expr $elapsed - $e_sec`
+e_min=`busybox expr $elapsed / 60`
+e_sec=`busybox expr $e_min \* 60`
+e_sec=`busybox expr $elapsed - $e_sec`
 logmsg "Online Nandroid Backup Completed in $e_min minutes $e_sec seconds!"
