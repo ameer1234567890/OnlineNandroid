@@ -1,5 +1,5 @@
 echo "##########################################"
-echo "Online Nandroid Backup v3.3"
+echo "Online Nandroid Backup v3.4"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery. It can"
 echo "  be run via adb shell or terminal"d
@@ -96,12 +96,13 @@ if [ -f /sys/class/power_supply/bq27520/capacity ]; then
 		rem_power=100
 	fi
 else
-	rem_power=100
-	logmsg "Unable to check power status! Taking a chance here..."
+	rem_power=-1
 fi
 
 # Check if power is sufficient
-if [ $rem_power -gt $req_power ]; then
+if [ $rem_power == -1 ]; then
+	logmsg "Unable to check power status! Taking a chance here..."
+elif [ $rem_power -gt $req_power ]; then
 	logmsg "Sufficient power available! Continuing..."
 else
 	logmsg "Sufficient power not available! Exiting..."
@@ -133,6 +134,16 @@ if [ "`which mkyaffs2image`" == "" ]; then
 	logmsg "Error: mkyaffs2image not found in path! Exiting..."
 	exit 1
 fi
+md5sum=`which md5sum`
+if [ "$md5sum" == "" ]; then
+	logmsg "Error: md5sum not found in path! Exiting..."
+	exit 1
+fi
+tar==`which tar`
+if [ "$tar" == "" ]; then
+	logmsg "Error: tar not found in path! Exiting..."
+	exit 1
+fi
 logmsg "All required tools available! Continuing..."
 
 # Disk space check (in MB)
@@ -152,7 +163,7 @@ u_cache=`echo $entry | busybox cut -d' ' -f 3 | busybox cut -d '%' -f 1`
 
 # .android_secure partition size
 # Determine mount command's output format
-if [ `busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 2` == "on" ]; then
+if [ "`busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 2`" == "on" ]; then
 	sdcardm=`busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 3`
 else
 	sdcardm=`busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 2`
@@ -264,7 +275,7 @@ echo ""
 # Backup .android_secure
 logmsg "Backing up .android_secure...\c"
 cd /mnt/sdcard4nandroid
-busybox tar -cf $path/$name/.android_secure.vfat.tar .android_secure &
+tar -cf $path/$name/.android_secure.vfat.tar .android_secure &
 while [ `busybox pidof tar` ]; do
 	echo -n "."
 	sleep 2
@@ -284,7 +295,7 @@ if [ $sdext_exists == 1 ]; then
 	logmsg "Backing up sd-ext...\c"
 	cd $extm
 	cd ..
-	busybox tar -cf $path/$name/sd-ext.$extv.tar $extd &
+	tar -cf $path/$name/sd-ext.$extv.tar $extd &
 	while [ `busybox pidof tar` ]; do
 		echo -n "."
 		sleep 2
@@ -297,7 +308,7 @@ fi
 # Generate md5
 logmsg "Generating md5sum...\c"
 cd $path/$name
-busybox md5sum .android_secure.vfat.tar * > nandroid.md5 &
+md5sum .android_secure.vfat.tar * > nandroid.md5 &
 while [ `busybox pidof md5sum` ]; do
 	echo -n "."
 	sleep 2
