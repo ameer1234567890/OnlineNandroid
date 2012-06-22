@@ -1,5 +1,5 @@
 echo "##########################################"
-echo "Online Nandroid Backup v2.1"
+echo "Online Nandroid Backup v2.2"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery. It can"
 echo "  be run via adb shell or terminal"
@@ -109,8 +109,13 @@ entry=`df -m /data | tail -1`
 u_data=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
 entry=`df -m /cache | tail -1`
 u_cache=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
-entry=`df -ma /sdcard/.android_secure | tail -1`
-u_as=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
+# Mount sdcard into a temporary location for accessing .android_secure partition
+mount -o remount rw //
+mkdir /mnt/sdcard4nandroid
+mount /dev/block/vold/179:1 /mnt/sdcard4nandroid
+cd /mnt/sdcard4nandroid
+u_as=`du .android_secure | cut -f1`
+u_as=`expr $u_as / 1024`
 req_space=`expr $u_system + $u_data + $u_cache + $u_as + $safety`
 entry=`df -m /mnt/sdcard | tail -1`
 freespace=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
@@ -178,9 +183,6 @@ echo ""
 
 # Backup .android_secure
 echo -e "`date +%T` Backing up .android_secure...\c"
-mount -o remount rw //
-mkdir /mnt/sdcard4nandroid
-mount /dev/block/vold/179:1 /mnt/sdcard4nandroid
 cd /mnt/sdcard4nandroid
 tar -cf $path/$name/.android_secure.vfat.tar .android_secure &
 while [ `pidof tar` ]; do
@@ -188,6 +190,8 @@ while [ `pidof tar` ]; do
 	sleep 2
 done
 echo ""
+
+# Unmount temporary sdcard mount as .android_secure backup is complete
 # Wait 2 seconds before we umount device
 sleep 2
 umount -l /mnt/sdcard4nandroid
