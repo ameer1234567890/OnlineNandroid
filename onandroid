@@ -1,5 +1,5 @@
 echo "##########################################"
-echo "Online Nandroid Backup v3.1"
+echo "Online Nandroid Backup v3.2"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery. It can"
 echo "  be run via adb shell or terminal"
@@ -23,6 +23,17 @@ name="none"
 tz="u"
 req_power=10
 sdcard_temp_mount="/mnt/sdcard4nandroid"
+logfile=/data/local/tmp/onandroid.log
+
+# Logging function
+[ -f $logfile ] && rm $logfile
+logmsg(){
+	message="$*"
+	dtime=`date +%T`
+	echo -e "$dtime $message"
+	echo "$dtime $message" >>$logfile
+	log -p i -t onandroid "$message"
+}
 
 # Process arguments
 if [ $# -gt 0 ]; then
@@ -42,17 +53,17 @@ if [ $# -gt 0 ]; then
 		# Set timezone to home/phone timezone
 		tz="h"
 		if [ $# -gt 1 ]; then
-			echo "`date +%T` Custom backup name not allowed with timezone modifier! Continuing with default backup name!"
+			logmsg "Custom backup name not allowed with timezone modifier! Continuing with default backup name!"
 		fi
 	elif [ $1 == "-u" ]; then
 		# Set timezone to UTC
 		tz="u"
 		if [ $# -gt 1 ]; then
-			echo "`date +%T` Custom backup name not allowed with timezone modifier! Continuing with default backup name!"
+			logmsg "Custom backup name not allowed with timezone modifier! Continuing with default backup name!"
 		fi
 	else
 		if [ $# -gt 1 ]; then
-			echo "`date +%T` Spaces not allowed in backup name! Continuing with default backup name!"
+			logmsg "Spaces not allowed in backup name! Continuing with default backup name!"
 		else
 			# Grab custom backup name
 			name=$1
@@ -76,7 +87,7 @@ fi
 start_time=`date +%s`
 
 # Analyse power status
-echo "`date +%T` Analysing power..."
+logmsg "Analysing power..."
 if [ -f /sys/class/power_supply/bq27520/capacity ]; then
 	rem_power=`cat /sys/class/power_supply/bq27520/capacity`
 	if [ `cat /sys/class/power_supply/ac/online` == "1" ]; then
@@ -84,58 +95,57 @@ if [ -f /sys/class/power_supply/bq27520/capacity ]; then
 	fi
 else
 	rem_power=100
-	echo "`date +%T` Unable to check power status! Taking a chance here..."
+	logmsg "Unable to check power status! Taking a chance here..."
 fi
 
 # Check if power is sufficient
 if [ $rem_power -gt $req_power ]; then
-	echo "`date +%T` Required level of power available! Continuing..."
+	logmsg "Sufficient power available! Continuing..."
 else
-	echo "`date +%T` Required level of power not available! Exiting..."
+	logmsg "Sufficient power not available! Exiting..."
 	exit 1
 fi
 
 # Check if SD card is mounted
-echo "`date +%T` Searching for SD card..."
+logmsg "Searching for SD card..."
 is_sdcard_mounted=`mount | grep "sdcard.*vfat" | cut -d ' ' -f 1`
 if [ "$is_sdcard_mounted" == "" ]; then
-	echo "`date +%T` SD card not found! Exiting..."
+	logmsg "SD card not found! Exiting..."
 	exit 1
 else
-	echo "`date +%T` SD card found! Continuing..."
+	logmsg "SD card found! Continuing..."
 fi
 
 # Check for root permissions
-echo "`date +%T` Checking for root permissions..."
-uid=`id -u`
-if [ "$uid" == "0" ]; then
-	echo "`date +%T` Root permissions aquired! Continuing..."
+logmsg "Checking for root permissions..."
+if [ "`id -u`" == "0" -o "`id`" == "uid=0(root) gid=0(root)" ]; then
+	logmsg "Root permissions aquired! Continuing..."
 else
-	echo "`date +%T` Could not aquire root permissions! Exiting..."
+	logmsg "Could not aquire root permissions! Exiting..."
 	exit 1
 fi
 
 # Check for required tools
-echo "`date +%T` Checking for required tools..."
+logmsg "Checking for required tools..."
 mkyaffs2image=`which mkyaffs2image`
 if [ "$mkyaffs2image" == "" ]; then
-	echo "`date +%T` Error: mkyaffs2image not found in path! Exiting..."
+	logmsg "Error: mkyaffs2image not found in path! Exiting..."
 	exit 1
 fi
 md5sum=`which md5sum`
 if [ "$md5sum" == "" ]; then
-	echo "`date +%T` Error: md5sum not found in path! Exiting..."
+	logmsg "Error: md5sum not found in path! Exiting..."
 	exit 1
 fi
 tar==`which tar`
 if [ "$tar" == "" ]; then
-	echo "`date +%T` Error: tar not found in path! Exiting..."
+	logmsg "Error: tar not found in path! Exiting..."
 	exit 1
 fi
-echo "`date +%T` All required tools available! Continuing..."
+logmsg "All required tools available! Continuing..."
 
 # Disk space check (in MB)
-echo "`date +%T` Checking disk space..."
+logmsg "Checking disk space..."
 
 # /system partition size
 entry=`df -m /system | tail -1`
@@ -153,7 +163,7 @@ u_cache=`echo $entry | cut -d' ' -f 3 | cut -d '%' -f 1`
 # Mount sdcard into a temporary location for accessing .android_secure partition
 sdcard_vold_id=`mount | grep "sdcard.*vfat" | cut -d ' ' -f 1`
 mount -o remount,rw /
-mkdir $sdcard_temp_mount
+mkdir -p $sdcard_temp_mount
 mount $sdcard_vold_id $sdcard_temp_mount
 cd $sdcard_temp_mount
 u_as=`du -m .android_secure | cut -f 1`
@@ -192,13 +202,13 @@ entry=`df -m /mnt/sdcard | tail -1`
 freespace=`echo $entry | cut -d ' ' -f 3 | cut -d '%' -f 1`
 
 # Announce available space and required space
-echo "`date +%T` SD Card Free Space: $freespace MB"
-echo "`date +%T` Required Space: $req_space MB"
+logmsg "SD Card Free Space: $freespace MB"
+logmsg "Required Space: $req_space MB"
 if [ $freespace -lt $req_space ]; then
-	echo "`date +%T` Not enough disk space! Exiting..."
+	logmsg "Not enough disk space! Exiting..."
 	exit 1
 else
-	echo "`date +%T` Necessary disk space available! Continuing..."
+	logmsg "Necessary disk space available! Continuing..."
 fi
 
 # Change to backup directory
@@ -206,30 +216,30 @@ mkdir -p $path
 cd $path
 
 # Create directory for backup
-echo "`date +%T` Creating backup directory..."
+logmsg "Creating backup directory..."
 if [ ! -d $name ]; then 
 	mkdir -p -- $name
 	if [ ! -d $name ]; then 
-		echo "`date +%T` Error: Cannot create $name"
+		logmsg "Error: Cannot create $name"
 		exit 1
 	fi
 else
-	echo "`date +%T` Error: $name already exists! Exiting..."
+	logmsg "Error: $name already exists! Exiting..."
 	exit 1
 fi
 touch -- $name/.nandroidwritable
 if [ ! -e $name/.nandroidwritable ]; then
-	echo "`date +%T` Error: Cannot write to $name ! Exiting..."
+	logmsg "Error: Cannot write to $name ! Exiting..."
 	exit 1
 fi
 rm -- $name/.nandroidwritable
 
-echo "`date +%T` Backing up to $path/$name"
-echo "`date +%T` Opening backup directory..."
+logmsg "Backing up to $path/$name"
+logmsg "Opening backup directory..."
 cd -- $name
 
 # Backup system
-echo -e "`date +%T` Backing up /system...\c"
+logmsg "Backing up /system...\c"
 mkyaffs2image /system system.yaffs2.img &
 while [ `pidof mkyaffs2image` ]; do
 	echo -n "."
@@ -285,7 +295,7 @@ if [ $sdext_exists == 1 ]; then
 	done
 	echo ""
 else
-	echo "`date +%T` sd-ext not found! Skipping backup of sd-ext!"
+	logmsg "sd-ext not found! Skipping backup of sd-ext!"
 fi
 
 # Generate md5
@@ -306,4 +316,4 @@ elapsed=`expr $end_time - $start_time`
 e_min=`expr $elapsed / 60`
 e_sec=`expr $e_min \* 60`
 e_sec=`expr $elapsed - $e_sec`
-echo "`date +%T` Online Nandroid Backup Completed in $e_min minutes $e_sec seconds!"
+logmsg "Online Nandroid Backup Completed in $e_min minutes $e_sec seconds!"
