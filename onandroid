@@ -1,5 +1,5 @@
 echo "##########################################"
-echo "Online Nandroid Backup v3.7"
+echo "Online Nandroid Backup v4.0"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery."
 echo "* This tool backups /system , /data , "
@@ -22,6 +22,7 @@ sdcard_temp_mount="/mnt/sdcard4nandroid"
 logfile=/data/local/tmp/onandroid.log
 
 # Logging function
+mkdir -p /data/local/tmp
 [ -f $logfile ] && busybox rm $logfile
 logmsg(){
 	message="$*"
@@ -140,7 +141,7 @@ if [ "$md5sum" == "" ]; then
 	logmsg "Error: md5sum not found in path! Exiting..."
 	exit 1
 fi
-tar==`busybox which tar`
+tar=`busybox which tar`
 if [ "$tar" == "" ]; then
 	logmsg "Error: tar not found in path! Exiting..."
 	exit 1
@@ -311,3 +312,20 @@ e_min=`busybox expr $elapsed / 60`
 e_sec=`busybox expr $e_min \* 60`
 e_sec=`busybox expr $elapsed - $e_sec`
 logmsg "Online Nandroid Backup Completed in $e_min minutes $e_sec seconds!"
+
+# LED and vibrate notification
+led="/sys/class/leds/green/brightness"
+vibrator="/sys/class/timed_output/vibrator/enable"
+if [ -f $led ] && [ -f $vibrator ]; then
+	echo 250 > $vibrator
+	echo 255 > $led
+	sleep 0.5
+	echo 0 > $vibrator
+	echo 0 > $led
+	sleep 0.2
+	echo 250 > $vibrator
+	echo 255 > $led
+	sleep 0.5
+	echo 0 > $vibrator
+	echo 0 > $led
+fi
