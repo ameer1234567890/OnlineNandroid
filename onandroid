@@ -10,18 +10,18 @@ if [ $# -gt 0 ]; then
 fi
 
 echo "##########################################"
-echo "Online Nandroid Backup v1.1"
+echo "Online Nandroid Backup v1.2"
 echo "* A tool to perform a nandroid backup"
-echo "    without booting into recovery. It can"
-echo "    be run via adb shell or terminal"
-echo "    emulator in Android, thus allowing"
-echo "    you to do a live nandroid backup"
-echo "    within Android."
+echo "  without booting into recovery. It can"
+echo "  be run via adb shell or terminal"
+echo "  emulator in Android, thus allowing"
+echo "  you to do a live nandroid backup"
+echo "  within Android."
 echo "* This tool backups /system , /data , "
-echo "    /cache & .android_secure partitions."
+echo "  /cache & .android_secure partitions."
 echo "* It is fully compatible with nandroid."
 echo "* Pass an argument to customize"
-echo "    backup name."
+echo "  backup name."
 echo "* Created by Ameer Dawood"
 echo "##########################################"
 echo ""
@@ -54,7 +54,7 @@ sleep 1
 echo "`date +%T` All required tools available."
 
 # Disk space check (in MB)
-safety=4
+safety=7
 echo "`date +%T` Checking disk space..."
 entry=`df -m /system | tail -1`
 u_system=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
@@ -151,6 +151,8 @@ while [ `pidof tar` ]; do
 done
 echo ""
 cd $path/$name
+# Wait 2 seconds, as md5sum seems to fail due to some unknown reason
+sleep 2
 
 # Generate md5
 echo -e "`date +%T` Generating md5sum...\c"
@@ -165,5 +167,8 @@ echo ""
 end_time=`date +%s`
 elapsed=`expr $end_time - $start_time`
 
-# Announce
-echo "`date +%T` Online Nandroid Backup Completed in $elapsed seconds!"
+# Calculate elapsed time and Announce
+e_min=`expr $elapsed / 60`
+e_sec=`expr $e_min \* 60`
+e_sec=`expr $elapsed - $e_sec`
+echo "`date +%T` Online Nandroid Backup Completed in $e_min minutes $e_sec seconds!"
