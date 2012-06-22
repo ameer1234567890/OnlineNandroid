@@ -1,5 +1,5 @@
 echo "##########################################"
-echo "Online Nandroid Backup v3.0"
+echo "Online Nandroid Backup v3.1"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery. It can"
 echo "  be run via adb shell or terminal"
@@ -7,7 +7,7 @@ echo "  emulator in Android, thus allowing"
 echo "  you to do a live nandroid backup"
 echo "  within Android."
 echo "* This tool backups /system , /data , "
-echo "  /cache , .android_secure & /sd-ext"
+echo "  /cache , .android_secure & sd-ext"
 echo "  partitions."
 echo "* It is fully compatible with nandroid."
 echo "* Type 'onandroid --help' for usage"
@@ -97,7 +97,7 @@ fi
 
 # Check if SD card is mounted
 echo "`date +%T` Searching for SD card..."
-is_sdcard_mounted=`mount | grep "sdcard type vfat" | cut -d ' ' -f 3`
+is_sdcard_mounted=`mount | grep "sdcard.*vfat" | cut -d ' ' -f 1`
 if [ "$is_sdcard_mounted" == "" ]; then
 	echo "`date +%T` SD card not found! Exiting..."
 	exit 1
@@ -139,36 +139,47 @@ echo "`date +%T` Checking disk space..."
 
 # /system partition size
 entry=`df -m /system | tail -1`
-u_system=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
+u_system=`echo $entry | cut -d' ' -f 3 | cut -d '%' -f 1`
 
 # /data partition size
 entry=`df -m /data | tail -1`
-u_data=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
+u_data=`echo $entry | cut -d' ' -f 3 | cut -d '%' -f 1`
 
 # /cache partition size
 entry=`df -m /cache | tail -1`
-u_cache=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
+u_cache=`echo $entry | cut -d' ' -f 3 | cut -d '%' -f 1`
 
 # .android_secure partition size
 # Mount sdcard into a temporary location for accessing .android_secure partition
-sdcard_vold_id=`mount | grep "/mnt/sdcard type vfat" | cut -d ' ' -f 1`
-mount -o remount,rw //
+sdcard_vold_id=`mount | grep "sdcard.*vfat" | cut -d ' ' -f 1`
+mount -o remount,rw /
 mkdir $sdcard_temp_mount
 mount $sdcard_vold_id $sdcard_temp_mount
 cd $sdcard_temp_mount
-u_as=`du -m .android_secure | cut -f1`
+u_as=`du -m .android_secure | cut -f 1`
 
 # sd-ext partition size
 # Check if sd-ext is mounted
-is_sdext_mounted=`mount | grep "type ext" | cut -d ' ' -f 3`
-sdext_exists=1
+is_sdext_mounted=`mount | grep "ext.*ext" | cut -d ' ' -f 1`
 if [ "$is_sdext_mounted" == "" ]; then
 	sdext_exists=0
+else
+	sdext_exists=1
 fi
 if [ $sdext_exists == 1 ]; then
-	extm=`mount | grep "type ext" | cut -d ' ' -f 3`
+	# Determine mount command's output format
+	if [ `mount | grep "ext.*ext" | cut -d ' ' -f 2` == "on" ]; then
+		extv=`mount | grep "ext.*ext" | cut -d ' ' -f 5`
+		extd=`mount | grep "ext.*ext" | cut -d ' ' -f 3 | cut -d '/' -f 2`
+		extm=`mount | grep "ext.*ext" | cut -d ' ' -f 3`
+	else
+		extv=`mount | grep "ext.*ext" | cut -d ' ' -f 3`
+		extd=`mount | grep "ext.*ext" | cut -d ' ' -f 2 | cut -d '/' -f 2`
+		extm=`mount | grep "ext.*ext" | cut -d ' ' -f 2`
+	fi
+	# Grab sd-ext mount point
 	entry=`df -m $extm | tail -1`
-	u_ext=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
+	u_ext=`echo $entry | cut -d ' ' -f 3 | cut -d '%' -f 1`
 else
 	u_ext=0
 fi
@@ -178,7 +189,7 @@ req_space=`expr $u_system + $u_data + $u_cache + $u_as + $u_ext + $safety`
 
 # Available space calculation
 entry=`df -m /mnt/sdcard | tail -1`
-freespace=`echo $entry | cut -d' ' -f3 | cut -d'%' -f1`
+freespace=`echo $entry | cut -d ' ' -f 3 | cut -d '%' -f 1`
 
 # Announce available space and required space
 echo "`date +%T` SD Card Free Space: $freespace MB"
@@ -191,6 +202,7 @@ else
 fi
 
 # Change to backup directory
+mkdir -p $path
 cd $path
 
 # Create directory for backup
@@ -258,18 +270,14 @@ echo ""
 sleep 2
 umount -l $sdcard_temp_mount
 rmdir $sdcard_temp_mount
-mount -o remount,ro //
+mount -o remount,ro /
 
 # Backup sd-ext
 if [ $sdext_exists == 1 ]; then
 	# Grab ext version
-	extv=`mount | grep "type ext" | cut -d ' ' -f 5`
-	# Grab mountpoint
-	extm=`mount | grep "type ext" | cut -d ' ' -f 3`
 	echo -e "`date +%T` Backing up sd-ext...\c"
 	cd $extm
 	cd ..
-	extd=`mount | grep "type ext" | cut -d ' ' -f 3 | cut -d '/' -f 2`
 	tar -cf $path/$name/sd-ext.$extv.tar $extd &
 	while [ `pidof tar` ]; do
 		echo -n "."
