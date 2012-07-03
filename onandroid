@@ -1,5 +1,5 @@
 echo "##########################################"
-echo "Online Nandroid Backup v4.1"
+echo "Online Nandroid Backup v4.2"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery."
 echo "* This tool backups /system , /data , "
@@ -296,8 +296,17 @@ fi
 # Generate md5
 logmsg "Generating md5sum...\c"
 cd $path/$name
-md5sum .android_secure.vfat.tar * > nandroid.md5 &
+md5sum .* * > nandroid.md5 &
 while [ `busybox pidof md5sum` ]; do
+	echo -n "."
+	sleep 2
+done
+echo ""
+
+sleep 1
+
+logmsg "Verifying md5sum...\c"
+while [ `busybox stat nandroid.md5 | busybox grep "Size" | busybox cut -d ' ' -f 4` == "0" ]; do
 	echo -n "."
 	sleep 2
 done
