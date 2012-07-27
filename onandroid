@@ -1,10 +1,8 @@
+version="5.0"
 echo "##########################################"
-echo "Online Nandroid Backup v4.2"
+echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
 echo "  without booting into recovery."
-echo "* This tool backups /system , /data , "
-echo "  /cache , .android_secure & sd-ext"
-echo "  partitions."
 echo "* It is fully compatible with nandroid."
 echo "* Type 'onandroid --help' for usage"
 echo "  instructions."
@@ -13,13 +11,13 @@ echo "##########################################"
 echo ""
 
 # Define constants
-path="/sdcard/clockworkmod/backup"
-safety=7
+path="/clockworkmod/backup"
+safety=10
 name="none"
 tz="u"
 req_power=10
 sdcard_temp_mount="/mnt/sdcard4nandroid"
-logfile=/data/local/tmp/onandroid.log
+logfile="/data/local/tmp/onandroid.log"
 
 # Logging function
 mkdir -p /data/local/tmp
@@ -34,13 +32,42 @@ logmsg(){
 	fi
 }
 
+# Error logging function (for detailed error logs)
+logerror(){
+	echo "$1" >>$logfile
+	echo "$2" >>$logfile
+	if [ "`busybox which log`" != "" ]; then
+		log -p i -t onandroid "$1"
+		log -p i -t onandroid "$2"
+	fi
+}
+
+# Cleanup function (Unmount temporary sdcard mount & remount root as ro)
+cleanup(){
+	if [ "$has_as" == 1 ]; then
+		busybox umount -lf $sdcard_temp_mount
+		busybox rmdir $sdcard_temp_mount
+		busybox mount -fo remount,ro /
+	fi
+}
+
+# Spit version number, date and time to log file
+logerror "Online Nandroid v$version" "Started at `date`"
+logerror "###########################" ""
+logerror "Run with options: $*" ""
+logerror "###########################" ""
+logerror "File System Layout:" "`busybox mount`"
+logerror "###########################" ""
+
 # Process arguments
 if [ $# -gt 0 ]; then
 	if [ $1 == "--help" ]; then
 		# Display usage instructions
 		clear
 		echo ""
-		echo "Usage: onandroid [OPTIONS] [NAME]"
+		echo "Online Nandroid v$version by Ameer Dawood"
+		echo ""
+		echo "Usage: onandroid [-h|-u] [NAME]"
 		echo ""
 		echo "Performs a nandroid backup with the NAME provided, or a default backup name consisting of the current date and time"
 		echo ""
@@ -91,16 +118,19 @@ if [ "`busybox id -u`" == "0" ]; then
 	logmsg "Root permissions aquired!"
 else
 	logmsg "Could not aquire root permissions! Exiting..."
+	logerror "busybox -u:" "`busybox id -u`"
 	exit 1
 fi
 
 # Analyse power status
 logmsg "Analysing power..."
+# Xperia Pro, Neo, Neo V, Arc, Arc S
 if [ -f /sys/class/power_supply/bq27520/capacity ]; then
 	rem_power=`busybox cat /sys/class/power_supply/bq27520/capacity`
 	if [ `busybox cat /sys/class/power_supply/ac/online` == "1" ]; then
 		rem_power=100
 	fi
+# Xperia X10, HTC Desire HD, Desire Z, Inspire, Triump (with CM7)
 elif [ -f /sys/class/power_supply/battery/capacity ]; then
 	rem_power=`busybox cat /sys/class/power_supply/battery/capacity`
 	if [ `busybox cat /sys/class/power_supply/ac/online` == "1" ]; then
@@ -117,73 +147,176 @@ elif [ $rem_power -gt $req_power ]; then
 	logmsg "Sufficient power available!"
 else
 	logmsg "Sufficient power not available! Exiting..."
+	logerror "Power Level:" "$rem_power"
 	exit 1
 fi
 
 # Check if SD card is mounted
 logmsg "Searching for SD card..."
-is_sdcard_mounted=`busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 1`
-if [ "$is_sdcard_mounted" == "" ]; then
+sdcard="$EXTERNAL_STORAGE"
+if [ "$sdcard" == "" ]; then
+	sdcard="sdcard"
+fi
+sdcard=`busybox mount | busybox grep "$sdcard.*vfat" | busybox tail -1 | busybox cut -d ' ' -f 3`
+if [ "$sdcard" == "" ]; then
 	logmsg "SD card not found! Exiting..."
+	logerror "Mounts:" "`busybox mount`"
 	exit 1
 else
 	logmsg "SD card found!"
+	path=$sdcard$path
+fi
+
+# Check if device has a yaffs2 file system
+system_fs="`busybox mount | grep "/system " | busybox cut -d ' ' -f 5`"
+data_fs="`busybox mount | grep "/data " | busybox cut -d ' ' -f 5`"
+cache_fs="`busybox mount | grep "/cache " | busybox cut -d ' ' -f 5`"
+datadata_fs="`busybox mount | grep "/datadata " | busybox cut -d ' ' -f 5`"
+if [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" ]; then
+	has_yaffs2="true"
 fi
 
 # Check for required tools
 logmsg "Checking for required tools..."
-if [ "`busybox which mkyaffs2image`" == "" ]; then
+if [ "$has_yaffs2" == "true" -a "`busybox which mkyaffs2image`" == "" ]; then
 	logmsg "Error: mkyaffs2image not found in path! Exiting..."
 	exit 1
 fi
-md5sum=`busybox which md5sum`
-if [ "$md5sum" == "" ]; then
+if [ "`busybox which md5sum`" == "" ]; then
 	logmsg "Error: md5sum not found in path! Exiting..."
 	exit 1
 fi
-tar=`busybox which tar`
-if [ "$tar" == "" ]; then
+if [ "`busybox which tar`" == "" ]; then
 	logmsg "Error: tar not found in path! Exiting..."
+	exit 1
+fi
+if [ "`busybox which dd`" == "" ]; then
+	logmsg "Error: dd not found in path! Exiting..."
 	exit 1
 fi
 logmsg "All required tools available!"
 
+# Detect /boot and /recovery partitions
+if [ -e "/proc/mtd" ]; then
+	part_type="mtd"
+elif [ -e "/proc/emmc" ]; then
+	part_type="emmc"
+else
+	part_type="not_found"
+fi
+
+if [ $part_type != "not_found" ]; then
+	part_boot=`cat /proc/$part_type | grep "boot" | cut -d ' ' -f 1 | cut -d ':' -f 1`
+	part_recovery=`cat /proc/$part_type | grep "recovery" | cut -d ' ' -f 1 | cut -d ':' -f 1`
+	part_wimax=`cat /proc/$part_type | grep "wimax" | cut -d ' ' -f 1 | cut -d ':' -f 1`
+	part_appslog=`cat /proc/$part_type | grep "appslog" | cut -d ' ' -f 1 | cut -d ':' -f 1`
+fi
+
 # Disk space check (in MB)
 logmsg "Checking disk space..."
 
+# /boot partition size
+if [ $part_type == "not_found" -o "$part_boot" == "" ]; then
+	u_boot=0
+else
+	boot_hex=`busybox cat /proc/$part_type | busybox grep "boot" | cut -d ' ' -f 2`
+	boot_dec=`busybox printf "%d \n " 0x$boot_hex`
+	u_boot=`busybox expr $boot_dec / 1024 / 1024`
+fi
+
+# /recovery partition size
+if [ $part_type == "not_found" -o "$part_recovery" == "" ]; then
+	u_recovery=0
+else
+	recovery_hex=`busybox cat /proc/$part_type | busybox grep "recovery" | cut -d ' ' -f 2`
+	recovery_dec=`busybox printf "%d \n " 0x$recovery_hex`
+	u_recovery=`busybox expr $recovery_dec / 1024 / 1024`
+fi
+
+# /wimax partition size
+if [ $part_type == "not_found" -o "$part_wimax" == "" ]; then
+	u_wimax=0
+else
+	wimax_hex=`busybox cat /proc/$part_type | busybox grep "wimax" | cut -d ' ' -f 2`
+	wimax_dec=`busybox printf "%d \n " 0x$wimax_hex`
+	u_wimax=`busybox expr $wimax_dec / 1024 / 1024`
+fi
+
+# /appslog partition size
+if [ $part_type == "not_found" -o "$part_appslog" == "" ]; then
+	u_appslog=0
+else
+	appslog_hex=`busybox cat /proc/$part_type | busybox grep "appslog" | cut -d ' ' -f 2`
+	appslog_dec=`busybox printf "%d \n " 0x$appslog_hex`
+	u_appslog=`busybox expr $appslog_dec / 1024 / 1024`
+fi
+
 # /system partition size
-entry=`busybox df -m /system | busybox tail -1`
-u_system=`echo $entry | busybox cut -d' ' -f 3 | busybox cut -d '%' -f 1`
+if [ "$system_fs" != "" ]; then
+	entry=`busybox df -m /system | busybox tail -1`
+	u_system=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+else
+	u_system=0
+fi
 
 # /data partition size
-entry=`busybox df -m /data | busybox tail -1`
-u_data=`echo $entry | busybox cut -d' ' -f 3 | busybox cut -d '%' -f 1`
+if [ "$data_fs" != "" ]; then
+	entry=`busybox df -m /data | busybox tail -1`
+	u_data=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+else
+	u_data=0
+fi
 
 # /cache partition size
-entry=`busybox df -m /cache | busybox tail -1`
-u_cache=`echo $entry | busybox cut -d' ' -f 3 | busybox cut -d '%' -f 1`
+if [ "$cache_fs" != "" ]; then
+	entry=`busybox df -m /cache | busybox tail -1`
+	u_cache=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+else
+	u_cache=0
+fi
+
+# /datadata partition size
+if [ "$datadata_fs" != "" ]; then
+	entry=`busybox df -m /datadata | busybox tail -1`
+	u_datadata=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+else
+	u_datadata=0
+fi
+
+if [ -d  "$sdcard/.android_secure" ]; then
+	has_as=1
+else
+	has_as=0
+fi
 
 # .android_secure partition size
-sdcardm=`busybox mount | busybox grep "sdcard.*vfat" | busybox cut -d ' ' -f 3`
-# Mount sdcard into a temporary location for accessing .android_secure partition
-busybox mount -o remount,rw /
-busybox mkdir -p $sdcard_temp_mount
-busybox mount $sdcardm $sdcard_temp_mount
-cd $sdcard_temp_mount
-u_as=`busybox du -m .android_secure | busybox tail -1 | busybox cut -f 1`
+if [ "$has_as" == 1 ]; then
+	# Mount sdcard into a temporary location for accessing .android_secure partition
+	busybox mount -fo remount,rw /
+	busybox mkdir -p $sdcard_temp_mount
+	busybox mount $sdcard $sdcard_temp_mount
+	cd $sdcard_temp_mount
+	u_as=`busybox du -m .android_secure | busybox tail -1 | busybox cut -f 1`
+else
+	u_as=0
+fi
 
 # sd-ext partition size
 # Check if sd-ext is mounted
-is_sdext_mounted=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 1`
+sdextdir="$SD_EXT_DIRECTORY"
+if [ "$sdextdir" == "" ]; then
+	sdextdir="/sd-ext"
+fi
+is_sdext_mounted=`busybox mount | busybox egrep "($sdextdir|sd|ext).*ext[234]" | busybox tail -1 | busybox cut -d ' ' -f 1`
 if [ "$is_sdext_mounted" == "" ]; then
 	sdext_exists=0
 else
 	sdext_exists=1
 fi
 if [ $sdext_exists == 1 ]; then
-	extv=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 5`
-	extd=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 3 | busybox cut -d '/' -f 2`
-	extm=`busybox mount | busybox grep "ext.*ext" | busybox cut -d ' ' -f 3`
+	extv=`busybox mount | busybox egrep "($sdextdir|sd|ext).*ext[234]" | busybox cut -d ' ' -f 5`
+	extm=`busybox mount | busybox egrep "($sdextdir|sd|ext).*ext[234]" | busybox cut -d ' ' -f 3`
+	extd=`busybox basename $extm`
 	entry=`busybox df -m $extm | busybox tail -1`
 	u_ext=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
 else
@@ -191,10 +324,10 @@ else
 fi
 
 # Required space calculation
-req_space=`busybox expr $u_system + $u_data + $u_cache + $u_as + $u_ext + $safety`
+req_space=`busybox expr $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_as + $u_ext + $safety`
 
 # Available space calculation
-entry=`busybox df -m /sdcard | busybox tail -1`
+entry=`busybox df -m $sdcard | busybox tail -1`
 freespace=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
 
 # Announce available space and required space
@@ -202,6 +335,11 @@ logmsg "SD Card Free Space: $freespace MB"
 logmsg "Required Space: $req_space MB"
 if [ $freespace -lt $req_space ]; then
 	logmsg "Not enough disk space! Exiting..."
+	logerror "df:" "`busybox df`"
+	logerror "Partitions:" "`busybox cat /proc/$part_type`"
+	logerror ".android_secure:" "$u_as"
+	logerror "sd-ext:" "$u_ext"
+	cleanup
 	exit 1
 else
 	logmsg "Necessary disk space available!"
@@ -217,15 +355,20 @@ if [ ! -d $name ]; then
 	busybox mkdir -p -- $name
 	if [ ! -d $name ]; then 
 		logmsg "Error: Cannot create $name"
+		logerror "Mounts:" "`busybox mount`"
+		cleanup
 		exit 1
 	fi
 else
 	logmsg "Error: $name already exists! Exiting..."
+	cleanup
 	exit 1
 fi
 busybox touch -- $name/.nandroidwritable
 if [ ! -e $name/.nandroidwritable ]; then
 	logmsg "Error: Cannot write to $name ! Exiting..."
+	logerror "Mounts:" "`busybox mount`"
+	cleanup
 	exit 1
 fi
 busybox rm -- $name/.nandroidwritable
@@ -233,53 +376,173 @@ busybox rm -- $name/.nandroidwritable
 logmsg "Backing up to $path/$name"
 cd -- $name
 
+# Backup boot
+if [ $part_type == "not_found" -o "$part_boot" == "" ]; then
+	logmsg "/boot not found! Skipping backup of /boot!"
+else
+	logmsg "Backing up /boot...\c"
+	dd if=/dev/mtd/$part_boot of=$path/$name/boot.img bs=4096 2> /dev/null &
+	while [ `busybox pidof dd` ]; do
+		echo -n "."
+		sleep 2
+	done
+	echo ""
+fi
+
+# Backup recovery
+if [ $part_type == "not_found" -o "$part_recovery" == "" ]; then
+	logmsg "/recovery not found! Skipping backup of /recovery!"
+else
+	logmsg "Backing up /recovery...\c"
+	dd if=/dev/mtd/$part_recovery of=$path/$name/recovery.img bs=4096 2> /dev/null &
+	while [ `busybox pidof dd` ]; do
+		echo -n "."
+		sleep 2
+	done
+	echo ""
+fi
+
+# Backup wimax
+if [ $part_type == "not_found" -o "$part_wimax" == "" ]; then
+	logmsg "/wimax not found! Skipping backup of /wimax!"
+else
+	logmsg "Backing up /wimax...\c"
+	dd if=/dev/mtd/$part_wimax of=$path/$name/wimax.img bs=4096 2> /dev/null &
+	while [ `busybox pidof dd` ]; do
+		echo -n "."
+		sleep 2
+	done
+	echo ""
+fi
+
+# Backup appslog
+if [ $part_type == "not_found" -o "$part_appslog" == "" ]; then
+	logmsg "/appslog not found! Skipping backup of /appslog!"
+else
+	logmsg "Backing up /appslog...\c"
+	dd if=/dev/mtd/$part_appslog of=$path/$name/appslog.img bs=4096 2> /dev/null &
+	while [ `busybox pidof dd` ]; do
+		echo -n "."
+		sleep 2
+	done
+	echo ""
+fi
+
 # Backup system
-logmsg "Backing up /system...\c"
-mkyaffs2image /system system.yaffs2.img &
-while [ `busybox pidof mkyaffs2image` ]; do
-	echo -n "."
-	sleep 2
-done
-echo ""
+if [ "$system_fs" != "" ]; then
+	if [ "$system_fs" == "yaffs2" ]; then
+		logmsg "Backing up /system...\c"
+		mkyaffs2image /system system.yaffs2.img &
+		while [ `busybox pidof mkyaffs2image` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	else
+		logmsg "Backing up /system...\c"
+		cd /
+		tar -cf $path/$name/system.$system_fs.tar system &
+		while [ `busybox pidof tar` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	fi
+else
+	logmsg "/system not found! Skipping backup of /system!"
+fi
 
 # Backup data
-logmsg "Backing up /data...\c"
-mkyaffs2image /data data.yaffs2.img &
-while [ `busybox pidof mkyaffs2image` ]; do
-	echo -n "."
-	sleep 2
-done
-echo ""
+if [ "$data_fs" != "" ]; then
+	if [ "$data_fs" == "yaffs2" ]; then
+		logmsg "Backing up /data...\c"
+		mkyaffs2image /data data.yaffs2.img &
+		while [ `busybox pidof mkyaffs2image` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	else
+		logmsg "Backing up /data...\c"
+		cd /
+		tar -cf $path/$name/data.$data_fs.tar data &
+		while [ `busybox pidof tar` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	fi
+else
+	logmsg "/data not found! Skipping backup of /data!"
+fi
 
 # Backup cache
-logmsg "Backing up /cache...\c"
-mkyaffs2image /cache cache.yaffs2.img &
-while [ `busybox pidof mkyaffs2image` ]; do
-	echo -n "."
-	sleep 2
-done
-echo ""
+if [ "$cache_fs" != "" ]; then
+	if [ "$cache_fs" == "yaffs2" ]; then
+		logmsg "Backing up /cache...\c"
+		mkyaffs2image /cache cache.yaffs2.img &
+		while [ `busybox pidof mkyaffs2image` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	else
+		logmsg "Backing up /cache...\c"
+		cd /
+		tar -cf $path/$name/cache.$cache_fs.tar cache &
+		while [ `busybox pidof tar` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	fi
+else
+	logmsg "/cache not found! Skipping backup of /cache!"
+fi
+
+# Backup datadata
+if [ "$datadata_fs" != "" ]; then
+	if [ "$datadata_fs" == "yaffs2" ]; then
+		logmsg "Backing up /datadata...\c"
+		mkyaffs2image /datadata datadata.yaffs2.img &
+		while [ `busybox pidof mkyaffs2image` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	else
+		logmsg "Backing up /datadata...\c"
+		cd /
+		tar -cf $path/$name/datadata.$datadata_fs.tar datadata &
+		while [ `busybox pidof tar` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	fi
+else
+	logmsg "/datadata not found! Skipping backup of /datadata!"
+fi
 
 # Backup .android_secure
-logmsg "Backing up .android_secure...\c"
-cd /mnt/sdcard4nandroid
-tar -cf $path/$name/.android_secure.vfat.tar .android_secure &
-while [ `busybox pidof tar` ]; do
-	echo -n "."
+if [ "$has_as" == 1 ]; then
+	logmsg "Backing up .android_secure...\c"
+	cd $sdcard_temp_mount
+	tar -cf $path/$name/.android_secure.vfat.tar .android_secure &
+	while [ `busybox pidof tar` ]; do
+		echo -n "."
+		sleep 2
+	done
+	echo ""
+	sync
 	sleep 2
-done
-echo ""
-
-# Unmount temporary sdcard mount as .android_secure backup is complete
-# Wait 2 seconds before we umount device
-sleep 2
-busybox umount -l $sdcard_temp_mount
-busybox rmdir $sdcard_temp_mount
-busybox mount -o remount,ro /
+	cleanup
+else
+	logmsg ".android_secure not found! Skipping backup of .android_secure!"
+fi
 
 # Backup sd-ext
 if [ $sdext_exists == 1 ]; then
-	# Grab ext version
 	logmsg "Backing up sd-ext...\c"
 	cd $extm
 	cd ..
@@ -303,6 +566,7 @@ while [ `busybox pidof md5sum` ]; do
 done
 echo ""
 
+sync
 sleep 1
 
 logmsg "Verifying md5sum...\c"
@@ -321,20 +585,58 @@ e_min=`busybox expr $elapsed / 60`
 e_sec=`busybox expr $e_min \* 60`
 e_sec=`busybox expr $elapsed - $e_sec`
 logmsg "Online Nandroid Backup Completed in $e_min minutes $e_sec seconds!"
+logerror "###########################" ""
+bkp_files=`busybox ls -l1A $path/$name`
+logerror "Files Backed-up:" "\"$bkp_files\""
 
-# LED and vibrate notification
-led="/sys/class/leds/green/brightness"
-vibrator="/sys/class/timed_output/vibrator/enable"
-if [ -f $led ] && [ -f $vibrator ]; then
-	echo 250 > $vibrator
-	echo 255 > $led
+# LED detection
+# Xperia Pro
+if [ -f /sys/class/leds/green/brightness ]; then
+	led="/sys/class/leds/green/brightness"
+# Xperia U
+elif [ -f /sys/class/leds/m-key-green/brightness ]; then
+	led="/sys/class/leds/m-key-green/brightness"
+else
+	led="none"
+fi
+
+# Vibrator detection
+# Xperia Pro
+if [ -f /sys/class/timed_output/vibrator/enable ]; then
+	vibrator="/sys/class/timed_output/vibrator/enable"
+else
+	vibrator="none"
+fi
+
+# LED / Vibrate Notification
+if [ $vibrator == "none" ] && [ $led == "none" ] ; then
+	exit 0
+else
+	if [ $vibrator != "none" ]; then
+		echo 250 > $vibrator
+	fi
+	if [ $led != "none" ]; then
+		echo 255 > $led
+	fi
 	sleep 0.5
-	echo 0 > $vibrator
-	echo 0 > $led
+	if [ $vibrator != "none" ]; then
+		echo 0 > $vibrator
+	fi
+	if [ $led != "none" ]; then
+		echo 0 > $led
+	fi
 	sleep 0.2
-	echo 250 > $vibrator
-	echo 255 > $led
+	if [ $vibrator != "none" ]; then
+		echo 250 > $vibrator
+	fi
+	if [ $led != "none" ]; then
+		echo 255 > $led
+	fi
 	sleep 0.5
-	echo 0 > $vibrator
-	echo 0 > $led
+	if [ $vibrator != "none" ]; then
+		echo 0 > $vibrator
+	fi
+	if [ $led != "none" ]; then
+		echo 0 > $led
+	fi
 fi
