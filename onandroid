@@ -1,4 +1,4 @@
-version="5.0"
+version="5.1"
 echo "##########################################"
 echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
@@ -47,7 +47,7 @@ cleanup(){
 	if [ "$has_as" == 1 ]; then
 		busybox umount -lf $sdcard_temp_mount
 		busybox rmdir $sdcard_temp_mount
-		busybox mount -fo remount,ro /
+		busybox mount -o remount,ro /
 	fi
 }
 
@@ -157,7 +157,7 @@ sdcard="$EXTERNAL_STORAGE"
 if [ "$sdcard" == "" ]; then
 	sdcard="sdcard"
 fi
-sdcard=`busybox mount | busybox grep "$sdcard.*vfat" | busybox tail -1 | busybox cut -d ' ' -f 3`
+sdcard=`busybox mount | busybox grep "$sdcard type vfat" | busybox tail -1 | busybox cut -d ' ' -f 3`
 if [ "$sdcard" == "" ]; then
 	logmsg "SD card not found! Exiting..."
 	logerror "Mounts:" "`busybox mount`"
@@ -292,7 +292,7 @@ fi
 # .android_secure partition size
 if [ "$has_as" == 1 ]; then
 	# Mount sdcard into a temporary location for accessing .android_secure partition
-	busybox mount -fo remount,rw /
+	busybox mount -o remount,rw /
 	busybox mkdir -p $sdcard_temp_mount
 	busybox mount $sdcard $sdcard_temp_mount
 	cd $sdcard_temp_mount
