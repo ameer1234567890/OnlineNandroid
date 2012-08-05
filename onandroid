@@ -1,4 +1,4 @@
-version="5.1"
+version="5.2"
 echo "##########################################"
 echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
@@ -12,7 +12,7 @@ echo ""
 
 # Define constants
 path="/clockworkmod/backup"
-safety=10
+safety=12
 name="none"
 tz="u"
 req_power=10
@@ -157,7 +157,7 @@ sdcard="$EXTERNAL_STORAGE"
 if [ "$sdcard" == "" ]; then
 	sdcard="sdcard"
 fi
-sdcard=`busybox mount | busybox grep "$sdcard type vfat" | busybox tail -1 | busybox cut -d ' ' -f 3`
+sdcard=`busybox mount | busybox egrep "$sdcard type (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
 if [ "$sdcard" == "" ]; then
 	logmsg "SD card not found! Exiting..."
 	logerror "Mounts:" "`busybox mount`"
@@ -172,7 +172,8 @@ system_fs="`busybox mount | grep "/system " | busybox cut -d ' ' -f 5`"
 data_fs="`busybox mount | grep "/data " | busybox cut -d ' ' -f 5`"
 cache_fs="`busybox mount | grep "/cache " | busybox cut -d ' ' -f 5`"
 datadata_fs="`busybox mount | grep "/datadata " | busybox cut -d ' ' -f 5`"
-if [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" ]; then
+efs_fs="`busybox mount | grep "/efs " | busybox cut -d ' ' -f 5`"
+if [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" ]; then
 	has_yaffs2="true"
 fi
 
@@ -206,7 +207,7 @@ else
 fi
 
 if [ $part_type != "not_found" ]; then
-	part_boot=`cat /proc/$part_type | grep "boot" | cut -d ' ' -f 1 | cut -d ':' -f 1`
+	part_boot=`cat /proc/$part_type | grep "[^s]boot" | cut -d ' ' -f 1 | cut -d ':' -f 1`
 	part_recovery=`cat /proc/$part_type | grep "recovery" | cut -d ' ' -f 1 | cut -d ':' -f 1`
 	part_wimax=`cat /proc/$part_type | grep "wimax" | cut -d ' ' -f 1 | cut -d ':' -f 1`
 	part_appslog=`cat /proc/$part_type | grep "appslog" | cut -d ' ' -f 1 | cut -d ':' -f 1`
@@ -283,6 +284,14 @@ else
 	u_datadata=0
 fi
 
+# /efs partition size
+if [ "$efs_fs" != "" ]; then
+	entry=`busybox df -m /efs | busybox tail -1`
+	u_efs=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+else
+	u_efs=0
+fi
+
 if [ -d  "$sdcard/.android_secure" ]; then
 	has_as=1
 else
@@ -324,7 +333,7 @@ else
 fi
 
 # Required space calculation
-req_space=`busybox expr $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_as + $u_ext + $safety`
+req_space=`busybox expr $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_efs + $u_as + $u_ext + $safety`
 
 # Available space calculation
 entry=`busybox df -m $sdcard | busybox tail -1`
@@ -522,6 +531,30 @@ if [ "$datadata_fs" != "" ]; then
 	fi
 else
 	logmsg "/datadata not found! Skipping backup of /datadata!"
+fi
+
+# Backup efs
+if [ "$efs_fs" != "" ]; then
+	if [ "$efs_fs" == "yaffs2" ]; then
+		logmsg "Backing up /efs...\c"
+		mkyaffs2image /efs efs.yaffs2.img &
+		while [ `busybox pidof mkyaffs2image` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	else
+		logmsg "Backing up /efs...\c"
+		cd /
+		tar -cf $path/$name/efs.$efs_fs.tar efs &
+		while [ `busybox pidof tar` ]; do
+			echo -n "."
+			sleep 2
+		done
+		echo ""
+	fi
+else
+	logmsg "/efs not found! Skipping backup of /efs!"
 fi
 
 # Backup .android_secure
