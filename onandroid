@@ -1,4 +1,4 @@
-version="5.2"
+version="5.3"
 echo "##########################################"
 echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
@@ -168,11 +168,11 @@ else
 fi
 
 # Check if device has a yaffs2 file system
-system_fs="`busybox mount | grep "/system " | busybox cut -d ' ' -f 5`"
-data_fs="`busybox mount | grep "/data " | busybox cut -d ' ' -f 5`"
-cache_fs="`busybox mount | grep "/cache " | busybox cut -d ' ' -f 5`"
-datadata_fs="`busybox mount | grep "/datadata " | busybox cut -d ' ' -f 5`"
-efs_fs="`busybox mount | grep "/efs " | busybox cut -d ' ' -f 5`"
+system_fs="`busybox mount | busybox grep "/system " | busybox cut -d ' ' -f 5`"
+data_fs="`busybox mount | busybox grep "/data " | busybox cut -d ' ' -f 5`"
+cache_fs="`busybox mount | busybox grep "/cache " | busybox cut -d ' ' -f 5`"
+datadata_fs="`busybox mount | busybox grep "/datadata " | busybox cut -d ' ' -f 5`"
+efs_fs="`busybox mount | busybox grep "/efs " | busybox cut -d ' ' -f 5`"
 if [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" ]; then
 	has_yaffs2="true"
 fi
@@ -197,20 +197,25 @@ if [ "`busybox which dd`" == "" ]; then
 fi
 logmsg "All required tools available!"
 
-# Detect /boot and /recovery partitions
+# Detect /boot, /recovery, /wimax and appslog partitions
 if [ -e "/proc/mtd" ]; then
-	part_type="mtd"
+	part_type="/proc/mtd"
+	part_path="/dev/mtd"
 elif [ -e "/proc/emmc" ]; then
-	part_type="emmc"
+	part_type="/proc/emmc"
+	part_path="/dev/block"
+elif [ -e "/system/partlayout4nandroid" ]; then
+	part_type="/system/partlayout4nandroid"
+	part_path="/dev/block"
 else
 	part_type="not_found"
 fi
 
 if [ $part_type != "not_found" ]; then
-	part_boot=`cat /proc/$part_type | grep "[^s]boot" | cut -d ' ' -f 1 | cut -d ':' -f 1`
-	part_recovery=`cat /proc/$part_type | grep "recovery" | cut -d ' ' -f 1 | cut -d ':' -f 1`
-	part_wimax=`cat /proc/$part_type | grep "wimax" | cut -d ' ' -f 1 | cut -d ':' -f 1`
-	part_appslog=`cat /proc/$part_type | grep "appslog" | cut -d ' ' -f 1 | cut -d ':' -f 1`
+	part_boot=`cat $part_type | busybox grep "\"boot\"" | busybox cut -d ':' -f 1`
+	part_recovery=`cat $part_type | busybox grep "\"recovery\"" | busybox cut -d ':' -f 1`
+	part_wimax=`cat $part_type | busybox grep "\"wimax\"" | busybox cut -d ':' -f 1`
+	part_appslog=`cat $part_type | busybox grep "\"appslog\"" | busybox cut -d ':' -f 1`
 fi
 
 # Disk space check (in MB)
@@ -220,7 +225,7 @@ logmsg "Checking disk space..."
 if [ $part_type == "not_found" -o "$part_boot" == "" ]; then
 	u_boot=0
 else
-	boot_hex=`busybox cat /proc/$part_type | busybox grep "boot" | cut -d ' ' -f 2`
+	boot_hex=`busybox cat $part_type | busybox grep "boot" | busybox cut -d ' ' -f 2`
 	boot_dec=`busybox printf "%d \n " 0x$boot_hex`
 	u_boot=`busybox expr $boot_dec / 1024 / 1024`
 fi
@@ -229,7 +234,7 @@ fi
 if [ $part_type == "not_found" -o "$part_recovery" == "" ]; then
 	u_recovery=0
 else
-	recovery_hex=`busybox cat /proc/$part_type | busybox grep "recovery" | cut -d ' ' -f 2`
+	recovery_hex=`busybox cat $part_type | busybox grep "recovery" | busybox cut -d ' ' -f 2`
 	recovery_dec=`busybox printf "%d \n " 0x$recovery_hex`
 	u_recovery=`busybox expr $recovery_dec / 1024 / 1024`
 fi
@@ -238,7 +243,7 @@ fi
 if [ $part_type == "not_found" -o "$part_wimax" == "" ]; then
 	u_wimax=0
 else
-	wimax_hex=`busybox cat /proc/$part_type | busybox grep "wimax" | cut -d ' ' -f 2`
+	wimax_hex=`busybox cat $part_type | busybox grep "wimax" | busybox cut -d ' ' -f 2`
 	wimax_dec=`busybox printf "%d \n " 0x$wimax_hex`
 	u_wimax=`busybox expr $wimax_dec / 1024 / 1024`
 fi
@@ -247,7 +252,7 @@ fi
 if [ $part_type == "not_found" -o "$part_appslog" == "" ]; then
 	u_appslog=0
 else
-	appslog_hex=`busybox cat /proc/$part_type | busybox grep "appslog" | cut -d ' ' -f 2`
+	appslog_hex=`busybox cat $part_type | busybox grep "appslog" | busybox cut -d ' ' -f 2`
 	appslog_dec=`busybox printf "%d \n " 0x$appslog_hex`
 	u_appslog=`busybox expr $appslog_dec / 1024 / 1024`
 fi
@@ -292,6 +297,7 @@ else
 	u_efs=0
 fi
 
+# Check if .android_secure exists
 if [ -d  "$sdcard/.android_secure" ]; then
 	has_as=1
 else
@@ -345,7 +351,7 @@ logmsg "Required Space: $req_space MB"
 if [ $freespace -lt $req_space ]; then
 	logmsg "Not enough disk space! Exiting..."
 	logerror "df:" "`busybox df`"
-	logerror "Partitions:" "`busybox cat /proc/$part_type`"
+	logerror "Partitions:" "`busybox cat $part_type`"
 	logerror ".android_secure:" "$u_as"
 	logerror "sd-ext:" "$u_ext"
 	cleanup
@@ -390,7 +396,7 @@ if [ $part_type == "not_found" -o "$part_boot" == "" ]; then
 	logmsg "/boot not found! Skipping backup of /boot!"
 else
 	logmsg "Backing up /boot...\c"
-	dd if=/dev/mtd/$part_boot of=$path/$name/boot.img bs=4096 2> /dev/null &
+	dd if=$part_path/$part_boot of=$path/$name/boot.img bs=4096 2> /dev/null &
 	while [ `busybox pidof dd` ]; do
 		echo -n "."
 		sleep 2
@@ -403,7 +409,7 @@ if [ $part_type == "not_found" -o "$part_recovery" == "" ]; then
 	logmsg "/recovery not found! Skipping backup of /recovery!"
 else
 	logmsg "Backing up /recovery...\c"
-	dd if=/dev/mtd/$part_recovery of=$path/$name/recovery.img bs=4096 2> /dev/null &
+	dd if=$part_path/$part_recovery of=$path/$name/recovery.img bs=4096 2> /dev/null &
 	while [ `busybox pidof dd` ]; do
 		echo -n "."
 		sleep 2
@@ -416,7 +422,7 @@ if [ $part_type == "not_found" -o "$part_wimax" == "" ]; then
 	logmsg "/wimax not found! Skipping backup of /wimax!"
 else
 	logmsg "Backing up /wimax...\c"
-	dd if=/dev/mtd/$part_wimax of=$path/$name/wimax.img bs=4096 2> /dev/null &
+	dd if=$part_path/$part_wimax of=$path/$name/wimax.img bs=4096 2> /dev/null &
 	while [ `busybox pidof dd` ]; do
 		echo -n "."
 		sleep 2
@@ -429,7 +435,7 @@ if [ $part_type == "not_found" -o "$part_appslog" == "" ]; then
 	logmsg "/appslog not found! Skipping backup of /appslog!"
 else
 	logmsg "Backing up /appslog...\c"
-	dd if=/dev/mtd/$part_appslog of=$path/$name/appslog.img bs=4096 2> /dev/null &
+	dd if=$part_path/$part_appslog of=$path/$name/appslog.img bs=4096 2> /dev/null &
 	while [ `busybox pidof dd` ]; do
 		echo -n "."
 		sleep 2
@@ -602,6 +608,7 @@ echo ""
 sync
 sleep 1
 
+# Verify md5sum (to check if the file is populated)
 logmsg "Verifying md5sum...\c"
 while [ `busybox stat nandroid.md5 | busybox grep "Size" | busybox cut -d ' ' -f 4` == "0" ]; do
 	echo -n "."
