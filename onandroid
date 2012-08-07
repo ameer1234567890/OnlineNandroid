@@ -1,4 +1,4 @@
-version="5.3"
+version="5.4"
 echo "##########################################"
 echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
@@ -322,15 +322,15 @@ sdextdir="$SD_EXT_DIRECTORY"
 if [ "$sdextdir" == "" ]; then
 	sdextdir="/sd-ext"
 fi
-is_sdext_mounted=`busybox mount | busybox egrep "($sdextdir|sd|ext).*ext[234]" | busybox tail -1 | busybox cut -d ' ' -f 1`
+is_sdext_mounted=`busybox mount | busybox egrep "($sdextdir|sd|ext) type ext[234]" | busybox tail -1 | busybox cut -d ' ' -f 1`
 if [ "$is_sdext_mounted" == "" ]; then
 	sdext_exists=0
 else
 	sdext_exists=1
 fi
 if [ $sdext_exists == 1 ]; then
-	extv=`busybox mount | busybox egrep "($sdextdir|sd|ext).*ext[234]" | busybox cut -d ' ' -f 5`
-	extm=`busybox mount | busybox egrep "($sdextdir|sd|ext).*ext[234]" | busybox cut -d ' ' -f 3`
+	extv=`busybox mount | busybox egrep "($sdextdir|sd|ext) type ext[234]" | busybox cut -d ' ' -f 5`
+	extm=`busybox mount | busybox egrep "($sdextdir|sd|ext) type ext[234]" | busybox cut -d ' ' -f 3`
 	extd=`busybox basename $extm`
 	entry=`busybox df -m $extm | busybox tail -1`
 	u_ext=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
@@ -350,8 +350,12 @@ logmsg "SD Card Free Space: $freespace MB"
 logmsg "Required Space: $req_space MB"
 if [ $freespace -lt $req_space ]; then
 	logmsg "Not enough disk space! Exiting..."
-	logerror "df:" "`busybox df`"
-	logerror "Partitions:" "`busybox cat $part_type`"
+	logerror "df:" "`busybox df -m`"
+	if [ -f $part_type ]; then
+		logerror "Partitions:" "`busybox cat $part_type`"
+	else
+		logerror "Partitions:" "Partition layout not found"
+	fi
 	logerror ".android_secure:" "$u_as"
 	logerror "sd-ext:" "$u_ext"
 	cleanup
