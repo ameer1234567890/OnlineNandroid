@@ -1,4 +1,4 @@
-version="5.4"
+version="5.5"
 echo "##########################################"
 echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
@@ -17,6 +17,7 @@ name="none"
 tz="u"
 req_power=10
 sdcard_temp_mount="/mnt/sdcard4nandroid"
+sdext_temp_mount="/mnt/sdext4nandroid"
 logfile="/data/local/tmp/onandroid.log"
 
 # Logging function
@@ -47,6 +48,13 @@ cleanup(){
 	if [ "$has_as" == 1 ]; then
 		busybox umount -lf $sdcard_temp_mount
 		busybox rmdir $sdcard_temp_mount
+	fi
+	if [ "$sdext_exists" == 1 ]; then
+		busybox umount -lf $sdext_temp_mount/sd-ext
+		busybox rmdir $sdext_temp_mount/sd-ext
+		busybox rmdir $sdext_temp_mount
+	fi
+	if [ "$has_as" == 1 -o "$sdext_exists" == 1 ]; then
 		busybox mount -o remount,ro /
 	fi
 }
@@ -115,9 +123,9 @@ start_time=`busybox date +%s`
 # Check for root permissions
 logmsg "Checking for root permissions..."
 if [ "`busybox id -u`" == "0" ]; then
-	logmsg "Root permissions aquired!"
+	logmsg "Root permissions acquired!"
 else
-	logmsg "Could not aquire root permissions! Exiting..."
+	logmsg "Could not acquire root permissions! Exiting..."
 	logerror "busybox -u:" "`busybox id -u`"
 	exit 1
 fi
@@ -157,7 +165,7 @@ sdcard="$EXTERNAL_STORAGE"
 if [ "$sdcard" == "" ]; then
 	sdcard="sdcard"
 fi
-sdcard=`busybox mount | busybox egrep "$sdcard type (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
+sdcard=`busybox mount | busybox egrep "$sdcard type* (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
 if [ "$sdcard" == "" ]; then
 	logmsg "SD card not found! Exiting..."
 	logerror "Mounts:" "`busybox mount`"
@@ -225,7 +233,7 @@ logmsg "Checking disk space..."
 if [ $part_type == "not_found" -o "$part_boot" == "" ]; then
 	u_boot=0
 else
-	boot_hex=`busybox cat $part_type | busybox grep "boot" | busybox cut -d ' ' -f 2`
+	boot_hex=`busybox cat $part_type | busybox grep "\"boot\"" | busybox cut -d ' ' -f 2`
 	boot_dec=`busybox printf "%d \n " 0x$boot_hex`
 	u_boot=`busybox expr $boot_dec / 1024 / 1024`
 fi
@@ -234,7 +242,7 @@ fi
 if [ $part_type == "not_found" -o "$part_recovery" == "" ]; then
 	u_recovery=0
 else
-	recovery_hex=`busybox cat $part_type | busybox grep "recovery" | busybox cut -d ' ' -f 2`
+	recovery_hex=`busybox cat $part_type | busybox grep "\"recovery\"" | busybox cut -d ' ' -f 2`
 	recovery_dec=`busybox printf "%d \n " 0x$recovery_hex`
 	u_recovery=`busybox expr $recovery_dec / 1024 / 1024`
 fi
@@ -243,7 +251,7 @@ fi
 if [ $part_type == "not_found" -o "$part_wimax" == "" ]; then
 	u_wimax=0
 else
-	wimax_hex=`busybox cat $part_type | busybox grep "wimax" | busybox cut -d ' ' -f 2`
+	wimax_hex=`busybox cat $part_type | busybox grep "\"wimax\"" | busybox cut -d ' ' -f 2`
 	wimax_dec=`busybox printf "%d \n " 0x$wimax_hex`
 	u_wimax=`busybox expr $wimax_dec / 1024 / 1024`
 fi
@@ -252,7 +260,7 @@ fi
 if [ $part_type == "not_found" -o "$part_appslog" == "" ]; then
 	u_appslog=0
 else
-	appslog_hex=`busybox cat $part_type | busybox grep "appslog" | busybox cut -d ' ' -f 2`
+	appslog_hex=`busybox cat $part_type | busybox grep "\"appslog\"" | busybox cut -d ' ' -f 2`
 	appslog_dec=`busybox printf "%d \n " 0x$appslog_hex`
 	u_appslog=`busybox expr $appslog_dec / 1024 / 1024`
 fi
@@ -269,6 +277,14 @@ fi
 if [ "$data_fs" != "" ]; then
 	entry=`busybox df -m /data | busybox tail -1`
 	u_data=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+	if [ -d /data/media ]; then
+		entry=`busybox df -m $sdcard | busybox tail -1`
+		usedspace=`echo $entry | busybox cut -d ' ' -f 2 | busybox cut -d '%' -f 1`
+		u_data=`busybox expr $u_data - $usedspace`
+		if [ $u_data -lt 10 ]; then
+			u_data=10
+		fi
+	fi
 else
 	u_data=0
 fi
@@ -322,20 +338,25 @@ sdextdir="$SD_EXT_DIRECTORY"
 if [ "$sdextdir" == "" ]; then
 	sdextdir="/sd-ext"
 fi
-is_sdext_mounted=`busybox mount | busybox egrep "($sdextdir|sd|ext) type ext[234]" | busybox tail -1 | busybox cut -d ' ' -f 1`
+is_sdext_mounted=`busybox mount | busybox egrep "($sdextdir|sd|ext)* type ext[234]" | busybox tail -1 | busybox cut -d ' ' -f 1`
 if [ "$is_sdext_mounted" == "" ]; then
 	sdext_exists=0
 else
 	sdext_exists=1
 fi
 if [ $sdext_exists == 1 ]; then
-	extv=`busybox mount | busybox egrep "($sdextdir|sd|ext) type ext[234]" | busybox cut -d ' ' -f 5`
-	extm=`busybox mount | busybox egrep "($sdextdir|sd|ext) type ext[234]" | busybox cut -d ' ' -f 3`
+	extv=`busybox mount | busybox egrep "($sdextdir|sd|ext)* type ext[234]" | busybox cut -d ' ' -f 5`
+	extm=`busybox mount | busybox egrep "($sdextdir|sd|ext)* type ext[234]" | busybox cut -d ' ' -f 3`
 	extd=`busybox basename $extm`
 	entry=`busybox df -m $extm | busybox tail -1`
 	u_ext=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
 else
 	u_ext=0
+fi
+
+# What to exclude if sd-ext is mounted on /data partition
+if [ `echo $extm | busybox grep "^/data"` ]; then
+	sdext_exclude=`echo $extm | sed s/'^\/'/''/g`
 fi
 
 # Required space calculation
@@ -460,7 +481,7 @@ if [ "$system_fs" != "" ]; then
 	else
 		logmsg "Backing up /system...\c"
 		cd /
-		tar -cf $path/$name/system.$system_fs.tar system &
+		tar -cf $path/$name/system.$system_fs.tar system 2> /dev/null &
 		while [ `busybox pidof tar` ]; do
 			echo -n "."
 			sleep 2
@@ -484,7 +505,7 @@ if [ "$data_fs" != "" ]; then
 	else
 		logmsg "Backing up /data...\c"
 		cd /
-		tar -cf $path/$name/data.$data_fs.tar data &
+		tar -cf $path/$name/data.$data_fs.tar --exclude="data/media" --exclude="$sdext_exclude" data 2> /dev/null &
 		while [ `busybox pidof tar` ]; do
 			echo -n "."
 			sleep 2
@@ -508,7 +529,7 @@ if [ "$cache_fs" != "" ]; then
 	else
 		logmsg "Backing up /cache...\c"
 		cd /
-		tar -cf $path/$name/cache.$cache_fs.tar cache &
+		tar -cf $path/$name/cache.$cache_fs.tar cache 2> /dev/null &
 		while [ `busybox pidof tar` ]; do
 			echo -n "."
 			sleep 2
@@ -532,7 +553,7 @@ if [ "$datadata_fs" != "" ]; then
 	else
 		logmsg "Backing up /datadata...\c"
 		cd /
-		tar -cf $path/$name/datadata.$datadata_fs.tar datadata &
+		tar -cf $path/$name/datadata.$datadata_fs.tar datadata 2> /dev/null &
 		while [ `busybox pidof tar` ]; do
 			echo -n "."
 			sleep 2
@@ -556,7 +577,7 @@ if [ "$efs_fs" != "" ]; then
 	else
 		logmsg "Backing up /efs...\c"
 		cd /
-		tar -cf $path/$name/efs.$efs_fs.tar efs &
+		tar -cf $path/$name/efs.$efs_fs.tar efs 2> /dev/null &
 		while [ `busybox pidof tar` ]; do
 			echo -n "."
 			sleep 2
@@ -571,25 +592,24 @@ fi
 if [ "$has_as" == 1 ]; then
 	logmsg "Backing up .android_secure...\c"
 	cd $sdcard_temp_mount
-	tar -cf $path/$name/.android_secure.vfat.tar .android_secure &
+	tar -cf $path/$name/.android_secure.vfat.tar .android_secure 2> /dev/null &
 	while [ `busybox pidof tar` ]; do
 		echo -n "."
 		sleep 2
 	done
 	echo ""
-	sync
-	sleep 2
-	cleanup
 else
 	logmsg ".android_secure not found! Skipping backup of .android_secure!"
 fi
 
 # Backup sd-ext
-if [ $sdext_exists == 1 ]; then
+if [ "$sdext_exists" == 1 ]; then
 	logmsg "Backing up sd-ext...\c"
-	cd $extm
-	cd ..
-	tar -cf $path/$name/sd-ext.$extv.tar $extd &
+	busybox mount -o remount,rw /
+	busybox mkdir -p $sdext_temp_mount/sd-ext
+	busybox mount $extm $sdext_temp_mount/sd-ext
+	cd $sdext_temp_mount
+	tar -cf $path/$name/sd-ext.$extv.tar sd-ext 2> /dev/null &
 	while [ `busybox pidof tar` ]; do
 		echo -n "."
 		sleep 2
@@ -598,6 +618,11 @@ if [ $sdext_exists == 1 ]; then
 else
 	logmsg "sd-ext not found! Skipping backup of sd-ext!"
 fi
+
+# Sync data to disk, sleep for a while and cleanup
+sync
+sleep 2
+cleanup
 
 # Generate md5
 logmsg "Generating md5sum...\c"
