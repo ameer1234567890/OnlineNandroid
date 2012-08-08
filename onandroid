@@ -1,4 +1,4 @@
-version="5.5"
+version="5.6"
 echo "##########################################"
 echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
@@ -165,7 +165,7 @@ sdcard="$EXTERNAL_STORAGE"
 if [ "$sdcard" == "" ]; then
 	sdcard="sdcard"
 fi
-sdcard=`busybox mount | busybox egrep "$sdcard type* (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
+sdcard=`busybox mount | busybox egrep "$sdcard.* type (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
 if [ "$sdcard" == "" ]; then
 	logmsg "SD card not found! Exiting..."
 	logerror "Mounts:" "`busybox mount`"
@@ -338,16 +338,15 @@ sdextdir="$SD_EXT_DIRECTORY"
 if [ "$sdextdir" == "" ]; then
 	sdextdir="/sd-ext"
 fi
-is_sdext_mounted=`busybox mount | busybox egrep "($sdextdir|sd|ext)* type ext[234]" | busybox tail -1 | busybox cut -d ' ' -f 1`
+is_sdext_mounted=`busybox mount | busybox egrep "($sdextdir|sd|ext).* type ext[234]" | busybox tail -1 | busybox cut -d ' ' -f 1`
 if [ "$is_sdext_mounted" == "" ]; then
 	sdext_exists=0
 else
 	sdext_exists=1
 fi
 if [ $sdext_exists == 1 ]; then
-	extv=`busybox mount | busybox egrep "($sdextdir|sd|ext)* type ext[234]" | busybox cut -d ' ' -f 5`
-	extm=`busybox mount | busybox egrep "($sdextdir|sd|ext)* type ext[234]" | busybox cut -d ' ' -f 3`
-	extd=`busybox basename $extm`
+	extv=`busybox mount | busybox egrep "($sdextdir|sd|ext).* type ext[234]" | busybox cut -d ' ' -f 5`
+	extm=`busybox mount | busybox egrep "($sdextdir|sd|ext).* type ext[234]" | busybox cut -d ' ' -f 3`
 	entry=`busybox df -m $extm | busybox tail -1`
 	u_ext=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
 else
@@ -627,7 +626,7 @@ cleanup
 # Generate md5
 logmsg "Generating md5sum...\c"
 cd $path/$name
-md5sum .* * > nandroid.md5 &
+md5sum .* * > nandroid.md5 2> /dev/null &
 while [ `busybox pidof md5sum` ]; do
 	echo -n "."
 	sleep 2
