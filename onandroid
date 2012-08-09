@@ -1,4 +1,4 @@
-version="5.6"
+version="5.7"
 echo "##########################################"
 echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
@@ -21,7 +21,7 @@ sdext_temp_mount="/mnt/sdext4nandroid"
 logfile="/data/local/tmp/onandroid.log"
 
 # Logging function
-mkdir -p /data/local/tmp
+busybox mkdir -p /data/local/tmp
 [ -f $logfile ] && busybox rm $logfile
 logmsg(){
 	message="$*"
@@ -207,23 +207,35 @@ logmsg "All required tools available!"
 
 # Detect /boot, /recovery, /wimax and appslog partitions
 if [ -e "/proc/mtd" ]; then
-	part_type="/proc/mtd"
-	part_path="/dev/mtd"
+	if [ "`busybox cat /proc/mtd | busybox egrep "(mtd|emmc)"`" ]; then
+		part_type="/proc/mtd"
+		part_path="/dev/mtd"
+	else
+		part_type="not_found"
+	fi
 elif [ -e "/proc/emmc" ]; then
-	part_type="/proc/emmc"
-	part_path="/dev/block"
+	if [ "`busybox cat /proc/emmc | busybox egrep "(mtd|emmc)"`" ]; then
+		part_type="/proc/emmc"
+		part_path="/dev/block"
+	else
+		part_type="not_found"
+	fi
 elif [ -e "/system/partlayout4nandroid" ]; then
-	part_type="/system/partlayout4nandroid"
-	part_path="/dev/block"
+	if [ "`busybox cat /system/partlayout4nandroid | busybox egrep "(mtd|emmc)"`" ]; then
+		part_type="/system/partlayout4nandroid"
+		part_path="/dev/block"
+	else
+		part_type="not_found"
+	fi
 else
 	part_type="not_found"
 fi
 
 if [ $part_type != "not_found" ]; then
-	part_boot=`cat $part_type | busybox grep "\"boot\"" | busybox cut -d ':' -f 1`
-	part_recovery=`cat $part_type | busybox grep "\"recovery\"" | busybox cut -d ':' -f 1`
-	part_wimax=`cat $part_type | busybox grep "\"wimax\"" | busybox cut -d ':' -f 1`
-	part_appslog=`cat $part_type | busybox grep "\"appslog\"" | busybox cut -d ':' -f 1`
+	part_boot=`busybox cat $part_type | busybox grep "\"boot\"" | busybox cut -d ':' -f 1`
+	part_recovery=`busybox cat $part_type | busybox grep "\"recovery\"" | busybox cut -d ':' -f 1`
+	part_wimax=`busybox cat $part_type | busybox grep "\"wimax\"" | busybox cut -d ':' -f 1`
+	part_appslog=`busybox cat $part_type | busybox grep "\"appslog\"" | busybox cut -d ':' -f 1`
 fi
 
 # Disk space check (in MB)
@@ -267,19 +279,16 @@ fi
 
 # /system partition size
 if [ "$system_fs" != "" ]; then
-	entry=`busybox df -m /system | busybox tail -1`
-	u_system=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+	u_system=`busybox df -Pm /system | busybox tail -1 | busybox awk '{print $3}'`
 else
 	u_system=0
 fi
 
 # /data partition size
 if [ "$data_fs" != "" ]; then
-	entry=`busybox df -m /data | busybox tail -1`
-	u_data=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+	u_data=`busybox df -Pm /data | busybox tail -1 | busybox awk '{print $3}'`
 	if [ -d /data/media ]; then
-		entry=`busybox df -m $sdcard | busybox tail -1`
-		usedspace=`echo $entry | busybox cut -d ' ' -f 2 | busybox cut -d '%' -f 1`
+		usedspace=`busybox df -Pm $sdcard | busybox tail -1 | busybox awk '{print $3}'`
 		u_data=`busybox expr $u_data - $usedspace`
 		if [ $u_data -lt 10 ]; then
 			u_data=10
@@ -291,24 +300,21 @@ fi
 
 # /cache partition size
 if [ "$cache_fs" != "" ]; then
-	entry=`busybox df -m /cache | busybox tail -1`
-	u_cache=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+	u_cache=`busybox df -Pm /cache | busybox tail -1 | busybox awk '{print $3}'`
 else
 	u_cache=0
 fi
 
 # /datadata partition size
 if [ "$datadata_fs" != "" ]; then
-	entry=`busybox df -m /datadata | busybox tail -1`
-	u_datadata=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+	u_datadata=`busybox df -Pm /datadata | busybox tail -1 | busybox awk '{print $3}'`
 else
 	u_datadata=0
 fi
 
 # /efs partition size
 if [ "$efs_fs" != "" ]; then
-	entry=`busybox df -m /efs | busybox tail -1`
-	u_efs=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+	u_efs=`busybox df -Pm /efs | busybox tail -1 | busybox awk '{print $3}'`
 else
 	u_efs=0
 fi
@@ -347,8 +353,7 @@ fi
 if [ $sdext_exists == 1 ]; then
 	extv=`busybox mount | busybox egrep "($sdextdir|sd|ext).* type ext[234]" | busybox cut -d ' ' -f 5`
 	extm=`busybox mount | busybox egrep "($sdextdir|sd|ext).* type ext[234]" | busybox cut -d ' ' -f 3`
-	entry=`busybox df -m $extm | busybox tail -1`
-	u_ext=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+	u_ext=`busybox df -Pm $extm | busybox tail -1 | busybox awk '{print $3}'`
 else
 	u_ext=0
 fi
@@ -362,8 +367,7 @@ fi
 req_space=`busybox expr $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_efs + $u_as + $u_ext + $safety`
 
 # Available space calculation
-entry=`busybox df -m $sdcard | busybox tail -1`
-freespace=`echo $entry | busybox cut -d ' ' -f 3 | busybox cut -d '%' -f 1`
+freespace=`busybox df -Pm $sdcard | busybox tail -1 | busybox awk '{print $4}'`
 
 # Announce available space and required space
 logmsg "SD Card Free Space: $freespace MB"
