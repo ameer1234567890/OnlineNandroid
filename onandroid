@@ -1,4 +1,4 @@
-version="5.7"
+version="5.75"
 echo "##########################################"
 echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
@@ -207,21 +207,21 @@ logmsg "All required tools available!"
 
 # Detect /boot, /recovery, /wimax and appslog partitions
 if [ -e "/proc/mtd" ]; then
-	if [ "`busybox cat /proc/mtd | busybox egrep "(mtd|emmc)"`" ]; then
+	if [ "`busybox cat /proc/mtd | busybox egrep "(mtd|mmc)"`" ]; then
 		part_type="/proc/mtd"
 		part_path="/dev/mtd"
 	else
 		part_type="not_found"
 	fi
 elif [ -e "/proc/emmc" ]; then
-	if [ "`busybox cat /proc/emmc | busybox egrep "(mtd|emmc)"`" ]; then
+	if [ "`busybox cat /proc/emmc | busybox egrep "(mtd|mmc)"`" ]; then
 		part_type="/proc/emmc"
 		part_path="/dev/block"
 	else
 		part_type="not_found"
 	fi
 elif [ -e "/system/partlayout4nandroid" ]; then
-	if [ "`busybox cat /system/partlayout4nandroid | busybox egrep "(mtd|emmc)"`" ]; then
+	if [ "`busybox cat /system/partlayout4nandroid | busybox egrep "(mtd|mmc)"`" ]; then
 		part_type="/system/partlayout4nandroid"
 		part_path="/dev/block"
 	else
