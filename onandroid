@@ -1,4 +1,4 @@
-version="5.8"
+version="5.9"
 echo "##########################################"
 echo "Online Nandroid Backup v$version"
 echo "* A tool to perform a nandroid backup"
@@ -18,6 +18,7 @@ tz="u"
 req_power=10
 sdcard_temp_mount="/mnt/sdcard4nandroid"
 sdext_temp_mount="/mnt/sdext4nandroid"
+custbkp_temp_mount="/mnt/custbkp4nandroid"
 logfile="/data/local/tmp/onandroid.log"
 
 # Logging function
@@ -54,7 +55,12 @@ cleanup(){
 		busybox rmdir $sdext_temp_mount/sd-ext
 		busybox rmdir $sdext_temp_mount
 	fi
-	if [ "$has_as" == 1 -o "$sdext_exists" == 1 ]; then
+	if [ "$custbkp_exists" == 1 ]; then
+		busybox umount -lf $custbkp_temp_mount/boot
+		busybox rmdir $custbkp_temp_mount/boot
+		busybox rmdir $custbkp_temp_mount
+	fi
+	if [ "$has_as" == 1 -o "$sdext_exists" == 1 -o "$custbkp_exists" == 1 ]; then
 		busybox mount -o remount,ro /
 	fi
 }
@@ -206,17 +212,30 @@ fi
 logmsg "All required tools available!"
 
 # Detect /boot, /recovery, /wimax and appslog partitions
-if [ -e "/proc/mtd" -o "`busybox cat /proc/mtd | busybox egrep "(mtd|mmc|bml)"`" != "" ]; then
-	part_type="/proc/mtd"
-	part_path="/dev/mtd"
-elif [ -e "/proc/emmc" -o "`busybox cat /proc/emmc | busybox egrep "(mtd|mmc|bml)"`" != "" ]; then
-	part_type="/proc/emmc"
-	part_path="/dev/block"
-elif [ -e "/system/partlayout4nandroid" -o "`busybox cat /system/partlayout4nandroid | busybox egrep "(mtd|mmc|bml)"`" != "" ]; then
-	part_type="/system/partlayout4nandroid"
-	part_path="/dev/block"
-else
-	part_type="not_found"
+part_type="not_found"
+if [ -f "/proc/mtd" ]; then
+	if [ "`busybox cat /proc/mtd | busybox egrep "(mtd|mmc|bml)"`" != "" ]; then
+		part_type="/proc/mtd"
+		part_path="/dev/mtd"
+	else
+		part_type="not_found"
+	fi
+fi
+if [ -f "/proc/emmc" ]; then
+	if [ "`busybox cat /proc/emmc | busybox egrep "(mtd|mmc|bml)"`" != "" ]; then
+		part_type="/proc/emmc"
+		part_path="/dev/block"
+	else
+		part_type="not_found"
+	fi
+fi
+if [ -f "/system/partlayout4nandroid" ]; then
+	if [ "`busybox cat /system/partlayout4nandroid | busybox egrep "(mtd|mmc|bml)"`" != "" ]; then
+		part_type="/system/partlayout4nandroid"
+		part_path="/dev/block"
+	else
+		part_type="not_found"
+	fi
 fi
 
 if [ $part_type != "not_found" ]; then
@@ -338,7 +357,7 @@ if [ "$is_sdext_mounted" == "" ]; then
 else
 	sdext_exists=1
 fi
-if [ $sdext_exists == 1 ]; then
+if [ "$sdext_exists" == 1 ]; then
 	extv=`busybox mount | busybox egrep "($sdextdir|sd|ext).* type ext[234]" | busybox cut -d ' ' -f 5`
 	extm=`busybox mount | busybox egrep "($sdextdir|sd|ext).* type ext[234]" | busybox cut -d ' ' -f 3`
 	u_ext=`busybox df -Pm $extm | busybox tail -1 | busybox awk '{print $3}'`
@@ -351,8 +370,23 @@ if [ `echo $extm | busybox grep "^/data"` ]; then
 	sdext_exclude=`echo $extm | sed s/'^\/'/''/g`
 fi
 
+# /.cust_backup partition (for Huawei devices)
+is_custbkp_mounted=`busybox mount | busybox grep "/.cust_backup type vfat" | busybox tail -1 | busybox cut -d ' ' -f 1`
+if [ "$is_custbkp_mounted" == "" ]; then
+	custbkp_exists=0
+else
+	custbkp_exists=1
+fi
+
+# /.cust_backup size
+if [ "$custbkp_exists" == 1 ]; then
+	u_custbkp=`busybox df -Pm /.cust_backup | busybox tail -1 | busybox awk '{print $3}'`
+else
+	u_custbkp=0
+fi
+
 # Required space calculation
-req_space=`busybox expr $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_efs + $u_as + $u_ext + $safety`
+req_space=`busybox expr $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_efs + $u_as + $u_ext + $u_custbkp + $safety`
 
 # Available space calculation
 freespace=`busybox df -Pm $sdcard | busybox tail -1 | busybox awk '{print $4}'`
@@ -405,7 +439,27 @@ fi
 busybox rm -- $name/.nandroidwritable
 
 logmsg "Backing up to $path/$name"
-cd -- $name
+
+# Backup /.cust_backup partition (for Huawei devices)
+if [ "$custbkp_exists" == 1 ]; then
+	logmsg "Backing up /.cust_backup...\c"
+	busybox mkdir -p $custbkp_temp_mount/boot
+	busybox mount /.cust_backup $custbkp_temp_mount/boot
+	cd $custbkp_temp_mount
+	tar -cf $path/$name/boot.vfat.tar boot 2> /dev/null &
+	while [ `busybox pidof tar` ]; do
+		echo -n "."
+		sleep 2
+	done
+	echo ""
+else
+	null="null"
+	#Do not spit anything since this is very much device specific
+	#logmsg "/.cust_backup not found! Skipping backup of /.cust_backup!"
+fi
+
+# Change to backup directory
+cd -- $path/$name
 
 # Backup boot
 if [ $part_type == "not_found" -o "$part_boot" == "" ]; then
@@ -496,7 +550,7 @@ if [ "$data_fs" != "" ]; then
 	else
 		logmsg "Backing up /data...\c"
 		cd /
-		tar -cf $path/$name/data.$data_fs.tar --exclude="data/media" --exclude="$sdext_exclude" data 2> /dev/null &
+		tar -cf $path/$name/data.$data_fs.tar --exclude="data/media" --exclude="$sdext_exclude/*" data 2> /dev/null &
 		while [ `busybox pidof tar` ]; do
 			echo -n "."
 			sleep 2

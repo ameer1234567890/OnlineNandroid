@@ -1,3 +1,15 @@
 Nandroid backups are usually performed in recovery mode. This means you would have to turn off your phone and reboot in recovery mode, which wastes a whole lot of time rebooting and a lot more time offline. For me, this has been a killer as I do regular nandroid backups. Having to reboot in recovery and finding missed calls, sms from my wife and friends is totally not accepatable for me. So, I set to develop an online nandroid backup tool which can do nandroid backups without switching off my phone.
 
-This tool backups /boot (from version 5), /recovery (from version 5), /wimax (from version 5), /system , /data , /cache , /datadata (from version 5), /efs (from version 5.2), .android_secure & sd-ext (from version 3) partitions to /sdcard/clockworkmod/backup directory. The date format used for folder name is the same used by CWM itself and nandroid backups created with this tool can safely be restored using CWM. If you would want to have a custom name for backup folder, pass an argument with the name to the script and it will use the name.
+This tool backups the below partitions to /sdcard/clockworkmod/backup directory. The date format used for folder name is the same used by CWM itself and nandroid backups created with this tool can safely be restored using CWM. If you would want to have a custom name for backup folder, pass an argument with the name to the script and it will use the name.
+* /boot (from version 5)
+* /recovery (from version 5)
+* /wimax (from version 5)
+* /appslog (from version 5)
+* /system
+* /data
+* /cache
+* /datadata (from version 5)
+* /efs (from version 5.2) (for Samsung devices)
+* /.cust_backup (from version 5.9) (for Huawei devices)
+* .android_secure
+* sd-ext (from version 3)
