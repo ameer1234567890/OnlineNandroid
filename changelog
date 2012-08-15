@@ -1,0 +1,92 @@
+v1.0  - Initial release.
+v1.1  - Bug Fix: incorrect implementation of help command.
+v1.2  - Bug Fix: changed script permissions from 777 to 755
+        Improvement: changed elapsed display of seconds only to minutes & seconds.
+v1.3  - Bug Fix: error if /sbin/sh is not present (Reported by kamil004. Thanks!)
+v2.0  - Fixed: various bugs and re-organized script.
+        Added: timezone modifier.
+        Improved: usage instructions screen.
+        Added: su detection.
+v2.1  - Bug Fix: .android_secure partition not being backed-up correctly. (Reported by Kamil004. Thanks!)
+v2.2  - Bug Fix: size calculation of .android_secure partition. (Reported by Kamil004. Thanks!)
+v2.3  - Improvement: size calculation in .android_secure partition.
+v3.0  - Bug Fix: unknown uid 0 (incorrect detection of root).
+        Added: sd-ext backup.
+        Added: battery level check.
+        Added: SD card check.
+        Improved: .android_secure backup.
+        Fixed: various bugs and re-organized script.
+v3.1  - Bug Fix: SD card not found error on some devices. (Reported by tRippinthehead, x_one, varader0zs & hgoldner. Thanks!)
+        Re-organization of script and removal of bloat code.
+v3.2  - Bug Fix: Incorrect detection of root.
+        Added: New logging mechanism.
+v3.3  - Bug Fix: Incorrect sdcard mounting.
+        Bug Fix: Various fixes for busybox conflicts.
+        Improvement: Logging mechanism.
+v3.4  - Bug Fix: Empty md5sum.
+        Bug Fix: Size calculation of sdcard.
+        Bug Fix: Script exiting before sd-ext and .android_secure partitions backed-up.
+v3.5  - Bug Fix: Busyboxed 'which' command.
+        Removed some log lines for cleaning-up.
+v3.6  - Removed: mount format detection bloat due to non-busyboxed version.
+v3.7  - Busyboxed "cat" commands.
+        Added: Battery level detection for Xperia X10.
+        Re-positioned root detection.
+v4.0  - Added: LED and vibrate notification on backup completion.
+        Bug Fix: Minor bug in "tar" detection.
+        Bug Fix: Cannot create log file. (Reported by papayayoghurt. Thanks!)
+v4.1  - Bug Fix: Corrected size checking of .android_secure partition.
+v4.2  - Added: md5sum verification.
+        Improved: md5sum generation.
+v5.0  - Added: Backup of boot, recovery, wimax and appslog partitions.
+        Added: Proper sdcard detection.
+        Added: Detailed error logging.
+        Added: Cleaning-up temp mounts upon exits.
+        Added: LED notification for Xperia U
+        Added: Version number to log.
+        Added: ext2/3/4 and rfs file system support.
+        Added: Avoid mkyaffs2image detection if device does not have a yaffs2 partition.
+        Added: Force remounting and unmounting.
+        Added: system, data, cache, datadata and .android_secure partition detection.
+        Improved: sd-ext detection.
+        Improved: sd-ext backup.
+        Improved: md5sum generation and validation.
+        Improved: sd-ext detection.
+        Improved: Usage instructions screen.
+        Improved: Battery level detection.
+        Improved: LED and vibrate notification.
+        Increased safety space from 7MB to 10MB.
+        Code clean-up and re-organization
+v5.1  - Bug Fix: Minor bug in sd card detection when device has internal storage and an external sd card mounted.
+        Bug Fix: Bug in .android_secure backup.
+v5.2  - Bug Fix: SD Card detection in Jellybean devices.
+        Bug Fix: boot partition detection in devices with sboot partition.
+        Added: /efs partition backup (for Samsung devices).
+        Increased: Safety size from 10 to 12.
+v5.3  - Added: Partition detection via part_detect_tool.
+        Bug Fix: boot, recovery, wimax and appslog partition backup for non-mtd devices.
+        Bug Fix: boot, recovery, wimax and appslog partition detection (Exact partition names).
+        Improvement: Busyboxed some cut and grep commands.
+        Removed: Some unwanted code in partition detection.
+v5.4  - Bug Fix: Error logging of partition layout.
+        Bug Fix: sd-ext detection bug.
+        Improvement: Logging of required space.
+v5.5  - Bug Fix: SD Card detection.
+        Bug Fix: sd-ext detection.
+        Bug Fix: sd-ext backup method.
+        Bug Fix: boot, recovery, wimax and appslog partition size calculation.
+        Bug Fix: socket ignored error by tar.
+        Bug Fix: /data/media included in /data partition backup.
+        Bug Fix: sd-ext included in /data partition backup for app2sd, link2sd, etc... setups.
+        Bug Fix: Eliminate /data/media while calculating used size of /data partition.
+v5.6  - Bug Fix: basename error on some devices.
+        Bug Fix: md5sum spitting an error if .android_secure not backed-up.
+        Bug Fix: Fixed regression bug in sd card and sd-ext detection.
+v5.7  - Bug Fix: partition detection.
+        Bug Fix: sd card space calculation on some devices.
+        Improvement: some busyboxing.
+v5.75 - Bug Fix: partition detection. (bug introduced in v5.7)
+v5.8  - Bug Fix: partition detection.
+v5.9  - Added: /.cust_backup partition backup (for Huawei devices).
+        Bug Fix: Partition detection.
+        Bug Fix: Include sd-ext folder in data partition whil skipping it's contents.
