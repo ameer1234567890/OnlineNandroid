@@ -89,4 +89,4 @@ v5.75 - Bug Fix: partition detection. (bug introduced in v5.7)
 v5.8  - Bug Fix: partition detection.
 v5.9  - Added: /.cust_backup partition backup (for Huawei devices).
         Bug Fix: Partition detection.
-        Bug Fix: Include sd-ext folder in data partition whil skipping it's contents.
+        Bug Fix: Include sd-ext folder in data partition while skipping it's contents.
