@@ -1,5 +1,5 @@
 #### Define constants
-version="6.00"
+version="6.01"
 path="/clockworkmod/backup"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
@@ -384,7 +384,7 @@ else
 	if [ ! "$sdcard" ]; then
 		sdcard="sdcard"
 	fi
-	sdcard=`busybox mount | busybox egrep -i "($sdcard|sdcard|external|storage).* type (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
+	sdcard=`busybox mount | busybox grep -v "/mnt/secure/" | busybox egrep -i "($sdcard|sdcard|external|storage).* type (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
 	if [ ! "$sdcard" ]; then
 		logmsg "SD card not found! Exiting..."
 		logerror "Mounts:" "`busybox mount`"

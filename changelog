@@ -125,3 +125,4 @@ v6.00 -	Added: CWM 6 style incremental backups.
         Changed: Argument for setting timezone. (-p for phone timezone instead of -h)
         Changed: Minor version numbers to 2 digits.
         Re-organisation of code.
+v6.01 - Bug Fix: sdcard detection in some devices using native app2sd.
