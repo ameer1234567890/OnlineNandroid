@@ -1,10 +1,10 @@
 #### Define constants
-version="6.01"
+version="6.10"
 path="/clockworkmod/backup"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
-all_partitions="mbrwlsdcteufiax"
+all_partitions="mbrwlsdcteufpiax"
 sdcard_temp_mount="/mnt/sdcard4nandroid"
 sdext_temp_mount="/mnt/sdext4nandroid"
 custbkp_temp_mount="/mnt/custbkp4nandroid"
@@ -384,7 +384,7 @@ else
 	if [ ! "$sdcard" ]; then
 		sdcard="sdcard"
 	fi
-	sdcard=`busybox mount | busybox grep -v "/mnt/secure/" | busybox egrep -i "($sdcard|sdcard|external|storage).* type (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
+	sdcard=`busybox mount | busybox grep -v "/mnt/asec/" | busybox egrep -i "($sdcard|sdcard|external|storage).* type (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
 	if [ ! "$sdcard" ]; then
 		logmsg "SD card not found! Exiting..."
 		logerror "Mounts:" "`busybox mount`"
@@ -482,6 +482,13 @@ if [ ! "`busybox mount | busybox grep "/flexrom "`" ]; then
 	fi
 fi
 
+#### Check for HP Touchpad (Originally on webOS, CM ported)
+if [ "`busybox mount | busybox grep "/dev/store/cm-system "`" ]; then
+	is_hptouchpad="yes"	
+else
+	is_hptouchpad="no"
+fi
+
 #### Check if device has a yaffs2 file system
 system_fs="`busybox mount | busybox grep "/system " | busybox cut -d ' ' -f 5`"
 data_fs="`busybox mount | busybox grep "/data " | busybox cut -d ' ' -f 5`"
@@ -490,7 +497,9 @@ datadata_fs="`busybox mount | busybox grep "/datadata " | busybox cut -d ' ' -f 
 efs_fs="`busybox mount | busybox grep "/efs " | busybox cut -d ' ' -f 5`"
 custbkp_fs="`busybox mount | busybox grep "/.cust_backup " | busybox cut -d ' ' -f 5`"
 flexrom_fs="`busybox mount | busybox grep "/flexrom " | busybox cut -d ' ' -f 5`"
-if [ "custbkp_fs" == "yaffs2" -o "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" -o "flexrom_fs" == "yaffs2" ]; then
+hptpboot_fs="`busybox mount | busybox grep "/boot " | busybox cut -d ' ' -f 5`"
+
+if [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" -o "$custbkp_fs" == "yaff2" -o "$flexrom_fs" == "yaffs2" -o "$boot_fs" == "yaffs2" ]; then
 	has_yaffs2="true"
 fi
 
@@ -636,7 +645,7 @@ else
 fi
 
 #### /boot partition size
-if [ "$part_type" == "not_found" -o "$part_boot" == "" -o "`busybox echo $adv | busybox grep 'b'`" == "" ]; then
+if [ "$part_type" == "not_found" -o "$part_boot" == "" -o "`busybox echo $adv | busybox grep 'b'`" == "" -o "$custbkp_fs" != "" -o "$is_hptouchpad" == "yes" ]; then
 	u_boot=0
 else
 	boot_hex=`busybox cat $part_type | busybox grep "\"boot\"" | busybox cut -d ' ' -f 2`
@@ -738,6 +747,14 @@ else
 	u_flexrom=`busybox expr $u_flexrom + 1`
 fi
 
+### /boot partition size (for HP Touchpad)
+if [ "$is_hptouchpad" == "no" -o "`busybox echo $adv | busybox grep 'p'`" == "" ]; then
+	u_hptpboot=0
+else
+	u_hptpboot=`busybox df -Pm /boot | busybox tail -1 | busybox awk '{print $3}'`
+	u_hptpboot=`busybox expr $u_hptpboot + 1`
+fi
+
 #### Check if .android_secure exists
 as_parent="`busybox mount | busybox grep "/.android_secure " | busybox cut -d ' ' -f 3 | busybox sed s/'\/.android_secure'/''/g`"
 
@@ -792,7 +809,7 @@ else
 fi
 
 #### Required space calculation
-req_space=`busybox expr $u_mmcblk0_start + $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_efs + $u_custbkp + $u_flexrom + $u_as + $u_ext`
+req_space=`busybox expr $u_mmcblk0_start + $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_efs + $u_custbkp + $u_flexrom + $u_hptpboot + $u_as + $u_ext`
 
 #### Available space calculation
 freespace=`busybox df -Pm $sdcard | busybox tail -1 | busybox awk '{print $4}'`
@@ -912,6 +929,19 @@ if [ "$flexrom_fs" != "" -a "`busybox echo $adv | busybox grep 'f'`" != "" ]; th
 	done
 fi
 
+# /boot excludes (for HP Touchpad)
+if [ "$is_hptouchpad" != "no" -a "`busybox echo $adv | busybox grep 'p'`" != "" ]; then
+	mounts=`busybox mount | busybox grep "/boot/" | busybox cut -d ' ' -f 3 | busybox sed s/'^\/'/''/g`
+	for mount in $mounts; do
+		hptpboot_excludes="$hptpboot_excludes --exclude=$mount/*"
+	done
+	mounts=`busybox mount | busybox grep "/boot/" | busybox cut -d ' ' -f 3 | busybox sed s/'^\\/boot'/''/g | busybox sed s/'\\/'/'\\\\\/'/g | busybox sed s/'$'/'\\\\\/*'/g | busybox sed s/'^'/'\\\\\.'/g`
+	cd /boot
+	for mount in $mounts; do
+		hptpboot_excludes_dedupe="$hptpboot_excludes_dedupe `busybox find -path $mount`"
+	done
+fi
+
 # sd-ext excludes
 if [ "$sdext_mount" != "" -a "`busybox echo $adv | busybox grep 'x'`" != "" ]; then
 	mounts=`busybox mount | busybox grep "$extm/" | busybox cut -d ' ' -f 3 | busybox sed s/'^\/'/''/g`
@@ -954,7 +984,7 @@ if [ "`busybox echo $adv | busybox grep 'm'`" != "" ]; then
 fi
 
 #### Backup boot
-if [ "`busybox echo $adv | busybox grep 'b'`" != "" ]; then
+if [ "`busybox echo $adv | busybox grep 'b'`" != "" -a "$is_hptouchpad" != "yes" -a "$custbkp_fs" == "" ]; then
 	if [ $part_type == "not_found" -o "$part_boot" == "" ]; then
 		logmsg "/boot not found! Skipping backup of /boot!"
 	else
@@ -1443,6 +1473,53 @@ if [ "`busybox echo $adv | busybox grep 'f'`" != "" ]; then
 		null="null"
 		#Do not spit anything since this is device specific
 		#logmsg "/flexrom not found! Skipping backup of /flexrom!"
+	fi
+fi
+
+#### Backup /boot partition (for HP Touchpad)
+if [ "`busybox echo $adv | busybox grep 'p'`" != "" ]; then
+	if [ "$is_hptouchpad" == "yes" -a "$hptpboot_fs" != "" ]; then
+		if [ "$backup_style" == "incremental" ]; then
+			logmsg "Backing up /boot...\c"
+			cd /
+			dedupe c boot $blobsdir $path/$name/boot.$hptpboot_fs.dup $hptpboot_excludes_dedupe > /dev/null &
+			while [ `busybox pidof dedupe` ]; do
+				progress dedupe_hptpboot
+				busybox sleep 2
+			done
+			progress_done
+			echo ""
+		else
+			logmsg "Backing up /boot...\c"
+			cd /
+			if [ "$backup_style" == "tarsplit" ]; then
+				busybox touch $path/$name/boot.$hptpboot_fs.tar
+				tar -c $hptpboot_excludes boot | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/boot.$hptpboot_fs.tar. 2> /dev/null &
+				while [ `busybox pidof tar` ]; do
+					progress tarsplit_hptpboot
+					busybox sleep 2
+				done
+				progress_done
+				busybox echo ""
+			else
+				if [ `busybox echo "$u_hptpboot" | busybox egrep "^[0-9]+$"` ]; then
+					full_size=$u_hptpboot
+				else
+					full_size=-1
+				fi
+				tar -cf $path/$name/boot.$hptpboot_fs.tar $hptpboot_excludes boot 2> /dev/null &
+				while [ `busybox pidof tar` ]; do
+					progress boot.$hptpboot_fs.tar
+					busybox sleep 2
+				done
+				progress_done
+				busybox echo ""
+			fi
+		fi
+	else
+		null="null"
+		#Do not spit anything since this is device specific
+		#logmsg "/boot not found! Skipping backup of /boot!"
 	fi
 fi
 

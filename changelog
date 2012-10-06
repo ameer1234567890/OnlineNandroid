@@ -126,3 +126,7 @@ v6.00 -	Added: CWM 6 style incremental backups.
         Changed: Minor version numbers to 2 digits.
         Re-organisation of code.
 v6.01 - Bug Fix: sdcard detection in some devices using native app2sd.
+v6.10 - Bug Fix: Actually fixed the bug mentioned in v6.01 changelog.
+        Added: HP Touchpad boot partition backup. (Partition letter p)
+        Bug Fix: mkyaffs2image requirement detection
+        Bug Fix: Removed disk dump of boot partition for Acer devices and HP Touchpad.
