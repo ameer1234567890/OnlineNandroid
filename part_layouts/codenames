@@ -12,8 +12,8 @@ toroplus	Samsung Galaxy Nexus (Sprint)
 i9100		Samsung Galaxy S II
 i9100g		Samsung Galaxy S II (G)
 maguro		Google Galaxy Nexus (GSM)
-s6102		Galaxy Y Duos
-s5360		Galaxy Y
+s6102		Samsung Galaxy Y Duos
+s5360		Samsung Galaxy Y
 grouper		Google Nexus 7
 tass		Samsung Galaxy Mini
 i9000		Samsung Galaxy S
@@ -40,3 +40,7 @@ apache		Samsung Rugby Smart SGH-I847
 gio		Samsung Galaxy Gio
 p5100		Samsung Galaxy Tab 2
 p990		LG Optimus 2X
+cayman		LG Lucid 4G
+warp		ZTE Warp
+spyder_cdma	Motorola RAZR XT912 (CDMA)
+spyder_umts	Motorola RAZR XT910 (UMTS)
