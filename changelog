@@ -1,14 +1,14 @@
 v1.0  - Initial release.
 v1.1  - Bug Fix: incorrect implementation of help command.
-v1.2  - Bug Fix: changed script permissions from 777 to 755
+v1.2  - Bug Fix: changed script permissions from 777 to 755.
         Improvement: changed elapsed display of seconds only to minutes & seconds.
-v1.3  - Bug Fix: error if /sbin/sh is not present (Reported by kamil004. Thanks!)
+v1.3  - Bug Fix: error if /sbin/sh is not present.
 v2.0  - Fixed: various bugs and re-organized script.
         Added: timezone modifier.
         Improved: usage instructions screen.
         Added: su detection.
-v2.1  - Bug Fix: .android_secure partition not being backed-up correctly. (Reported by Kamil004. Thanks!)
-v2.2  - Bug Fix: size calculation of .android_secure partition. (Reported by Kamil004. Thanks!)
+v2.1  - Bug Fix: .android_secure partition not being backed-up correctly.
+v2.2  - Bug Fix: size calculation of .android_secure partition.
 v2.3  - Improvement: size calculation in .android_secure partition.
 v3.0  - Bug Fix: unknown uid 0 (incorrect detection of root).
         Added: sd-ext backup.
@@ -16,7 +16,7 @@ v3.0  - Bug Fix: unknown uid 0 (incorrect detection of root).
         Added: SD card check.
         Improved: .android_secure backup.
         Fixed: various bugs and re-organized script.
-v3.1  - Bug Fix: SD card not found error on some devices. (Reported by tRippinthehead, x_one, varader0zs & hgoldner. Thanks!)
+v3.1  - Bug Fix: SD card not found error on some devices.
         Re-organization of script and removal of bloat code.
 v3.2  - Bug Fix: Incorrect detection of root.
         Added: New logging mechanism.
@@ -34,7 +34,7 @@ v3.7  - Busyboxed "cat" commands.
         Re-positioned root detection.
 v4.0  - Added: LED and vibrate notification on backup completion.
         Bug Fix: Minor bug in "tar" detection.
-        Bug Fix: Cannot create log file. (Reported by papayayoghurt. Thanks!)
+        Bug Fix: Cannot create log file.
 v4.1  - Bug Fix: Corrected size checking of .android_secure partition.
 v4.2  - Added: md5sum verification.
         Improved: md5sum generation.
@@ -42,7 +42,7 @@ v5.0  - Added: Backup of boot, recovery, wimax and appslog partitions.
         Added: Proper sdcard detection.
         Added: Detailed error logging.
         Added: Cleaning-up temp mounts upon exits.
-        Added: LED notification for Xperia U
+        Added: LED notification for Xperia U.
         Added: Version number to log.
         Added: ext2/3/4 and rfs file system support.
         Added: Avoid mkyaffs2image detection if device does not have a yaffs2 partition.
@@ -56,7 +56,7 @@ v5.0  - Added: Backup of boot, recovery, wimax and appslog partitions.
         Improved: Battery level detection.
         Improved: LED and vibrate notification.
         Increased safety space from 7MB to 10MB.
-        Code clean-up and re-organization
+        Code clean-up and re-organization.
 v5.1  - Bug Fix: Minor bug in sd card detection when device has internal storage and an external sd card mounted.
         Bug Fix: Bug in .android_secure backup.
 v5.2  - Bug Fix: SD Card detection in Jellybean devices.
@@ -122,11 +122,11 @@ v6.00 -	Added: CWM 6 style incremental backups.
         Improved: SD Card detection and automatic selection of external SD Card.
         Improved: Logging in log file.
         Improved: Some more busyboxing.
-        Changed: Argument for setting timezone. (-p for phone timezone instead of -h)
+        Changed: Argument for setting timezone. (-p for phone timezone instead of -h).
         Changed: Minor version numbers to 2 digits.
         Re-organisation of code.
 v6.01 - Bug Fix: sdcard detection in some devices using native app2sd.
 v6.10 - Bug Fix: Actually fixed the bug mentioned in v6.01 changelog.
-        Added: HP Touchpad boot partition backup. (Partition letter p)
-        Bug Fix: mkyaffs2image requirement detection
+        Added: HP Touchpad boot partition backup. (Partition letter p).
+        Bug Fix: mkyaffs2image requirement detection.
         Bug Fix: Removed disk dump of boot partition for Acer devices and HP Touchpad.
