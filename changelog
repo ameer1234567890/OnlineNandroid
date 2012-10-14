@@ -130,3 +130,5 @@ v6.10 - Bug Fix: Actually fixed the bug mentioned in v6.01 changelog.
         Added: HP Touchpad boot partition backup. (Partition letter p).
         Bug Fix: mkyaffs2image requirement detection.
         Bug Fix: Removed disk dump of boot partition for Acer devices and HP Touchpad.
+v6.11 - Bug Fix: Filesystem detection in data partition for incremental backups.
+        Bug Fix: wrong partition detected as sd-ext in some devices.

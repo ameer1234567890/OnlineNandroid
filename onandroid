@@ -1,5 +1,5 @@
 #### Define constants
-version="6.10"
+version="6.11"
 path="/clockworkmod/backup"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
@@ -118,6 +118,7 @@ advmapping(){
 	busybox echo "  e: efs (for Samsung devices)"
 	busybox echo "  u: .cust_backup (for Huawei devices)"
 	busybox echo "  f: flexrom (for Acer devices)"
+	busybox echo "  p: boot (for HP Touchpad)"
 	busybox echo "  i: (cp)uid (for Acer devices)"
 	busybox echo "  a: android_secure"
 	busybox echo "  x: sd-ext"
@@ -795,9 +796,9 @@ if [ ! "$sdextdir" ]; then
 	if [ ! "$sdextdir" ]; then
 		sdextdir="/sd-ext"
 	fi
-	sdext_mount=`busybox mount | busybox egrep "($sdextdir|sd|ext).* type ext[234]" | busybox tail -1`
+	sdext_mount=`busybox mount | busybox grep -v "sdhci" | busybox egrep "($sdextdir|sd|ext).* type ext[234]" | busybox tail -1`
 else
-	sdext_mount=`busybox mount | busybox egrep "$sdextdir type" | busybox tail -1`
+	sdext_mount=`busybox mount | busybox grep -v "sdhci" | busybox egrep "$sdextdir type" | busybox tail -1`
 fi
 if [ "$sdext_mount" == "" -o "`busybox echo $adv | busybox grep 'x'`" == "" ]; then
 	u_ext=0
@@ -1153,7 +1154,7 @@ if [ "`busybox echo $adv | busybox grep 'd'`" != "" ]; then
 			if [ "$backup_style" == "incremental" ]; then
 				logmsg "Backing up /data...\c"
 				cd /
-				dedupe c data $blobsdir $path/$name/data.ext2.dup ./media $data_excludes_dedupe > /dev/null 2>&1 &
+				dedupe c data $blobsdir $path/$name/data.$data_fs.dup ./media $data_excludes_dedupe > /dev/null 2>&1 &
 				while [ `busybox pidof dedupe` ]; do
 					progress dedupe_data
 					busybox sleep 2
