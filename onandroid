@@ -1,5 +1,5 @@
 #### Define constants
-version="6.11"
+version="6.12"
 path="/clockworkmod/backup"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
@@ -491,14 +491,14 @@ else
 fi
 
 #### Check if device has a yaffs2 file system
-system_fs="`busybox mount | busybox grep "/system " | busybox cut -d ' ' -f 5`"
-data_fs="`busybox mount | busybox grep "/data " | busybox cut -d ' ' -f 5`"
-cache_fs="`busybox mount | busybox grep "/cache " | busybox cut -d ' ' -f 5`"
-datadata_fs="`busybox mount | busybox grep "/datadata " | busybox cut -d ' ' -f 5`"
-efs_fs="`busybox mount | busybox grep "/efs " | busybox cut -d ' ' -f 5`"
-custbkp_fs="`busybox mount | busybox grep "/.cust_backup " | busybox cut -d ' ' -f 5`"
-flexrom_fs="`busybox mount | busybox grep "/flexrom " | busybox cut -d ' ' -f 5`"
-hptpboot_fs="`busybox mount | busybox grep "/boot " | busybox cut -d ' ' -f 5`"
+system_fs="`busybox mount | busybox grep "on /system " | busybox cut -d ' ' -f 5`"
+data_fs="`busybox mount | busybox grep "on /data " | busybox cut -d ' ' -f 5`"
+cache_fs="`busybox mount | busybox grep "on /cache " | busybox cut -d ' ' -f 5`"
+datadata_fs="`busybox mount | busybox grep "on /datadata " | busybox cut -d ' ' -f 5`"
+efs_fs="`busybox mount | busybox grep "on /efs " | busybox cut -d ' ' -f 5`"
+custbkp_fs="`busybox mount | busybox grep "on /.cust_backup " | busybox cut -d ' ' -f 5`"
+flexrom_fs="`busybox mount | busybox grep "on /flexrom " | busybox cut -d ' ' -f 5`"
+hptpboot_fs="`busybox mount | busybox grep "on /boot " | busybox cut -d ' ' -f 5`"
 
 if [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" -o "$custbkp_fs" == "yaff2" -o "$flexrom_fs" == "yaffs2" -o "$boot_fs" == "yaffs2" ]; then
 	has_yaffs2="true"
