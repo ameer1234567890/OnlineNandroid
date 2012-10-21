@@ -1,0 +1,7 @@
+dev:       size      erasesize  name
+mmcblk0p1: 000020 000002 "ebr1"
+mmcblk0p2: 10f720 100000 "cache"
+mmcblk0p3: 20ff20 200000 "userdata"
+mmcblk0p4: 410720 3328e0 "emmc"
+mmcblk0p5: 009f00 002800 "boot"
+mmcblk0p6: 00ef20 100000 "system"
