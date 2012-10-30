@@ -1,5 +1,5 @@
 #### Define constants
-version="6.12"
+version="6.13"
 path="/clockworkmod/backup"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
@@ -15,7 +15,6 @@ logfile="$logpath/onandroid.log"
 if [ ! -d $logpath ]; then
 	busybox mkdir -p $logpath
 fi
-[ -f $logfile ] && busybox echo "" >$logfile
 logmsg(){
 	message="$*"
 	dtime=`busybox date +%T`
@@ -58,7 +57,7 @@ cleanup(){
 		busybox mv -f /flexrom_bkp /flexrom
 	fi
 	if [ "$as_parent" -o "$sdext_mount" != "" -o "$custbkp_fs" != "" -o "$flexrom_hinted" == 1 ]; then
-		busybox mount -o remount,ro /
+		busybox mount -o remount,ro / 2> /dev/null
 	fi
 }
 
@@ -267,6 +266,9 @@ for arg in $arglist; do
 		fi
 	fi
 done
+
+#### Empty the log file before we start
+[ -f $logfile ] && busybox echo "" >$logfile
 
 #### The header
 busybox echo "##########################################"
@@ -765,7 +767,7 @@ if [ ! "$as_parent" ]; then
 	as_sdcards="$EXTERNAL_STORAGE"
 	as_sdcards=`busybox mount | busybox egrep "($as_sdcards|sdcard).* type (vfat|fuse)" | busybox cut -d ' ' -f 3`
 	# If a storage media is defined manually, check it too
-	if [ "$storage" != "" -a -d $storage ]; then
+	if [ "$storage" != "" ] && [ -d $storage ]; then
 		as_sdcards="$as_sdcards $storage"
 	fi
 	# Run through sdcards to find where is .android_secure

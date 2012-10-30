@@ -133,3 +133,6 @@ v6.10 - Bug Fix: Actually fixed the bug mentioned in v6.01 changelog.
 v6.11 - Bug Fix: Filesystem detection in data partition for incremental backups.
         Bug Fix: wrong partition detected as sd-ext in some devices.
 v6.12 - Bug Fix: filesystem detection in data partition on some devices.
+v6.13 - Bug Fix: .android_secure detection when an alternate storage media is selected.
+        Bug Fix: Remount error in AROMA terminal.
+        Bug Fix: Avoid clearing log file while checking the version number only.
