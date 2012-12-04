@@ -17,25 +17,25 @@ s5360		Samsung Galaxy Y
 grouper		Google Nexus 7
 tass		Samsung Galaxy Mini
 i9000		Samsung Galaxy S
-p999		T-Mobile LG G2x
+p999		LG G2x (T-Mobile)
 i5800		Samsung Galaxy 3
 i9003		Samsung Galaxy SL
 p1000		Samsung Galaxy Tab
 cocktail	Alcatel One Touch Ultra 995
 e400		LG Optimus L3
 p4		Samsung Galaxy Tab 10.1 (All Variants)
-glacier		T-Mobile myTouch 4G / HTC Glacier
+glacier		HTC myTouch 4G (T-Mobile)
 bryce		LG Revolution & LG Esteem
 a750		Lenovo A750
 ancora		Samsung Galaxy W (Wonder) I8150
 cooper		Samsung Galaxy Ace S5830
 cooperev	Samsung Galaxy Ace S5830i
-hercules	T-Mobile Samsung Galaxy S2 Hercules T989
+hercules	Samsung Galaxy S2 Hercules T989 (T-Mobile)
 p6800		Samsung Galaxy Tab 7.7 (3G)
 p6810		Samsung Galaxy Tab 7.7 (Wifi)
-skyrocket	AT&T Samsung Galaxy S II Skyrocket SGH-I727
+skyrocket	Samsung Galaxy S II Skyrocket SGH-I727 (AT&T)
 tenderloin	HP Touchpad (on CyanogenMod)
-tf300t		ASUS Transformer Pad
+tf300t		Asus Transformer Pad
 apache		Samsung Rugby Smart SGH-I847
 gio		Samsung Galaxy Gio
 p5100		Samsung Galaxy Tab 2
@@ -45,13 +45,13 @@ warp		ZTE Warp
 spyder_cdma	Motorola RAZR XT912 (CDMA)
 spyder_umts	Motorola RAZR XT910 (UMTS)
 n7100		Samsung Galaxy Note II (International)
-quincytmo	T-Mobile Samsung Galaxy Note T879
-quincyatt	AT&T Samsung Galaxy Note I717
+quincytmo	Samsung Galaxy Note T879 (T-Mobile)
+quincyatt	Samsung Galaxy Note I717 (AT&T)
 d2att		Samsung Galaxy S III (AT&T)
 d2can		Samsung Galaxy S III (for Canada)
 d2spr		Samsung Galaxy S III SPH-L710 (Sprint)
 d2vzw		Samsung Galaxy S III (Verizon)
-i777		AT&T Samsung Galaxy S II
+i777		Samsung Galaxy S II (AT&T)
 i927		Samsung Captivate Glide / Samsung Galaxy S Glide
 shooter		HTC Evo 3D (for Sprint)
 b5512		Samsung Galaxy Y Pro Duos
@@ -67,14 +67,14 @@ daytona		Motorola DROID X2
 saga		HTC Desire S
 holiday		HTC Raider 4G
 e350		Acer Liquid Gallant
-t869		T-Mobile Samsung Galaxy Tab 7.0 Plus
+t869		Samsung Galaxy Tab 7.0 Plus (T-Mobile)
 jaspervzw	Samsung Galaxy Stellar SCH-I200
 fleming		Motorola Xoom 2
 espressowifi	Samsung Galaxy Tab 2 7.0 GT-P3110
 i9305		Samsung Galaxy S III LTE
 milestone2	Motorola MILESTONE 2 A953 / Motorola DROID 2
 crane-inet	Visual Land Connect
-evita		AT&T, Rogers HTC One X, Telstra One XL
+evita		HTC One X (AT&T, Rogers), HTC One XL (Telstra)
 everest		Motorola Xoom
 droid2we	Motorola Droid 2 Global
 acclaim		Barnes & Noble Nook Tablet
@@ -82,3 +82,11 @@ reverb		Samsung Galaxy Reverb
 vs920		LG Spectrum
 p930		LG Nitro HD
 europa		Samsung Galaxy 5 GT-I5500
+tf201		Asus Transformer Prime
+ace			HTC Desire HD
+i317		Samsung Galaxy Note II (AT&T)
+l900		Samsung Galaxy Note II (Sprint)
+maserati	Motorola DROID 4 (XT894)
+mecha		HTC ThunderBolt 4G
+mt799		Fuhu Nabi 2
+n7105		Samsung Galaxy Note II LTE
