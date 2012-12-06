@@ -1,8 +1,8 @@
 i9300		Samsung Galaxy S III (International)
 d2tmo		Samsung Galaxy S III (T-Mobile)
-olympus		Motorola Atrix (4G)
+olympus		Motorola Atrix 4G
 picasso		Acer Iconia A500
-sunfire		Motorola Photon (4G)
+sunfire		Motorola Photon 4G
 p970		LG Optimus Black
 d710		Samsung Galaxy S II Epic 4G Touch (Sprint)
 jordan		Motorola Defy
@@ -53,11 +53,11 @@ d2spr		Samsung Galaxy S III SPH-L710 (Sprint)
 d2vzw		Samsung Galaxy S III (Verizon)
 i777		Samsung Galaxy S II (AT&T)
 i927		Samsung Captivate Glide / Samsung Galaxy S Glide
-shooter		HTC Evo 3D (for Sprint)
+shooter		HTC Evo 3D (Sprint)
 b5512		Samsung Galaxy Y Pro Duos
 targa		Motorola Droid Bionic
 flyer		HTC Flyer / HTC EVO View 4G
-speedy		HTC Evo Shift (4G)
+speedy		HTC Evo Shift 4G
 u8800		Huawei Ideos X
 ariesve		Samsung Galaxy S Plus i9001
 ms770		LG Motion 4G
@@ -83,10 +83,14 @@ vs920		LG Spectrum
 p930		LG Nitro HD
 europa		Samsung Galaxy 5 GT-I5500
 tf201		Asus Transformer Prime
-ace			HTC Desire HD
+ace		HTC Desire HD
 i317		Samsung Galaxy Note II (AT&T)
 l900		Samsung Galaxy Note II (Sprint)
 maserati	Motorola DROID 4 (XT894)
 mecha		HTC ThunderBolt 4G
 mt799		Fuhu Nabi 2
 n7105		Samsung Galaxy Note II LTE
+i9103		Samsung Galaxy R
+mako		Google Nexus 4
+golfu		HTC Desire C
+i605		Samsung Galaxy Note II (Verizon)
