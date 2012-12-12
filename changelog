@@ -136,3 +136,6 @@ v6.12 - Bug Fix: filesystem detection in data partition on some devices.
 v6.13 - Bug Fix: .android_secure detection when an alternate storage media is selected.
         Bug Fix: Remount error in AROMA terminal.
         Bug Fix: Avoid clearing log file while checking the version number only.
+v6.14 - Bug Fix: Busyboxed ls command in md5 verification.
+        Bug Fix: Added some detailed error logging for could not change to path errors.
+        Bug Fix: Could not change to path errors.

@@ -1,5 +1,5 @@
 #### Define constants
-version="6.13"
+version="6.14"
 path="/clockworkmod/backup"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
@@ -289,7 +289,7 @@ logerror "Run with options: $*" ""
 logerror "###########################" ""
 logerror "BusyBox: `busybox | grep "BusyBox v"`" ""
 logerror "###########################" ""
-logerror "File System Layout:" "`busybox mount`"
+logerror "File System Layout:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
 logerror "###########################" ""
 
 #### Set default backup name (with date)
@@ -390,7 +390,7 @@ else
 	sdcard=`busybox mount | busybox grep -v "/mnt/asec/" | busybox egrep -i "($sdcard|sdcard|external|storage).* type (vfat|fuse)" | busybox tail -1 | busybox cut -d ' ' -f 3`
 	if [ ! "$sdcard" ]; then
 		logmsg "SD card not found! Exiting..."
-		logerror "Mounts:" "`busybox mount`"
+		logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
 		exit 2
 	else
 		logmsg "SD card found!"
@@ -542,8 +542,9 @@ fi
 
 #### Change to backup directory
 cd $path
-if [ `busybox pwd` != "$path" ]; then
+if [ $? != 0 ]; then
 	logmsg "Error: Could not change to $path. Exiting..."
+	logerror "Current Path:" "`busybox pwd`"
 	exit 2
 fi
 
@@ -553,7 +554,7 @@ if [ "$backup_style" != "gc" ]; then
 		busybox mkdir -p -- $name
 		if [ ! -d $name ]; then
 			logmsg "Error: Cannot create $name. Exiting..."
-			logerror "Mounts:" "`busybox mount`"
+			logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
 			exit 2
 		fi
 	else
@@ -561,13 +562,13 @@ if [ "$backup_style" != "gc" ]; then
 			busybox rm -rf -- $name
 			if [ -d $name ]; then
 				logmsg "Error: Cannot delete $name. Exiting..."
-				logerror "Mounts:" "`busybox mount`"
+				logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
 				exit 2
 			fi
 			busybox mkdir -p -- $name
 			if [ ! -d $name ]; then
 				logmsg "Error: Cannot create $name. Exiting..."
-				logerror "Mounts:" "`busybox mount`"
+				logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
 				exit 2
 			fi
 		else
@@ -578,13 +579,13 @@ if [ "$backup_style" != "gc" ]; then
 				busybox rm -rf -- $name
 				if [ -d $name ]; then
 					logmsg "Error: Cannot delete $name. Exiting..."
-					logerror "Mounts:" "`busybox mount`"
+					logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
 					exit 2
 				fi
 				busybox mkdir -p -- $name
 				if [ ! -d $name ]; then
 					logmsg "Error: Cannot create $name. Exiting..."
-					logerror "Mounts:" "`busybox mount`"
+					logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
 					exit 2
 				fi
 			else
@@ -596,7 +597,7 @@ if [ "$backup_style" != "gc" ]; then
 	busybox touch -- $name/.nandroidwritable
 	if [ ! -e $name/.nandroidwritable ]; then
 		logmsg "Error: Cannot write to $name ! Exiting..."
-		logerror "Mounts:" "`busybox mount`"
+		logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
 		exit 2
 	fi
 	busybox rm -- $name/.nandroidwritable
@@ -605,7 +606,7 @@ if [ "$backup_style" == "incremental" ]; then
 	busybox touch -- $blobsdir/.nandroidwritable
 	if [ ! -e $blobsdir/.nandroidwritable ]; then
 		logmsg "Error: Cannot write to $blobsdir ! Exiting..."
-		logerror "Mounts:" "`busybox mount`"
+		logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
 		exit 2
 	fi
 	busybox rm -- $blobsdir/.nandroidwritable
@@ -822,8 +823,9 @@ logmsg "SD Card Free Space: $freespace MB"
 logmsg "Required Space: $req_space MB"
 if [ $freespace -lt $req_space ]; then
 	cd $path
-	if [ `busybox pwd` != "$path" ]; then
+	if [ $? != 0 ]; then
 		logmsg "Error: Could not change to $path. Exiting..."
+		logerror "Current Path:" "`busybox pwd`"
 		exit 2
 	fi
 	busybox rmdir -- $name
@@ -1640,8 +1642,9 @@ cleanup
 #### Generate md5
 logmsg "Generating md5sum...\c"
 cd $path/$name
-if [ `busybox pwd` != "$path/$name" ]; then
+if [ $? != 0 ]; then
 	logmsg "Error: Could not change to $path/$name. Exiting..."
+	logerror "Current Path:" "`busybox pwd`"
 	exit 2
 fi
 md5sum .* * > nandroid.md5 2> /dev/null &
@@ -1656,7 +1659,7 @@ busybox sync
 busybox sleep 1
 
 #### Verify md5sum (to check if the file is populated)
-if [ "`ls`" != "nandroid.md5" ]; then
+if [ "`busybox ls`" != "nandroid.md5" ]; then
 	logmsg "Verifying md5sum...\c"
 	while [ `busybox stat -t nandroid.md5 | busybox awk '{print $2}'` == "0" ]; do
 		progress md5sum_validate
