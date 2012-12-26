@@ -48,7 +48,7 @@ n7100		Samsung Galaxy Note II (International)
 quincytmo	Samsung Galaxy Note T879 (T-Mobile)
 quincyatt	Samsung Galaxy Note I717 (AT&T)
 d2att		Samsung Galaxy S III (AT&T)
-d2can		Samsung Galaxy S III (for Canada)
+d2can		Samsung Galaxy S III SGH-I747M
 d2spr		Samsung Galaxy S III SPH-L710 (Sprint)
 d2vzw		Samsung Galaxy S III (Verizon)
 i777		Samsung Galaxy S II (AT&T)
@@ -122,9 +122,14 @@ shooteru	HTC Evo 3D (GSM)
 vigor		HTC Rezound
 s5839i		Samsung Galaxy Ace GT-S5839i
 p4tmo		Samsung Galaxy Tab 10.1 SGH-T859 (T-Mobile)
-umts_jordan		Motorola Defy+
+umts_jordan	Motorola Defy+
 jewel		HTC Evo 4G LTE (Sprint)
 n8000		Samsung Galaxy Note 10.1 GT-N8000
 n8013		Samsung Galaxy Note 10.1 GT-N8013
-p5			Samsung Galaxy Tab 8.9 3G P7300
+p5		Samsung Galaxy Tab 8.9 3G P7300
 p5wifi		Samsung Galaxy Tab 8.9 3G P7310
+tostab03	Toshiba AT100 Thrive
+ls855		LG Marquee
+ms695		LG Optimus M+
+n8010		Samsung Galaxy Note 10.1 GT-N8010
+solana		Motorola DROID 3 (Verizon)
