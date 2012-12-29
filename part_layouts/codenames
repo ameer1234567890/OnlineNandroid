@@ -1,5 +1,5 @@
 i9300		Samsung Galaxy S III (International)
-d2tmo		Samsung Galaxy S III (T-Mobile)
+d2tmo		Samsung Galaxy S III SGH-T999 (T-Mobile)
 olympus		Motorola Atrix 4G
 picasso		Acer Iconia A500
 sunfire		Motorola Photon 4G
@@ -15,7 +15,7 @@ maguro		Google Galaxy Nexus (GSM)
 s6102		Samsung Galaxy Y Duos
 s5360		Samsung Galaxy Y
 grouper		Google Nexus 7
-tass		Samsung Galaxy Mini
+tass		Samsung Galaxy Mini GT-S5570
 i9000		Samsung Galaxy S
 p999		LG G2x (T-Mobile)
 i5800		Samsung Galaxy 3
@@ -35,19 +35,19 @@ p6800		Samsung Galaxy Tab 7.7 (3G)
 p6810		Samsung Galaxy Tab 7.7 (Wifi)
 skyrocket	Samsung Galaxy S II Skyrocket SGH-I727 (AT&T)
 tenderloin	HP Touchpad (on CyanogenMod)
-tf300t		Asus Transformer Pad
+tf300t		Asus Transformer Pad TF300T
 apache		Samsung Rugby Smart SGH-I847
 gio		Samsung Galaxy Gio
 p5100		Samsung Galaxy Tab 2
 p990		LG Optimus 2X
 cayman		LG Lucid 4G
 warp		ZTE Warp
-spyder_cdma	Motorola RAZR XT912 (CDMA)
-spyder_umts	Motorola RAZR XT910 (UMTS)
+cdma_spyder	Motorola RAZR XT912 (CDMA)
+umts_spyder	Motorola RAZR XT910 (UMTS)
 n7100		Samsung Galaxy Note II (International)
 quincytmo	Samsung Galaxy Note T879 (T-Mobile)
 quincyatt	Samsung Galaxy Note I717 (AT&T)
-d2att		Samsung Galaxy S III (AT&T)
+d2att		Samsung Galaxy S III SGH-I747 (AT&T)
 d2can		Samsung Galaxy S III SGH-I747M
 d2spr		Samsung Galaxy S III SPH-L710 (Sprint)
 d2vzw		Samsung Galaxy S III (Verizon)
@@ -82,7 +82,7 @@ reverb		Samsung Galaxy Reverb
 vs920		LG Spectrum
 p930		LG Nitro HD
 europa		Samsung Galaxy 5 GT-I5500
-tf201		Asus Transformer Prime
+tf201		Asus Transformer Prime TF201
 ace		HTC Desire HD
 i317		Samsung Galaxy Note II (AT&T)
 l900		Samsung Galaxy Note II (Sprint)
@@ -124,7 +124,7 @@ s5839i		Samsung Galaxy Ace GT-S5839i
 p4tmo		Samsung Galaxy Tab 10.1 SGH-T859 (T-Mobile)
 umts_jordan	Motorola Defy+
 jewel		HTC Evo 4G LTE (Sprint)
-n8000		Samsung Galaxy Note 10.1 GT-N8000
+p4noterf		Samsung Galaxy Note 10.1 GT-N8000
 n8013		Samsung Galaxy Note 10.1 GT-N8013
 p5		Samsung Galaxy Tab 8.9 3G P7300
 p5wifi		Samsung Galaxy Tab 8.9 3G P7310
@@ -133,3 +133,9 @@ ls855		LG Marquee
 ms695		LG Optimus M+
 n8010		Samsung Galaxy Note 10.1 GT-N8010
 solana		Motorola DROID 3 (Verizon)
+vision		HTC Desire Z
+dlx		HTC Droid DNA
+primoc		HTC One V
+pyramid		HTC Sensation
+ruby		HTC Amaze 4G
+tf101		Asus Transformer TF101
