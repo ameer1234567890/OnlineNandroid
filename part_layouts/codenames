@@ -91,7 +91,7 @@ mecha	HTC ThunderBolt 4G
 mt799	Fuhu Nabi 2
 n7105	Samsung Galaxy Note II LTE
 n1	Samsung Galaxy R GT-I9103
-mako	Google Nexus 4
+occam	Google Nexus 4
 golfu	HTC Desire C
 i605	Samsung Galaxy Note II (Verizon)
 shadow	Motorola DROID X / Motorola MILESTONE X
@@ -122,7 +122,7 @@ shooteru	HTC Evo 3D (GSM)
 vigor	HTC Rezound
 s5839i	Samsung Galaxy Ace GT-S5839i
 p4tmo	Samsung Galaxy Tab 10.1 SGH-T859 (T-Mobile)
-umts_jordan	Motorola Defy+
+umts_jordan	Motorola Defy+ MB526
 jewel	HTC Evo 4G LTE (Sprint)
 p4noterf	Samsung Galaxy Note 10.1 GT-N8000
 n8013	Samsung Galaxy Note 10.1 GT-N8013
@@ -174,3 +174,7 @@ i927r	Samsung Galaxy S Glide SGH-I927R (Rogers)
 i997r	Samsung Infuse 4G SGH-I997R (Rogers)
 i9305t	Samsung Galaxy S III 4G
 p5113	Samsung Galaxy Tab 2 10.1 (Wifi) GT-P5113
+golden	Samsung Galaxy S III mini GT-I8190
+lotus	Sony Xperia Go ST27
+otter	Amazon Kindle Fire
+x3	LG Optimus 4X HD P880
