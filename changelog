@@ -139,3 +139,18 @@ v6.13 - Bug Fix: .android_secure detection when an alternate storage media is se
 v6.14 - Bug Fix: Busyboxed ls command in md5 verification.
         Bug Fix: Added some detailed error logging for could not change to path errors.
         Bug Fix: Could not change to path errors.
+v7.00 - Added: TWRP support.
+        Added: Specific exit codes for exits upon an error.
+        Added: Device details to log file.
+        Added: Output PID to onandroid.pid file upon each run.
+        Added: /preload partition backup. (Partition letter "o".)
+        Added: Flag to backup yaffs2 partitions as tar archives.
+        Added: Notice to install patch file, if boot partition was not found.
+        Removed: cpuid backup on Acer devices, since it freezes on some ROMs.
+        Removed: sd-ext not found message. Not all devices have one.
+        Removed: .android_secure not found message. Not all devices have one.
+        Improved: More elegant backup process.
+        Improved: Some internal variable naming.
+        Bug Fix: Notification disable did not work in some devices.
+        Bug Fix: Busyboxing of some commands.
+        Bug Fix: Minor bug in error logging.

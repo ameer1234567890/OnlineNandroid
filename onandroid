@@ -1,15 +1,35 @@
 #### Define constants
-version="6.14"
-path="/clockworkmod/backup"
+version="7.00beta7"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
-all_partitions="mbrwlsdcteufpiax"
+all_partitions="mbrwlsdcteoufpax"
 sdcard_temp_mount="/mnt/sdcard4nandroid"
 sdext_temp_mount="/mnt/sdext4nandroid"
 custbkp_temp_mount="/mnt/custbkp4nandroid"
 logpath="/data/local/tmp"
 logfile="$logpath/onandroid.log"
+pidfile="$logpath/onandroid.pid"
+
+#### Define exit codes (returned upon exit due to an error)
+err_noroot=65 # Could not acquire root permissions
+err_nobatt=66 # Sufficient battery not available
+err_bbvless=67 # Error: BusyBox version less than 1.20 found
+err_nosdcard=68 # SD card not found
+err_killsig=69 # Killed by exit/kill signal
+err_nomkyaffs=70 # mkyaffs2image not found in path
+err_nodedupe=71 # dedupe not found in path
+err_nomd5sum=72 # md5sum not found in path
+err_notar=73 # tar not found in path
+err_nodd=74 # dd not found in path
+err_cntcdpath=80 # Could not change to backup path
+err_cntmkname=81 # Cannot create backup directory
+err_cntrmname=82 # Cannot delete backup directory
+err_nameexist=83 # Backup name already exists
+err_cntwrname=84 # Cannot write to backup directory
+err_cntwrblobs=85 # Cannot write to blobs directory
+err_nospace=86 # Not enough disk space
+err_cntcdname=87 # Could not change to backup directory
 
 #### Logging function
 if [ ! -d $logpath ]; then
@@ -64,7 +84,7 @@ cleanup(){
 #### Garbage Collect function (used for incremental backups)
 garbagecollect(){
 	logmsg "Freeing Space...\c"
-	dedupe gc $blobsdir $(busybox find $path -name '*.dup') &
+	dedupe gc $blobsdir $(busybox find $path -name "*.dup") &
 	while [ `busybox pidof dedupe` ]; do
 		busybox echo -n "."
 		busybox sleep 2
@@ -90,6 +110,11 @@ usage(){
 	busybox echo "  -l, --split                   split backup mode (CWM 6+ only)"
 	busybox echo "  -o, --old                     good old backup mode (default)"
 	busybox echo "  -gc, --garbage-collect        run garbage collect mode"
+	busybox echo "  -w, --twrp                    TWRP backup mode"
+	busybox echo "  -me, --md5-enable             enable md5 generation (for TWRP only)"
+	busybox echo "  -md, --md5-disable            disable md5 generation (for TWRP only)"
+	busybox echo "  -ce, --compression-enable     enable compression (for TWRP only)"
+	busybox echo "  -cd, --compression-disable    disable compression (for TWRP only)"
 	busybox echo "  -c, --custom NAME             specify a custom backup name"
 	busybox echo "  -s, --storage MEDIA           specify an alternate storage media to backup"
 	busybox echo "  -e, --sd-ext-path PATH        specify path to sd-ext partition"
@@ -115,6 +140,7 @@ advmapping(){
 	busybox echo "  c: cache"
 	busybox echo "  t: datadata (for Samsung devices)"
 	busybox echo "  e: efs (for Samsung devices)"
+	busybox echo "  o: preload (for Samsung devices)"
 	busybox echo "  u: .cust_backup (for Huawei devices)"
 	busybox echo "  f: flexrom (for Acer devices)"
 	busybox echo "  p: boot (for HP Touchpad)"
@@ -125,8 +151,8 @@ advmapping(){
 	exit 0
 }
 
-#### Progress percentage function
-progress() {
+#### Progress status function
+progress(){
 	if [ "$progress_style" == "dot" ]; then
 		busybox echo -n "."
 	else
@@ -164,6 +190,153 @@ progress_done(){
 	fi
 }
 
+#### Backup Function - Disk Dump
+nandroid_dd(){
+	part_name=$1 # Name of partition.Used only for display.
+	part_fname=$2 # Backup file name.
+	part_dev=$3 # Device name.
+	part_id=$4 # Partition identification letter (used in advanced backup mode).
+	part_size=$5 # Partition size.
+	part_bs=$6 # bs value for dd.
+	part_count=$7 # count value for dd. Pass "all" (string) to omit count argument.
+	part_iscommon=$8 # Is partition common among all android?
+	# Usage: nandroid_dd $part_name $part_fname $part_dev $part_id $part_size $part_bs $part_count $part_iscommon
+
+	if [ "`busybox echo $adv | busybox grep $part_id`" != "" ]; then
+		if [ $part_type == "not_found" -o "$part_dev" == "" ]; then
+			if [ "$part_iscommon" == "yes" ]; then
+				logmsg "/$part_name not found! Skipping backup of /$part_name!"
+			fi
+		else
+			logmsg "Backing up /$part_name...\c"
+			if [ `busybox echo "$part_size" | busybox egrep "^[0-9]+$"` ]; then
+				full_size=$part_size
+			else
+				full_size=-1
+			fi
+			if [ "$part_count" == "all" ]; then
+				dd if=$part_path/$part_dev of=$path/$name/$part_fname.$img_ext bs=$part_bs 2> /dev/null &
+				while [ `busybox pidof dd` ]; do
+					progress $part_fname.$img_ext
+					busybox sleep 2
+				done
+				progress_done
+				busybox echo ""
+			else
+				dd if=$part_path/$part_dev of=$path/$name/$part_fname.$img_ext bs=$part_bs count=$part_count 2> /dev/null &
+				while [ `busybox pidof dd` ]; do
+					progress $part_fname.$img_ext
+					busybox sleep 2
+				done
+				progress_done
+				busybox echo ""
+			fi
+		fi
+	fi
+}
+
+#### Backup Function - Filesystems
+nandroid_fs(){
+	part_name=$1 # Name of partition.Used only for display.
+	part_fname=$2 # Backup file name.
+	part_id=$3 # Partition identification letter (used in advanced backup mode).
+	part_mount=$4 # Partition mount point.
+	part_mountdir=$5 # Directory name of mount point.
+	part_fs=$6 # Filesystem type.
+	part_size=$7 # Partition size.
+	part_excludes=$8 # Excludes for tar
+	part_excludes_dedupe=$9 # Excludes for dedupe
+	part_iscommon=$10 # Is partition common among all android?
+	# Usage: nandroid_fs $part_name $part_fname $part_id $part_mount $part_mountdir $part_fs $part_size $part_excludes $part_excludes_dedupe $part_iscommon
+
+	if [ "`busybox echo $adv | busybox grep $part_id`" != "" ]; then
+		if [ "$part_fs" != "" ]; then
+			if [ "$backup_style" == "twrp" ]; then
+				if [ "$part_excludes" != "" ]; then
+					part_m="`busybox echo $part_mount | busybox sed s/'^\/'/''/g`"
+					part_excludes="`busybox echo $part_excludes | busybox sed s/$part_m/'.'/g`"
+				fi
+				logmsg "Backing up /$part_name...\c"
+				cd $part_mount
+				if [ `busybox echo "$part_size" | busybox egrep "^[0-9]+$"` ]; then
+					full_size=$part_size
+				else
+					full_size=-1
+				fi
+				if [ "$compress_backup" == "no" ]; then
+					tar -cf $path/$name/$part_fname.$part_fs.win $part_excludes $part_mountdir ./* > /dev/null 2>&1 &
+					while [ `busybox pidof tar` ]; do
+						progress $part_fname.$part_fs.win
+						busybox sleep 2
+					done
+				else
+					tar -czf $path/$name/$part_fname.$part_fs.win $part_excludes $part_mountdir ./* > /dev/null 2>&1 &
+					while [ `busybox pidof tar` ]; do
+						progress $part_fname.$part_fs.win
+						busybox sleep 2
+					done
+				fi
+				progress_done
+				busybox echo ""
+			else
+				if [ "$part_fs" == "yaffs2" -a "$yaffs_override" != "yes" ]; then
+					logmsg "Backing up /$part_name...\c"
+					if [ `busybox echo "$part_size" | busybox egrep "^[0-9]+$"` ]; then
+						full_size=$part_size
+					else
+						full_size=-1
+					fi
+					mkyaffs2image $part_mount $part_fname.$part_fs.img &
+					while [ `busybox pidof mkyaffs2image` ]; do
+						progress $part_fname.$part_fs.img
+						busybox sleep 2
+					done
+					progress_done
+					busybox echo ""
+				else
+					cd $part_mount/..
+					logmsg "Backing up /$part_name...\c"
+					if [ "$backup_style" == "incremental" ]; then
+						dedupe c $part_mountdir $blobsdir $path/$name/$part_fname.$part_fs.dup $part_excludes_dedupe > /dev/null 2>&1 &
+						while [ `busybox pidof dedupe` ]; do
+							progress dedupe_$part_fname
+							busybox sleep 2
+						done
+						progress_done
+						busybox echo ""
+					elif [ "$backup_style" == "tarsplit" ]; then
+						busybox touch $path/$name/$part_fname.$part_fs.tar
+						tar -c $part_excludes $part_mountdir 2> /dev/null | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/$part_fname.$part_fs.tar. > /dev/null 2>&1 &
+						while [ `busybox pidof tar` ]; do
+							progress tarsplit_$part_fname
+							busybox sleep 2
+						done
+						progress_done
+						busybox echo ""
+					else
+						if [ `busybox echo "$part_size" | busybox egrep "^[0-9]+$"` ]; then
+							full_size=$part_size
+						else
+							full_size=-1
+						fi
+						tar -cf $path/$name/$part_fname.$part_fs.tar $part_excludes $part_mountdir > /dev/null 2>&1 &
+						while [ `busybox pidof tar` ]; do
+							progress $part_fname.$part_fs.tar
+							busybox sleep 2
+						done
+						progress_done
+						busybox echo ""
+					fi
+				fi
+			fi
+		else
+			if [ "$part_iscommon" == "yes" ]; then
+				logmsg "/$part_name not found! Skipping backup of /$part_name!"
+			fi
+		fi
+	fi
+}
+
 #### Rnfgre Rtt Trarengbe shapgvba
 rtt(){
 	rtt="Gur Fxlarg Shaqvat Ovyy vf cnffrq. Gur flfgrz tbrf ba-yvar Nhthfg 4gu, 1997. Uhzna qrpvfvbaf ner erzbirq sebz fgengrtvp qrsrafr. Fxlarg ortvaf gb yrnea ng n trbzrgevp engr. Vg orpbzrf frys-njner ng 2:14 NZ Rnfgrea gvzr, Nhthfg 29gu. Va n cnavp, gurl gel gb chyy gur cyht."
@@ -172,6 +345,9 @@ rtt(){
 	busybox echo ""
 	exit 0
 }
+
+#### Output PID
+busybox echo "$$" >$pidfile
 
 #### Process arguments
 arglist=$@
@@ -225,7 +401,7 @@ for arg in $arglist; do
 			read adv
 		fi
 		# Show partition mapping if partition letters include an "h"
-		if [ "`echo $adv | grep 'h'`" ]; then
+		if [ "`busybox echo $adv | busybox grep 'h'`" ]; then
 			advmapping
 		fi
 	elif [ "$arg" == "-p" ] || [ "$arg" == "--phone" ]; then
@@ -238,6 +414,16 @@ for arg in $arglist; do
 		backup_style="old"
 	elif [ "$arg" == "-i" ] || [ "$arg" == "--incremental" ]; then
 		backup_style="incremental"
+	elif [ "$arg" == "-w" ] || [ "$arg" == "--twrp" ]; then
+		backup_style="twrp"
+	elif [ "$arg" == "-me" ] || [ "$arg" == "--md5-enable" ]; then
+		generate_md5="yes"
+	elif [ "$arg" == "-md" ] || [ "$arg" == "--md5-disable" ]; then
+		generate_md5="no"
+	elif [ "$arg" == "-ce" ] || [ "$arg" == "--compression-enable" ]; then
+		compress_backup="yes"
+	elif [ "$arg" == "-cd" ] || [ "$arg" == "--compression-disable" ]; then
+		compress_backup="no"
 	elif [ "$arg" == "-l" ] || [ "$arg" == "--split" ]; then
 		backup_style="tarsplit"
 	elif [ "$arg" == "-gc" ] || [ "$arg" == "--garbage-collect" ]; then
@@ -252,6 +438,8 @@ for arg in $arglist; do
 		progress_style="percent"
 	elif [ "$arg" == "-nd" ] || [ "$arg" == "--notification-disable" ]; then
 		notif_disable="yes"
+	elif [ "$arg" == "-y" ] || [ "$arg" == "--yaffs-override" ]; then
+		yaffs_override="yes"
 	elif [ "$arg" == "-~" ] || [ "$arg" == "--rtt" ]; then
 		rtt
 	else
@@ -282,21 +470,31 @@ busybox echo "* Created by Ameer Dawood"
 busybox echo "##########################################"
 busybox echo ""
 
-#### Spit version number, date and time to log file
+#### Spit version number, date, time and other technical info to log file
 logerror "Online Nandroid v$version" "Started at `date`"
 logerror "###########################" ""
 logerror "Run with options: $*" ""
 logerror "###########################" ""
-logerror "BusyBox: `busybox | grep "BusyBox v"`" ""
+logerror "BusyBox: `busybox | busybox grep "BusyBox v"`" ""
 logerror "###########################" ""
 logerror "File System Layout:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
+logerror "###########################" ""
+logerror "Device Details:" "`busybox cat /system/build.prop | busybox grep "^ro.product." | busybox grep -v "^ro.product.locale."`"
 logerror "###########################" ""
 
 #### Set default backup name (with date)
 if [ "$tz" == "phone" ]; then
-	def_name=`busybox date +%Y-%m-%d.%H.%M.%S`
+	if [ "$backup_style" == "twrp" ]; then
+		def_name=`busybox date +%Y-%m-%d--%H.%M.%S`
+	else
+		def_name=`busybox date +%Y-%m-%d.%H.%M.%S`
+	fi
 else
-	def_name=`busybox date -u +%Y-%m-%d.%H.%M.%S`
+	if [ "$backup_style" == "twrp" ]; then
+		def_name=`busybox date -u +%Y-%m-%d--%H.%M.%S`
+	else
+		def_name=`busybox date -u +%Y-%m-%d.%H.%M.%S`
+	fi
 fi
 
 #### Set backup name to default if backup name was not provided
@@ -318,8 +516,8 @@ if [ "`busybox id -u`" == "0" ]; then
 	logmsg "Root permissions acquired!"
 else
 	logmsg "Could not acquire root permissions! Exiting..."
-	logerror "busybox -u:" "`busybox id -u`"
-	exit 2
+	logerror "busybox id -u:" "`busybox id -u`"
+	exit $err_noroot
 fi
 
 #### Analyse power status
@@ -355,22 +553,33 @@ elif [ $rem_power -gt $req_power ]; then
 else
 	logmsg "Sufficient battery not available! Exiting..."
 	logerror "Battery Level:" "$rem_power"
-	exit 2
+	exit $err_nobatt
 fi
 
 #### Check BusyBox version (requires version 1.20 or above)
 logmsg "Checking version of BusyBox installed..."
-bb_major=`busybox | grep "BusyBox v" | awk '{print }' | cut -d v -f 2 | cut -d - -f 1 | cut -d . -f 1`
-bb_minor=`busybox | grep "BusyBox v" | awk '{print }' | cut -d v -f 2 | cut -d - -f 1 | cut -d . -f 2`
+bb_major=`busybox | busybox grep "BusyBox v" | busybox awk '{print }' | busybox cut -d v -f 2 | busybox cut -d - -f 1 | busybox cut -d . -f 1`
+bb_minor=`busybox | busybox grep "BusyBox v" | busybox awk '{print }' | busybox cut -d v -f 2 | busybox cut -d - -f 1 | busybox cut -d . -f 2`
 if [ "`busybox echo $bb_major | busybox egrep "^[0-9]+$"`" -a "`busybox echo $bb_minor | busybox egrep "^[0-9]+$"`" ]; then
 	if [ "$bb_major" -lt 1 -o "$bb_minor" -lt 20 ]; then
 		logmsg "Error: BusyBox version less than 1.20 found. Exiting..."
-		exit 2
+		exit $err_bbvless
 	else
 		logmsg "BusyBox version 1.20 or above installed!"
 	fi
 else
 	logmsg "Unable to check BusyBox version. Taking chances here..."
+fi
+
+#### Set backup path according to the backup style
+if [ "$backup_style" == "twrp" ]; then
+	android_id=`busybox cat /proc/cmdline | busybox tr ' ' '\n' | busybox grep "androidboot.serialno=" | busybox cut -d '=' -f 2`
+	if [ ! "$android_id" ]; then
+		android_id=`busybox cat /proc/cpuinfo | busybox grep "Serial" | busybox awk '{print $3}'`
+	fi
+	path="/TWRP/BACKUPS/$android_id"
+else
+	path="/clockworkmod/backup"
 fi
 
 #### Check if SD card is mounted
@@ -391,56 +600,13 @@ else
 	if [ ! "$sdcard" ]; then
 		logmsg "SD card not found! Exiting..."
 		logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
-		exit 2
+		exit $err_nosdcard
 	else
 		logmsg "SD card found!"
 		path=$sdcard$path
 		blobsdir=$sdcard$blobsdir
 	fi
 fi
-
-#### Discover if default backup format is defined and follow the same
-if [ -f $path/../.default_backup_format ]; then
-	default_backup_format=`busybox cat $path/../.default_backup_format`
-fi
-if [ "$default_backup_format" == "dup" -a ! "$backup_style" ]; then
-	backup_style="incremental"
-	style_mode="default"
-elif [ "$default_backup_format" == "tar" -a ! "$backup_style" ]; then
-	backup_style="tarsplit"
-	style_mode="default"
-fi
-
-#### Discover if advanced backup mode is defined and follow the same
-if [ -f $path/../.advanced_backup_partitions ]; then
-	default_adv=`busybox cat $path/../.advanced_backup_partitions`
-fi
-if [ "$default_adv" != "" -a "$advbkp_mode" != "run" ]; then
-	adv=$default_adv
-fi
-
-#### Announce backup style
-if [ "$backup_style" == "incremental" ]; then
-	if [ "$style_mode" == "default" ]; then
-		logmsg "Incremental backup mode selected by default!"
-	else
-		logmsg "Incremental backup mode selected at run time!"
-	fi
-elif [ "$backup_style" == "tarsplit" ]; then
-	if [ "$style_mode" == "default" ]; then
-		logmsg "Split backup mode selected by default!"
-	else
-		logmsg "Split backup mode selected at run time!"
-	fi
-fi
-if [ "$advbkp_mode" == "run" ]; then
-	logmsg "Advanced backup mode selected at run time!"
-elif [ "$default_adv" != "" ]; then
-	logmsg "Advanced backup mode selected by default!"
-fi
-
-#### Trap any exit/kill signals and cleanup before exiting
-trap 'cleanup; exit 2' 1 2 3 13 15
 
 #### Detect partition layouts
 part_type="not_found"
@@ -468,6 +634,61 @@ if [ -f "/system/partlayout4nandroid" ]; then
 		part_type="not_found"
 	fi
 fi
+
+#### Determine if default backup format is defined and follow the same
+if [ -f $path/../.default_backup_format ]; then
+	default_backup_format=`busybox cat $path/../.default_backup_format`
+fi
+if [ "$default_backup_format" == "dup" -a ! "$backup_style" ]; then
+	backup_style="incremental"
+	style_mode="default"
+elif [ "$default_backup_format" == "tar" -a ! "$backup_style" ]; then
+	backup_style="tarsplit"
+	style_mode="default"
+fi
+
+#### Determine if advanced backup mode is defined and follow the same
+if [ -f $path/../.advanced_backup_partitions ]; then
+	default_adv=`busybox cat $path/../.advanced_backup_partitions`
+fi
+if [ "$default_adv" != "" -a "$advbkp_mode" != "run" ]; then
+	adv=$default_adv
+fi
+
+#### Set filename extensions before setting backup style
+img_ext="img"
+as_name=".android_secure"
+
+#### Announce backup style
+if [ "$backup_style" == "incremental" ]; then
+	if [ "$style_mode" == "default" ]; then
+		logmsg "Incremental backup mode selected by default!"
+	else
+		logmsg "Incremental backup mode selected at run time!"
+	fi
+elif [ "$backup_style" == "tarsplit" ]; then
+	if [ "$style_mode" == "default" ]; then
+		logmsg "Split backup mode selected by default!"
+	else
+		logmsg "Split backup mode selected at run time!"
+	fi
+elif [ "$backup_style" == "twrp" ]; then
+	as_name="and-sec"
+	if [ "$part_path" == "/dev/mtd" ]; then
+		img_ext="mtd.win"
+	else
+		img_ext="emmc.win"
+	fi
+	logmsg "TWRP backup mode selected at run time!"
+fi
+if [ "$advbkp_mode" == "run" ]; then
+	logmsg "Advanced backup mode selected at run time!"
+elif [ "$default_adv" != "" ]; then
+	logmsg "Advanced backup mode selected by default!"
+fi
+
+#### Trap any exit/kill signals and cleanup before exiting
+trap 'cleanup; exit $err_killsig' 1 2 3 13 15
 
 #### Mount /flexrom partition if it is hinted but not mouted (for Acer devices)
 if [ ! "`busybox mount | busybox grep "/flexrom "`" ]; then
@@ -498,11 +719,12 @@ data_fs="`busybox mount | busybox grep "on /data " | busybox cut -d ' ' -f 5`"
 cache_fs="`busybox mount | busybox grep "on /cache " | busybox cut -d ' ' -f 5`"
 datadata_fs="`busybox mount | busybox grep "on /datadata " | busybox cut -d ' ' -f 5`"
 efs_fs="`busybox mount | busybox grep "on /efs " | busybox cut -d ' ' -f 5`"
+preload_fs="`busybox mount | busybox grep "on /preload " | busybox cut -d ' ' -f 5`"
 custbkp_fs="`busybox mount | busybox grep "on /.cust_backup " | busybox cut -d ' ' -f 5`"
 flexrom_fs="`busybox mount | busybox grep "on /flexrom " | busybox cut -d ' ' -f 5`"
 hptpboot_fs="`busybox mount | busybox grep "on /boot " | busybox cut -d ' ' -f 5`"
 
-if [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" -o "$custbkp_fs" == "yaff2" -o "$flexrom_fs" == "yaffs2" -o "$boot_fs" == "yaffs2" ]; then
+if [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" -o "$preload_fs" == "yaffs2" -o "$custbkp_fs" == "yaffs2" -o "$flexrom_fs" == "yaffs2" -o "$boot_fs" == "yaffs2" ]; then
 	has_yaffs2="true"
 fi
 
@@ -510,25 +732,25 @@ fi
 logmsg "Checking for required tools..."
 if [ "$has_yaffs2" == "true" -a "`busybox which mkyaffs2image`" == "" ]; then
 	logmsg "Error: mkyaffs2image not found in path! Exiting..."
-	exit 2
+	exit $err_nomkyaffs
 fi
 if [ "$backup_style" == "incremental" -o "$backup_style" == "gc" ]; then
 	if [ "`busybox which dedupe`" == "" ]; then
 		logmsg "Error: dedupe not found in path! Exiting..."
-		exit 2
+		exit $err_nodedupe
 	fi
 fi
 if [ "`busybox which md5sum`" == "" ]; then
 	logmsg "Error: md5sum not found in path! Exiting..."
-	exit 2
+	exit $err_nomd5sum
 fi
 if [ "`busybox which tar`" == "" ]; then
 	logmsg "Error: tar not found in path! Exiting..."
-	exit 2
+	exit $err_notar
 fi
 if [ "`busybox which dd`" == "" ]; then
 	logmsg "Error: dd not found in path! Exiting..."
-	exit 2
+	exit $err_nodd
 fi
 logmsg "All required tools available!"
 
@@ -544,8 +766,7 @@ fi
 cd $path
 if [ $? != 0 ]; then
 	logmsg "Error: Could not change to $path. Exiting..."
-	logerror "Current Path:" "`busybox pwd`"
-	exit 2
+	exit $err_cntcdpath
 fi
 
 #### Create directory for backup & do the tests
@@ -555,42 +776,20 @@ if [ "$backup_style" != "gc" ]; then
 		if [ ! -d $name ]; then
 			logmsg "Error: Cannot create $name. Exiting..."
 			logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
-			exit 2
+			exit $err_cntmkname
 		fi
 	else
 		if [ "$replace_backup" == "yes" ]; then
-			busybox rm -rf -- $name
-			if [ -d $name ]; then
-				logmsg "Error: Cannot delete $name. Exiting..."
-				logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
-				exit 2
-			fi
-			busybox mkdir -p -- $name
-			if [ ! -d $name ]; then
-				logmsg "Error: Cannot create $name. Exiting..."
-				logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
-				exit 2
-			fi
+			logmsg "Replace backup mode selected at run time!"
 		else
 			logmsg "Error: $name already exists!"
 			logmsg "Do you want to replace? [y|n]: \c"
 			read answer
 			if [ "$answer" == "y" -o "$answer" == "Y" -o "$answer" == "yes" -o "$answer" == "Yes" -o "$answer" == "YES" ]; then
-				busybox rm -rf -- $name
-				if [ -d $name ]; then
-					logmsg "Error: Cannot delete $name. Exiting..."
-					logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
-					exit 2
-				fi
-				busybox mkdir -p -- $name
-				if [ ! -d $name ]; then
-					logmsg "Error: Cannot create $name. Exiting..."
-					logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
-					exit 2
-				fi
+				logmsg "Replace backup mode selected upon prompt!"
 			else
 				logmsg "Error: $name already exists! Exiting..."
-				exit 2
+				exit $err_nameexist
 			fi
 		fi
 	fi
@@ -598,7 +797,7 @@ if [ "$backup_style" != "gc" ]; then
 	if [ ! -e $name/.nandroidwritable ]; then
 		logmsg "Error: Cannot write to $name ! Exiting..."
 		logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
-		exit 2
+		exit $err_cntwrname
 	fi
 	busybox rm -- $name/.nandroidwritable
 fi
@@ -607,7 +806,7 @@ if [ "$backup_style" == "incremental" ]; then
 	if [ ! -e $blobsdir/.nandroidwritable ]; then
 		logmsg "Error: Cannot write to $blobsdir ! Exiting..."
 		logerror "Mounts:" "`busybox mount | busybox grep -v "/mnt/asec/"`"
-		exit 2
+		exit $err_cntwrblobs
 	fi
 	busybox rm -- $blobsdir/.nandroidwritable
 	if [ ! -f $blobsdir/.nomedia ]; then
@@ -735,6 +934,14 @@ else
 	u_efs=`busybox expr $u_efs + 1`
 fi
 
+#### /preload partition size (for Samsung devices)
+if [ "$preload_fs" == "" -o "`busybox echo $adv | busybox grep 'o'`" == "" ]; then
+	u_preload=0
+else
+	u_preload=`busybox df -Pm /preload | busybox tail -1 | busybox awk '{print $3}'`
+	u_preload=`busybox expr $u_preload + 1`
+fi
+
 #### /.cust_backup partition size (for Huawei devices)
 if [ "$custbkp_fs" == "" -o "`busybox echo $adv | busybox grep 'u'`" == "" ]; then
 	u_custbkp=0
@@ -804,16 +1011,19 @@ else
 	sdext_mount=`busybox mount | busybox grep -v "sdhci" | busybox egrep "$sdextdir type" | busybox tail -1`
 fi
 if [ "$sdext_mount" == "" -o "`busybox echo $adv | busybox grep 'x'`" == "" ]; then
-	u_ext=0
+	u_sdext=0
 else
-	extv=`busybox echo $sdext_mount | busybox cut -d ' ' -f 5`
+	sdext_fs=`busybox echo $sdext_mount | busybox cut -d ' ' -f 5`
 	extm=`busybox echo $sdext_mount | busybox cut -d ' ' -f 3`
-	u_ext=`busybox df -Pm $extm | busybox tail -1 | busybox awk '{print $3}'`
-	u_ext=`busybox expr $u_ext + 1`
+	u_sdext=`busybox df -Pm $extm | busybox tail -1 | busybox awk '{print $3}'`
+	u_sdext=`busybox expr $u_sdext + 1`
 fi
 
 #### Required space calculation
-req_space=`busybox expr $u_mmcblk0_start + $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_efs + $u_custbkp + $u_flexrom + $u_hptpboot + $u_as + $u_ext`
+req_space=`busybox expr $u_mmcblk0_start + $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_efs + $u_preload + $u_custbkp + $u_flexrom + $u_hptpboot + $u_as + $u_sdext`
+if [ "$backup_style" == "updatezip" ]; then
+	req_space=`busybox expr $req_space \* 2`
+fi
 
 #### Available space calculation
 freespace=`busybox df -Pm $sdcard | busybox tail -1 | busybox awk '{print $4}'`
@@ -825,17 +1035,16 @@ if [ $freespace -lt $req_space ]; then
 	cd $path
 	if [ $? != 0 ]; then
 		logmsg "Error: Could not change to $path. Exiting..."
-		logerror "Current Path:" "`busybox pwd`"
-		exit 2
+		exit $err_cntcdpath
 	fi
-	busybox rmdir -- $name
+	busybox rm -rf -- $name
 	logmsg "Not enough disk space! Exiting..."
 	logerror "df:" "`busybox df -Pm`"
 	logerror "Partitions:" "`busybox cat $part_type`"
 	logerror ".android_secure:" "$u_as"
-	logerror "sd-ext:" "$u_ext"
+	logerror "sd-ext:" "$u_sdext"
 	cleanup
-	exit 2
+	exit $err_nospace
 else
 	logmsg "Necessary disk space available!"
 fi
@@ -908,6 +1117,19 @@ if [ "$efs_fs" != "" -a "`busybox echo $adv | busybox grep 'e'`" != "" ]; then
 	done
 fi
 
+# /preload excludes (for Samsung devices)
+if [ "$preload_fs" != "" -a "`busybox echo $adv | busybox grep 'o'`" != "" ]; then
+	mounts=`busybox mount | busybox grep "/preload/" | busybox cut -d ' ' -f 3 | busybox sed s/'^\/'/''/g`
+	for mount in $mounts; do
+		preload_excludes="$preload_excludes --exclude=$mount/*"
+	done
+	mounts=`busybox mount | busybox grep "/preload/" | busybox cut -d ' ' -f 3 | busybox sed s/'^\\/preload'/''/g | busybox sed s/'\\/'/'\\\\\/'/g | busybox sed s/'$'/'\\\\\/*'/g | busybox sed s/'^'/'\\\\\.'/g`
+	cd /preload
+	for mount in $mounts; do
+		preload_excludes_dedupe="$preload_excludes_dedupe `busybox find -path $mount`"
+	done
+fi
+
 # /.cust_backup excludes (for Huawei devices)
 if [ "$custbkp_fs" != "" -a "`busybox echo $adv | busybox grep 'u'`" != "" ]; then
 	mounts=`busybox mount | busybox grep "/.cust_backup/" | busybox cut -d ' ' -f 3 | busybox sed s/'^\/'/''/g`
@@ -966,672 +1188,75 @@ logmsg "Backing up to $path/$name"
 cd -- $path/$name
 
 #### Backup mmcblk0_start (for Acer devices)
-if [ "`busybox echo $adv | busybox grep 'm'`" != "" ]; then
-	if [ "$flexrom_fs" ]; then
-		logmsg "Backing up /mmcblk0_start...\c"
-		if [ `busybox echo "$u_mmcblk0_start" | busybox egrep "^[0-9]+$"` ]; then
-			full_size=$u_mmcblk0_start
-		else
-			full_size=-1
-		fi
-		dd if=/dev/block/mmcblk0 bs=512 count=13312 of=$path/$name/mmcblk0_start.img 2> /dev/null &
-		while [ `busybox pidof dd` ]; do
-			progress mmcblk0_start.img
-			busybox sleep 2
-		done
-		progress_done
-		busybox echo ""
-	else
-		null="null"
-		#Do not spit anything since this is device specific
-		#logmsg "/mmcblk0_start not found! Skipping backup of /mmcblk0_start!"
-	fi
+if [ "$flexrom_fs" ]; then
+	nandroid_dd "mmcblk0_start" "mmcblk0_start" "mmcblk0" "m" "$u_mmcblk0_start" "512" "13312" "no"
 fi
 
 #### Backup boot
-if [ "`busybox echo $adv | busybox grep 'b'`" != "" -a "$is_hptouchpad" != "yes" -a "$custbkp_fs" == "" ]; then
-	if [ $part_type == "not_found" -o "$part_boot" == "" ]; then
-		logmsg "/boot not found! Skipping backup of /boot!"
-	else
-		logmsg "Backing up /boot...\c"
-		if [ `busybox echo "$u_boot" | busybox egrep "^[0-9]+$"` ]; then
-			full_size=$u_boot
-		else
-			full_size=-1
-		fi
-		dd if=$part_path/$part_boot of=$path/$name/boot.img bs=4096 2> /dev/null &
-		while [ `busybox pidof dd` ]; do
-			progress boot.img
-			busybox sleep 2
-		done
-		progress_done
-		busybox echo ""
-	fi
+if [ "$is_hptouchpad" != "yes" -a "$custbkp_fs" == "" ]; then
+	nandroid_dd "boot" "boot" "$part_boot" "b" "$u_boot" "4096" "all" "yes"
+fi
+
+#### Notice to install patch file, if boot partition is not found.
+if [ $part_type == "not_found" -o "$part_boot" == "" ]; then
+	logmsg "Consider installing patch file for your device, for a complete nandroid!"
 fi
 
 #### Backup recovery
-if [ "`busybox echo $adv | busybox grep 'r'`" != "" ]; then
-	if [ $part_type == "not_found" -o "$part_recovery" == "" ]; then
-		logmsg "/recovery not found! Skipping backup of /recovery!"
-	else
-		logmsg "Backing up /recovery...\c"
-		if [ `busybox echo "$u_recovery" | busybox egrep "^[0-9]+$"` ]; then
-			full_size=$u_recovery
-		else
-			full_size=-1
-		fi
-		dd if=$part_path/$part_recovery of=$path/$name/recovery.img bs=4096 2> /dev/null &
-		while [ `busybox pidof dd` ]; do
-			progress recovery.img
-			busybox sleep 2
-		done
-		progress_done
-		busybox echo ""
-	fi
-fi
+nandroid_dd "recovery" "recovery" "$part_recovery" "r" "$u_recovery" "4096" "all" "yes"
 
 #### Backup wimax (for Samsung devices)
-if [ "`busybox echo $adv | busybox grep 'w'`" != "" ]; then
-	if [ $part_type == "not_found" -o "$part_wimax" == "" ]; then
-		null="null"
-		#Do not spit anything since this is device specific
-		#logmsg "/wimax not found! Skipping backup of /wimax!"
-	else
-		logmsg "Backing up /wimax...\c"
-		if [ `busybox echo "$u_wimax" | busybox egrep "^[0-9]+$"` ]; then
-			full_size=$u_wimax
-		else
-			full_size=-1
-		fi
-		dd if=$part_path/$part_wimax of=$path/$name/wimax.img bs=4096 2> /dev/null &
-		while [ `busybox pidof dd` ]; do
-			progress wimax.img
-			busybox sleep 2
-		done
-		progress_done
-		busybox echo ""
-	fi
-fi
+nandroid_dd "wimax" "wimax" "$part_wimax" "w" "$u_wimax" "4096" "all" "no"
 
 #### Backup appslog (for HTC and Sony (Ericsson) devices)
-if [ "`busybox echo $adv | busybox grep 'l'`" != "" ]; then
-	if [ $part_type == "not_found" -o "$part_appslog" == "" ]; then
-		null="null"
-		#Do not spit anything since this is device specific
-		#logmsg "/appslog not found! Skipping backup of /appslog!"
-	else
-		logmsg "Backing up /appslog...\c"
-		if [ `busybox echo "$u_appslog" | busybox egrep "^[0-9]+$"` ]; then
-			full_size=$u_appslog
-		else
-			full_size=-1
-		fi
-		dd if=$part_path/$part_appslog of=$path/$name/appslog.img bs=4096 2> /dev/null &
-		while [ `busybox pidof dd` ]; do
-			progress appslog.img
-			busybox sleep 2
-		done
-		progress_done
-		busybox echo ""
-	fi
-fi
+nandroid_dd "appslog" "appslog" "$part_appslog" "l" "$u_appslog" "4096" "all" "no"
 
 #### Backup /system
-if [ "`busybox echo $adv | busybox grep 's'`" != "" ]; then
-	if [ "$system_fs" != "" ]; then
-		if [ "$system_fs" == "yaffs2" ]; then
-			logmsg "Backing up /system...\c"
-			if [ `busybox echo "$u_system" | busybox egrep "^[0-9]+$"` ]; then
-				full_size=$u_system
-			else
-				full_size=-1
-			fi
-			mkyaffs2image /system system.yaffs2.img &
-			while [ `busybox pidof mkyaffs2image` ]; do
-				progress system.yaffs2.img
-				busybox sleep 2
-			done
-			progress_done
-			busybox echo ""
-		else
-			if [ "$backup_style" == "incremental" ]; then
-				logmsg "Backing up /system...\c"
-				cd /
-				dedupe c system $blobsdir $path/$name/system.$system_fs.dup $system_excludes_dedupe > /dev/null &
-				while [ `busybox pidof dedupe` ]; do
-					progress dedupe_system
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				logmsg "Backing up /system...\c"
-				cd /
-				if [ "$backup_style" == "tarsplit" ]; then
-					busybox touch $path/$name/system.$system_fs.tar
-					tar -c $system_excludes system | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/system.$system_fs.tar. 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress tarsplit_system
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				else
-					if [ `busybox echo "$u_system" | busybox egrep "^[0-9]+$"` ]; then
-						full_size=$u_system
-					else
-						full_size=-1
-					fi
-					tar -cf $path/$name/system.$system_fs.tar $system_excludes system 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress system.$system_fs.tar
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				fi
-			fi
-		fi
-	else
-		logmsg "/system not found! Skipping backup of /system!"
-	fi
-fi
+nandroid_fs "system" "system" "s" "/system" "system" "$system_fs" "$u_system" "$system_excludes" "$system_excludes_dedupe" "yes"
 
 #### Backup /data
-if [ "`busybox echo $adv | busybox grep 'd'`" != "" ]; then
-	if [ "$data_fs" != "" ]; then
-		if [ "$data_fs" == "yaffs2" ]; then
-			logmsg "Backing up /data...\c"
-			if [ `busybox echo "$u_data" | busybox egrep "^[0-9]+$"` ]; then
-				full_size=$u_data
-			else
-				full_size=-1
-			fi
-			mkyaffs2image /data data.yaffs2.img &
-			while [ `busybox pidof mkyaffs2image` ]; do
-				progress data.yaffs2.img
-				busybox sleep 2
-			done
-			progress_done
-			busybox echo ""
-		else
-			if [ "$backup_style" == "incremental" ]; then
-				logmsg "Backing up /data...\c"
-				cd /
-				dedupe c data $blobsdir $path/$name/data.$data_fs.dup ./media $data_excludes_dedupe > /dev/null 2>&1 &
-				while [ `busybox pidof dedupe` ]; do
-					progress dedupe_data
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				logmsg "Backing up /data...\c"
-				cd /
-				if [ "$backup_style" == "tarsplit" ]; then
-					busybox touch $path/$name/data.$data_fs.tar
-					tar -c --exclude="data/media" $data_excludes data 2> /dev/null | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/data.$data_fs.tar. 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress tarsplit_data
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				else
-					if [ `busybox echo "$u_data" | busybox egrep "^[0-9]+$"` ]; then
-						full_size=$u_data
-					else
-						full_size=-1
-					fi
-					tar -cf $path/$name/data.$data_fs.tar --exclude="data/media" $data_excludes data 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress data.$data_fs.tar
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				fi
-			fi
-		fi
-	else
-		logmsg "/data not found! Skipping backup of /data!"
-	fi
-fi
+nandroid_fs "data" "data" "d" "/data" "data" "$data_fs" "$u_data" "--exclude=data/media $data_excludes" "./media $data_excludes_dedupe" "yes"
 
 #### Backup /cache
-if [ "`busybox echo $adv | busybox grep 'c'`" != "" ]; then
-	if [ "$cache_fs" != "" ]; then
-		if [ "$cache_fs" == "yaffs2" ]; then
-			logmsg "Backing up /cache...\c"
-			if [ `busybox echo "$u_cache" | busybox egrep "^[0-9]+$"` ]; then
-				full_size=$u_cache
-			else
-				full_size=-1
-			fi
-			mkyaffs2image /cache cache.yaffs2.img &
-			while [ `busybox pidof mkyaffs2image` ]; do
-				progress cache.yaffs2.img
-				busybox sleep 2
-			done
-			progress_done
-			busybox echo ""
-		else
-			if [ "$backup_style" == "incremental" ]; then
-				logmsg "Backing up /cache...\c"
-				cd /
-				dedupe c cache $blobsdir $path/$name/cache.$cache_fs.dup $cache_excludes_dedupe > /dev/null &
-				while [ `busybox pidof dedupe` ]; do
-					progress dedupe_cache
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				logmsg "Backing up /cache...\c"
-				cd /
-				if [ "$backup_style" == "tarsplit" ]; then
-					busybox touch $path/$name/cache.$cache_fs.tar
-					tar -c $cache_excludes cache | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/cache.$cache_fs.tar. 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress tarsplit_cache
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				else
-					if [ `busybox echo "$u_cache" | busybox egrep "^[0-9]+$"` ]; then
-						full_size=$u_cache
-					else
-						full_size=-1
-					fi
-					tar -cf $path/$name/cache.$cache_fs.tar $cache_excludes cache 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress cache.$cache_fs.tar
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				fi
-			fi
-		fi
-	else
-		logmsg "/cache not found! Skipping backup of /cache!"
-	fi
-fi
+nandroid_fs "cache" "cache" "c" "/cache" "cache" "$cache_fs" "$u_cache" "$cache_excludes" "$cache_excludes_dedupe" "yes"
 
 #### Backup /datadata (for some Samsung devices)
-if [ "`busybox echo $adv | busybox grep 't'`" != "" ]; then
-	if [ "$datadata_fs" != "" ]; then
-		if [ "$datadata_fs" == "yaffs2" ]; then
-			logmsg "Backing up /datadata...\c"
-			if [ `busybox echo "$u_datadata" | busybox egrep "^[0-9]+$"` ]; then
-				full_size=$u_datadata
-			else
-				full_size=-1
-			fi
-			mkyaffs2image /datadata datadata.yaffs2.img &
-			while [ `busybox pidof mkyaffs2image` ]; do
-				progress datadata.yaffs2.img
-				busybox sleep 2
-			done
-			progress_done
-			busybox echo ""
-		else
-			if [ "$backup_style" == "incremental" ]; then
-				logmsg "Backing up /datadata...\c"
-				cd /
-				dedupe c datadata $blobsdir $path/$name/datadata.$datadata_fs.dup $datadata_excludes_dedupe > /dev/null &
-				while [ `busybox pidof dedupe` ]; do
-					progress dedupe_datadata
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				logmsg "Backing up /datadata...\c"
-				cd /
-				if [ "$backup_style" == "tarsplit" ]; then
-					busybox touch $path/$name/datadata.$datadata_fs.tar
-					tar -c $datadata_excludes datadata | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/datadata.$datadata_fs.tar. 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress tarsplit_datadata
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				else
-					if [ `busybox echo "$u_datadata" | busybox egrep "^[0-9]+$"` ]; then
-						full_size=$u_datadata
-					else
-						full_size=-1
-					fi
-					tar -cf $path/$name/datadata.$datadata_fs.tar $datadata_excludes datadata 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress datadata.$datadata_fs.tar
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				fi
-			fi
-		fi
-	else
-		null="null"
-		#Do not spit anything since this is device specific
-		#logmsg "/datadata not found! Skipping backup of /datadata!"
-	fi
-fi
+nandroid_fs "datadata" "datadata" "t" "/datadata" "datadata" "$datadata_fs" "$u_datadata" "$datadata_excludes" "$datadata_excludes_dedupe" "no"
 
 #### Backup /efs (for Samsung devices)
-if [ "`busybox echo $adv | busybox grep 'e'`" != "" ]; then
-	if [ "$efs_fs" != "" ]; then
-		if [ "$efs_fs" == "yaffs2" ]; then
-			logmsg "Backing up /efs...\c"
-			if [ `busybox echo "$u_efs" | busybox egrep "^[0-9]+$"` ]; then
-				full_size=$u_efs
-			else
-				full_size=-1
-			fi
-			mkyaffs2image /efs efs.yaffs2.img &
-			while [ `busybox pidof mkyaffs2image` ]; do
-				progress efs.yaffs2.img
-				busybox sleep 2
-			done
-			progress_done
-			busybox echo ""
-		else
-			if [ "$backup_style" == "incremental" ]; then
-				logmsg "Backing up /efs...\c"
-				cd /
-				dedupe c efs $blobsdir $path/$name/efs.$efs_fs.dup $efs_excludes_dedupe > /dev/null &
-				while [ `busybox pidof dedupe` ]; do
-					progress dedupe_efs
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				logmsg "Backing up /efs...\c"
-				cd /
-				if [ "$backup_style" == "tarsplit" ]; then
-					busybox touch $path/$name/efs.$efs_fs.tar
-					tar -c $efs_excludes efs | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/efs.$efs_fs.tar. 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress tarsplit_efs
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				else
-					if [ `busybox echo "$u_efs" | busybox egrep "^[0-9]+$"` ]; then
-						full_size=$u_efs
-					else
-						full_size=-1
-					fi
-					tar -cf $path/$name/efs.$efs_fs.tar $efs_excludes efs 2> /dev/null &
-					while [ `busybox pidof tar` ]; do
-						progress efs.$efs_fs.tar
-						busybox sleep 2
-					done
-					progress_done
-					busybox echo ""
-				fi
-			fi
-		fi
-	else
-		null="null"
-		#Do not spit anything since this is device specific
-		#logmsg "/efs not found! Skipping backup of /efs!"
-	fi
-fi
+nandroid_fs "efs" "efs" "e" "/efs" "efs" "$efs_fs" "$u_efs" "$efs_excludes" "$efs_excludes_dedupe" "no"
+
+#### Backup /preload (for Samsung devices)
+nandroid_fs "preload" "preload" "o" "/preload" "preload" "$preload_fs" "$u_preload" "$preload_excludes" "$preload_excludes_dedupe" "no"
 
 #### Backup /.cust_backup partition (for Huawei devices)
-if [ "`busybox echo $adv | busybox grep 'u'`" != "" ]; then
-	if [ "$custbkp_fs" ]; then
-		busybox mount -o remount,rw /
-		busybox mkdir -p $custbkp_temp_mount/boot
-		busybox mount /.cust_backup $custbkp_temp_mount/boot
-		cd $custbkp_temp_mount
-		if [ "$backup_style" == "incremental" ]; then
-			logmsg "Backing up /.cust_backup...\c"
-			dedupe c boot $blobsdir $path/$name/boot.$custbkp_fs.dup $custbkp_excludes_dedupe > /dev/null &
-			while [ `busybox pidof dedupe` ]; do
-				progress dedupe_custbkp
-				busybox sleep 2
-			done
-			progress_done
-			busybox echo ""
-		else
-			logmsg "Backing up /.cust_backup...\c"
-			if [ "$backup_style" == "tarsplit" ]; then
-				busybox touch $path/$name/boot.$custbkp_fs.tar
-				tar -c $custbkp_excludes boot | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/boot.$custbkp_fs.tar. 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress tarsplit_custbkp
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				if [ `busybox echo "$u_custbkp" | busybox egrep "^[0-9]+$"` ]; then
-					full_size=$u_custbkp
-				else
-					full_size=-1
-				fi
-				tar -cf $path/$name/boot.$custbkp_fs.tar $custbkp_excludes boot 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress boot.$custbkp_fs.tar
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			fi
-		fi
-	else
-		null="null"
-		#Do not spit anything since this is device specific
-		#logmsg "/.cust_backup not found! Skipping backup of /.cust_backup!"
-	fi
+if [ "$custbkp_fs" != "" -a "`echo $adv | busybox grep 'u'`" != "" ]; then
+	busybox mount -o remount,rw /
+	busybox mkdir -p $custbkp_temp_mount/boot
+	busybox mount /.cust_backup $custbkp_temp_mount/boot
+	nandroid_fs ".cust_backup" "boot" "u" "$custbkp_temp_mount/boot" "boot" "$custbkp_fs" "$u_custbkp" "$custbkp_excludes" "$custbkp_excludes_dedupe" "no"
 fi
 
 #### Backup /flexrom partition (for Acer devices)
-if [ "`busybox echo $adv | busybox grep 'f'`" != "" ]; then
-	if [ "$flexrom_fs" ]; then
-		if [ "$backup_style" == "incremental" ]; then
-			logmsg "Backing up /flexrom...\c"
-			cd /
-			dedupe c flexrom $blobsdir $path/$name/flexrom.$flexrom_fs.dup $flexrom_excludes_dedupe > /dev/null &
-			while [ `busybox pidof dedupe` ]; do
-				progress dedupe_flexrom
-				busybox sleep 2
-			done
-			progress_done
-			echo ""
-		else
-			logmsg "Backing up /flexrom...\c"
-			cd /
-			if [ "$backup_style" == "tarsplit" ]; then
-				busybox touch $path/$name/flexrom.$flexrom_fs.tar
-				tar -c $flexrom_excludes flexrom | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/flexrom.$flexrom_fs.tar. 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress tarsplit_flexrom
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				if [ `busybox echo "$u_flexrom" | busybox egrep "^[0-9]+$"` ]; then
-					full_size=$u_flexrom
-				else
-					full_size=-1
-				fi
-				tar -cf $path/$name/flexrom.$flexrom_fs.tar $flexrom_excludes flexrom 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress flexrom.$flexrom_fs.tar
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			fi
-		fi
-	else
-		null="null"
-		#Do not spit anything since this is device specific
-		#logmsg "/flexrom not found! Skipping backup of /flexrom!"
-	fi
-fi
+nandroid_fs "flexrom" "flexrom" "f" "/flexrom" "flexrom" "$flexrom_fs" "$u_flexrom" "$flexrom_excludes" "$flexrom_excludes_dedupe" "no"
 
 #### Backup /boot partition (for HP Touchpad)
-if [ "`busybox echo $adv | busybox grep 'p'`" != "" ]; then
-	if [ "$is_hptouchpad" == "yes" -a "$hptpboot_fs" != "" ]; then
-		if [ "$backup_style" == "incremental" ]; then
-			logmsg "Backing up /boot...\c"
-			cd /
-			dedupe c boot $blobsdir $path/$name/boot.$hptpboot_fs.dup $hptpboot_excludes_dedupe > /dev/null &
-			while [ `busybox pidof dedupe` ]; do
-				progress dedupe_hptpboot
-				busybox sleep 2
-			done
-			progress_done
-			echo ""
-		else
-			logmsg "Backing up /boot...\c"
-			cd /
-			if [ "$backup_style" == "tarsplit" ]; then
-				busybox touch $path/$name/boot.$hptpboot_fs.tar
-				tar -c $hptpboot_excludes boot | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/boot.$hptpboot_fs.tar. 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress tarsplit_hptpboot
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				if [ `busybox echo "$u_hptpboot" | busybox egrep "^[0-9]+$"` ]; then
-					full_size=$u_hptpboot
-				else
-					full_size=-1
-				fi
-				tar -cf $path/$name/boot.$hptpboot_fs.tar $hptpboot_excludes boot 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress boot.$hptpboot_fs.tar
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			fi
-		fi
-	else
-		null="null"
-		#Do not spit anything since this is device specific
-		#logmsg "/boot not found! Skipping backup of /boot!"
-	fi
-fi
-
-#### Backup (cp)uid (for Acer devices)
-if [ "`echo $adv | busybox grep 'i'`" != "" ]; then
-	if [ -f /sys/firmware/fuse/acer_cpu_id ]; then
-		logmsg "Backing up (cp)uid...\c"
-		uid="0x0`cat /sys/firmware/fuse/acer_cpu_id`"
-		busybox echo $uid > $path/$name/uid.txt
-		busybox echo " 100%"
-	else
-		null="null"
-		#Do not spit anything since this is device specific
-		#logmsg "(cp)uid not found! Skipping backup of (cp)uid!"
-	fi
+if [ "$is_hptouchpad" == "yes" -a "$hptpboot_fs" != "" ]; then
+	nandroid_fs "boot" "boot" "p" "/boot" "boot" "$hptpboot_fs" "$u_hptpboot" "$hptpboot_excludes" "$hptpboot_excludes_dedupe" "no"
 fi
 
 #### Backup .android_secure
-if [ "`busybox echo $adv | busybox grep 'a'`" != "" ]; then
-	if [ "$as_parent" ]; then
-		if [ "$backup_style" == "incremental" ]; then
-			logmsg "Backing up .android_secure...\c"
-			cd $sdcard_temp_mount
-			dedupe c .android_secure $blobsdir $path/$name/.android_secure.vfat.dup > /dev/null &
-			while [ `busybox pidof dedupe` ]; do
-				progress dedupe_as
-				busybox sleep 2
-			done
-			progress_done
-			busybox echo ""
-		else
-			logmsg "Backing up .android_secure...\c"
-			cd $sdcard_temp_mount
-			if [ "$backup_style" == "tarsplit" ]; then
-				busybox touch $path/$name/.android_secure.vfat.tar
-				tar -c .android_secure | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/.android_secure.vfat.tar. 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress tarsplit_as
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				if [ `busybox echo "$u_as" | busybox egrep "^[0-9]+$"` ]; then
-					full_size=$u_as
-				else
-					full_size=-1
-				fi
-				tar -cf $path/$name/.android_secure.vfat.tar .android_secure 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress .android_secure.vfat.tar
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			fi
-		fi
-	else
-		logmsg ".android_secure not found! Skipping backup of .android_secure!"
-	fi
+if [ "$as_parent" ]; then
+	nandroid_fs ".android_secure" "$as_name" "a" "$sdcard_temp_mount/.android_secure" ".android_secure" "vfat" "$u_as" "" "" "no"
 fi
 
 #### Backup sd-ext
-if [ "`busybox echo $adv | busybox grep 'x'`" != "" ]; then
-	if [ "$sdext_mount" ]; then
-		busybox mount -o remount,rw /
-		busybox mkdir -p $sdext_temp_mount/sd-ext
-		busybox mount $extm $sdext_temp_mount/sd-ext
-		cd $sdext_temp_mount
-		if [ "$backup_style" == "incremental" ]; then
-			logmsg "Backing up sd-ext...\c"
-			dedupe c sd-ext $blobsdir $path/$name/sd-ext.$extv.dup $sdext_excludes_dedupe > /dev/null &
-			while [ `busybox pidof dedupe` ]; do
-				progress dedupe_ext
-				busybox sleep 2
-			done
-			progress_done
-			busybox echo ""
-		else
-			logmsg "Backing up sd-ext...\c"
-			if [ "$backup_style" == "tarsplit" ]; then
-				busybox touch $path/$name/sd-ext.$extv.tar
-				tar -c $sdext_excludes sd-ext | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/sd-ext.$extv.tar. 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress tarsplit_ext
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			else
-				if [ `busybox echo "$u_ext" | busybox egrep "^[0-9]+$"` ]; then
-					full_size=$u_ext
-				else
-					full_size=-1
-				fi
-				tar -cf $path/$name/sd-ext.$extv.tar $sdext_excludes sd-ext 2> /dev/null &
-				while [ `busybox pidof tar` ]; do
-					progress sd-ext.$extv.tar
-					busybox sleep 2
-				done
-				progress_done
-				busybox echo ""
-			fi
-		fi
-	else
-		logmsg "sd-ext not found! Skipping backup of sd-ext!"
-	fi
+if [ "$sdext_mount" != "" -a "`echo $adv | busybox grep 'x'`" != "" ]; then
+	busybox mount -o remount,rw /
+	busybox mkdir -p $sdext_temp_mount/sd-ext
+	busybox mount $extm $sdext_temp_mount/sd-ext
+	cd $sdext_temp_mount
+	nandroid_fs "sd-ext" "sd-ext" "x" "$sdext_temp_mount/sd-ext" "sd-ext" "$sdext_fs" "$u_sdext" "$sdext_excludes" "$sdext_excludes_dedupe" "no"
 fi
 
 #### Sync data to disk, sleep for a while and cleanup
@@ -1639,35 +1264,57 @@ busybox sync
 busybox sleep 2
 cleanup
 
-#### Generate md5
-logmsg "Generating md5sum...\c"
+#### Get ready to generate md5
 cd $path/$name
 if [ $? != 0 ]; then
 	logmsg "Error: Could not change to $path/$name. Exiting..."
-	logerror "Current Path:" "`busybox pwd`"
-	exit 2
+	exit $err_cntcdpath
 fi
-md5sum .* * > nandroid.md5 2> /dev/null &
-while [ `busybox pidof md5sum` ]; do
-	progress md5sum_generate
-	busybox sleep 2
-done
-progress_done
-busybox echo ""
 
-busybox sync
-busybox sleep 1
-
-#### Verify md5sum (to check if the file is populated)
-if [ "`busybox ls`" != "nandroid.md5" ]; then
-	logmsg "Verifying md5sum...\c"
-	while [ `busybox stat -t nandroid.md5 | busybox awk '{print $2}'` == "0" ]; do
-		progress md5sum_validate
+#### Generate md5
+if [ "$backup_style" == "twrp" -a "$generate_md5" != "no" ]; then
+	files=`busybox ls -lA1 | busybox awk '{print $7}'`
+	for file in $files; do
+		logmsg "Generating md5sum for $file...\c"
+		md5sum $file > $file.md5 2> /dev/null &
+		while [ `busybox pidof md5sum` ]; do
+			progress md5sum_generate
+			busybox sleep 2
+		done
+		busybox sleep 1
+		while [ `busybox stat -t $file.md5 | busybox awk '{print $2}'` == "0" ]; do
+			progress md5sum_validate
+			busybox sleep 2
+		done
+		progress_done
+		busybox echo ""
+	done
+elif [ "$backup_style" == "twrp" ]; then
+	null="null"
+else
+	logmsg "Generating md5sum...\c"
+	md5sum .* * > nandroid.md5 2> /dev/null &
+	while [ `busybox pidof md5sum` ]; do
+		progress md5sum_generate
 		busybox sleep 2
 	done
 	progress_done
 	busybox echo ""
+ 	# Verify md5sum (to check if the file is populated)
+	if [ "`busybox ls -A`" != "nandroid.md5" ]; then
+		logmsg "Verifying md5sum...\c"
+		while [ `busybox stat -t nandroid.md5 | busybox awk '{print $2}'` == "0" ]; do
+			progress md5sum_validate
+			busybox sleep 2
+		done
+		progress_done
+		busybox echo ""
+	fi
 fi
+
+#### Sync-up and wait a second for things to settle
+busybox sync
+busybox sleep 1
 
 #### End timer
 end_time=`busybox date +%s`

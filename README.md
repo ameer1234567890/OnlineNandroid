@@ -18,6 +18,7 @@ Online Nandroid backups the below partitions to ``/sdcard/clockworkmod/backup`` 
 * cache
 * datadata (for Samsung devices)
 * efs (for Samsung devices)
+* preload (for Samsung devices)
 * .cust_backup (for Huawei devices)
 * flexrom (for Acer devices)
 * (cp)uid (for Acer devices)
