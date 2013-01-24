@@ -61,8 +61,8 @@ speedy	HTC Evo Shift 4G
 u8800	Huawei Ideos X
 ariesve	Samsung Galaxy S Plus i9001
 ms770	LG Motion 4G
-i997	Samsung Infuse 4G SGH-I997
-captivate	Samsung Captivate i897
+i997	Samsung Infuse 4G SGH-I997  (AT&T)
+captivate	Samsung Captivate SGH-I897 (AT&T)
 daytona	Motorola DROID X2
 saga	HTC Desire S
 holiday	HTC Raider 4G
@@ -91,7 +91,7 @@ mecha	HTC ThunderBolt 4G
 mt799	Fuhu Nabi 2
 n7105	Samsung Galaxy Note II LTE
 n1	Samsung Galaxy R GT-I9103
-occam	Google Nexus 4
+mako	Google Nexus 4
 golfu	HTC Desire C
 i605	Samsung Galaxy Note II (Verizon)
 shadow	Motorola DROID X / Motorola MILESTONE X
@@ -157,7 +157,7 @@ tervigon	Motorola Xoom (Wifi)
 tf700t	Asus Transformer Prime TF700T
 i317m	Samsung Galaxy Note II (Rogers)
 geehrc	LG Optimus G LS970
-mint	Sony Xperia T LT30p
+mint	Sony Xperia T LT30(at/p)
 mw07	Arnova 10C G3
 p4100	Pantech Element P4100 (AT&T)
 t769	Samsung Galaxy S Blaze 4G SGH-T769 (T-Mobile)
@@ -178,4 +178,4 @@ golden	Samsung Galaxy S III mini GT-I8190
 lotus	Sony Xperia Go ST27
 otter	Amazon Kindle Fire
 x3	LG Optimus 4X HD P880
-I9100m	Samsung Galaxy S II (M) (Bell Mobility)
+i9100m	Samsung Galaxy S II (M) (Bell Mobility)
