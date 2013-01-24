@@ -1,5 +1,5 @@
 #### Define constants
-version="7.00beta7"
+version="7.01"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -1021,9 +1021,6 @@ fi
 
 #### Required space calculation
 req_space=`busybox expr $u_mmcblk0_start + $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_efs + $u_preload + $u_custbkp + $u_flexrom + $u_hptpboot + $u_as + $u_sdext`
-if [ "$backup_style" == "updatezip" ]; then
-	req_space=`busybox expr $req_space \* 2`
-fi
 
 #### Available space calculation
 freespace=`busybox df -Pm $sdcard | busybox tail -1 | busybox awk '{print $4}'`
@@ -1273,7 +1270,7 @@ fi
 
 #### Generate md5
 if [ "$backup_style" == "twrp" -a "$generate_md5" != "no" ]; then
-	files=`busybox ls -lA1 | busybox awk '{print $7}'`
+	files=`busybox ls -lA1 | busybox awk '{print $7}' | busybox grep -v ".md5"`
 	for file in $files; do
 		logmsg "Generating md5sum for $file...\c"
 		md5sum $file > $file.md5 2> /dev/null &
@@ -1293,6 +1290,9 @@ elif [ "$backup_style" == "twrp" ]; then
 	null="null"
 else
 	logmsg "Generating md5sum...\c"
+	if [ -f nandroid.md5 ]; then
+		busybox rm nandroid.md5
+	fi
 	md5sum .* * > nandroid.md5 2> /dev/null &
 	while [ `busybox pidof md5sum` ]; do
 		progress md5sum_generate

@@ -154,3 +154,5 @@ v7.00 - Added: TWRP support.
         Bug Fix: Notification disable did not work in some devices.
         Bug Fix: Busyboxing of some commands.
         Bug Fix: Minor bug in error logging.
+v7.01 - Bug Fix: Duplicate md5sum generation while using replace mode.
+        Removed: A redundent code block.
