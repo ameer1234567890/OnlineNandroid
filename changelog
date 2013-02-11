@@ -166,3 +166,5 @@ v7.50 - Added: Copy log file to backup folder at the end of backup.
         Bug Fix: Notification on some devices.
         Bug Fix: sd-ext detection on some devices.
         Bug Fix: Could not change to folder bug in some devices, in TWRP mode.
+v7.52 - Bug Fix: Minor mistake in description of nandroid_dd function.
+        Bug Fix: Reverted fix in v7.50 for partition size detection of emmc partitions.

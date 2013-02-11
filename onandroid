@@ -1,5 +1,5 @@
 #### Define constants
-version="7.50"
+version="7.52"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -209,7 +209,7 @@ nandroid_dd(){
 	part_count=$7 # count value for dd. Pass "" (empty string) to omit count argument.
 	part_start=$8 # skip value for dd. Pass "" (empty string) to to omit skip value.
 	part_iscommon=$9 # Is partition common among all android?
-	# Usage: nandroid_dd $part_name $part_fname $part_dev $part_id $part_size $part_bs $part_count $part_start $part_dec $part_iscommon
+	# Usage: nandroid_dd $part_name $part_fname $part_dev $part_id $part_size $part_bs $part_count $part_start $part_iscommon
 
 	if [ "`busybox echo $adv | busybox grep $part_id`" != "" ]; then
 		if [ $part_type == "not_found" -o "$part_dev" == "" ]; then
@@ -646,7 +646,7 @@ if [ -f "/proc/emmc" ]; then
 	if [ "`busybox cat /proc/emmc | busybox egrep "(mtd|mmc|bml)"`" != "" ]; then
 		part_type="/proc/emmc"
 		part_path="/dev/block"
-		part_bytediv=1024
+		part_bytediv=1048576
 	else
 		part_type="not_found"
 	fi
@@ -655,7 +655,7 @@ if [ -f "/system/partlayout4nandroid" ]; then
 	if [ "`busybox cat /system/partlayout4nandroid | busybox egrep "(mtd|mmc|bml)"`" != "" ]; then
 		part_type="/system/partlayout4nandroid"
 		part_path="/dev/block"
-		part_bytediv=1024
+		part_bytediv=1048576
 	else
 		part_type="not_found"
 	fi
