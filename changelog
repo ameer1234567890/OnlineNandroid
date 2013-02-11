@@ -156,3 +156,13 @@ v7.00 - Added: TWRP support.
         Bug Fix: Minor bug in error logging.
 v7.01 - Bug Fix: Duplicate md5sum generation while using replace mode.
         Removed: A redundent code block.
+v7.50 - Added: Copy log file to backup folder at the end of backup.
+        Added: Replace the word "date" in backup name with current date.
+        Added: Finally busyboxed md5sum dd and tar calls.
+        Added: Kill all sub-processes upon exits.
+        Added: Ability to backup emmc partitions for MTK based devices.
+        Bug Fix: Incomplete backups while using compression (default) in TWRP mode.
+        Bug Fix: Partition size detection of emmc partitions.
+        Bug Fix: Notification on some devices.
+        Bug Fix: sd-ext detection on some devices.
+        Bug Fix: Could not change to folder bug in some devices, in TWRP mode.
