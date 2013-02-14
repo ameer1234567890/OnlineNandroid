@@ -1,4 +1,4 @@
-dev:       size      erasesize  name  start
+dev:       size      erasesize  name
 mmcblk0p1: 000180 000000 "spl"
 mmcblk0p2: 000600 000000 "bootloader"
 mmcblk0p3: 005000 000000 "efs"

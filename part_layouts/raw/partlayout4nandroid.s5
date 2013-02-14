@@ -1,4 +1,4 @@
-dev:       size      erasesize  name  start
+dev:       size      erasesize  name
 mmcblk0p1: 000020 000000 "abi"
 mmcblk0p2: 000020 000000 "abi-ext"
 mmcblk0p3: 000020 000000 "hwconf"

@@ -1,4 +1,4 @@
-dev:       size      erasesize  name  start
+dev:       size      erasesize  name
 mmcblk0p1: 0001f4 000000 "unknown"
 mmcblk0p2: 000040 000000 "unknown"
 mmcblk0p3: 001194 000000 "unknown"

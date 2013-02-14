@@ -1,4 +1,4 @@
-dev:       size      erasesize  name  start
+dev:       size      erasesize  name
 mmcblk0p1: 010000 000000 "modem"
 mmcblk0p2: 000200 000000 "sbl1"
 mmcblk0p3: 000200 000000 "sbl2"
