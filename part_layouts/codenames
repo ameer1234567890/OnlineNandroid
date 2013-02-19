@@ -42,8 +42,8 @@ p5100	Samsung Galaxy Tab 2
 p990	LG Optimus 2X
 cayman	LG Lucid 4G
 arthur	ZTE Warp
-cdma_spyder	Motorola RAZR XT912 (CDMA)
-umts_spyder	Motorola RAZR XT910 (UMTS)
+cdma_spyder	Motorola Razr XT912 (CDMA)
+umts_spyder	Motorola Razr XT910 (UMTS)
 n7100	Samsung Galaxy Note II (International)
 quincytmo	Samsung Galaxy Note T879 (T-Mobile)
 quincyatt	Samsung Galaxy Note I717 (AT&T)
@@ -63,7 +63,7 @@ ariesve	Samsung Galaxy S Plus i9001
 ms770	LG Motion 4G
 i997	Samsung Infuse 4G SGH-I997  (AT&T)
 captivate	Samsung Captivate SGH-I897 (AT&T)
-daytona	Motorola DROID X2
+daytona	Motorola Droid X2
 saga	HTC Desire S
 holiday	HTC Raider 4G
 e350	Acer Liquid Gallant
@@ -72,7 +72,7 @@ jaspervzw	Samsung Galaxy Stellar SCH-I200
 fleming	Motorola Xoom 2
 espressowifi	Samsung Galaxy Tab 2 7.0 GT-P3110
 i9305	Samsung Galaxy S III LTE
-milestone2	Motorola MILESTONE 2 A953 / Motorola DROID 2
+milestone2	Motorola Milestone 2 A953 / Motorola Droid 2
 crane-inet	Visual Land Connect
 evita	HTC One X (AT&T, Rogers), HTC One XL (Telstra)
 everest	Motorola Xoom (3G)
@@ -86,7 +86,7 @@ tf201	Asus Transformer Prime TF201
 ace	HTC Desire HD
 i317	Samsung Galaxy Note II (AT&T)
 l900	Samsung Galaxy Note II (Sprint)
-maserati	Motorola DROID 4 (XT894)
+maserati	Motorola Droid 4 (XT894)
 mecha	HTC ThunderBolt 4G
 mt799	Fuhu Nabi 2
 n7105	Samsung Galaxy Note II LTE
@@ -94,7 +94,7 @@ n1	Samsung Galaxy R GT-I9103
 mako	Google Nexus 4
 golfu	HTC Desire C
 i605	Samsung Galaxy Note II (Verizon)
-shadow	Motorola DROID X / Motorola MILESTONE X
+shadow	Motorola Droid X / Motorola Milestone X
 a700	Acer Iconia A700
 c800	LG myTouch Q
 crane-evb	Craig CMP741E
@@ -109,7 +109,7 @@ ville	HTC One S
 a510	Acer Iconia Tab A510
 callisto	Samsung Galaxy 551 GT-I5510
 codina	Samsung Galaxy Ace 2 GT-I8160
-edison	Motorola ATRIX 2 MB865
+edison	Motorola Atrix 2 MB865
 endeavoru	HTC One X (GSM)
 enrc2b	HTC One X Plus
 espresso	Samsung Galaxy Tab 2 7.0 GT-P3100
@@ -132,7 +132,7 @@ tostab03	Toshiba AT100 Thrive
 ls855	LG Marquee
 ms695	LG Optimus M+
 n8010	Samsung Galaxy Note 10.1 GT-N8010
-solana	Motorola DROID 3 (Verizon)
+solana	Motorola Droid 3 (Verizon)
 vision	HTC Desire Z
 dlx	HTC Droid DNA
 primoc	HTC One V
@@ -152,7 +152,7 @@ picasso_e	Acer Iconia A200
 presto	Pantech Burst P9070 (AT&T)
 primou	HTC One V
 r950	Samsung Galaxy Note II SCH-R950 (Sprint)
-smi	Motorola RAZR i XT890
+smi	Motorola Razr i XT890
 wingray	Motorola Xoom (Wifi)
 tf700t	Asus Transformer Prime TF700T
 i317m	Samsung Galaxy Note II (Rogers)
@@ -183,12 +183,12 @@ vivo	HTC Incredible S
 a2107a	Lenovo A2107A-H
 i9070	Samsung Galaxy S Advance GT-I9070
 r930	Samsung Galaxy S Aviator SCH-R930
-vanquish	Motorola DROID RAZR HD XT926
-venus2	Motorola DROID PRO XT610
+vanquish	Motorola Droid Razr HD XT926
+venus2	Motorola Droid Pro XT610
 protou	HTC Desire X
 doubleshot	HTC MyTouch 4G Slide
 espressowifiue	Samsung Galaxy Tab 2 7.0 GT-P3113
-mb886	Motorola ATRIX HD MB886 (AT&T)
+mb886	Motorola Atrix HD MB886 (AT&T)
 s5	Advan Vandroid S5
 a100	Acer Iconia Tab A100
 p5110	Samsung Galaxy Tab 2 Wifi (GT-P5110)
