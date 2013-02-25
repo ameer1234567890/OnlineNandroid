@@ -1,5 +1,5 @@
 #### Define constants
-version="7.52"
+version="7.53"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -275,20 +275,20 @@ nandroid_fs(){
 					full_size=-1
 				fi
 				if [ "$compress_backup" == "no" ]; then
-					busybox tar -cf $path/$name/$part_fname.$part_fs.win $part_excludes $part_mountdir ./* > /dev/null 2>&1 &
+					busybox tar -cf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
 					while [ `busybox ps | busybox grep "busybox tar" | busybox grep -v "busybox grep busybox tar" | busybox awk '{print $1}'` ]; do
 						progress $part_fname.$part_fs.win
 						busybox sleep 2
 					done
 				else
-					busybox tar -czf $path/$name/$part_fname.$part_fs.win $part_excludes $part_mountdir ./* > /dev/null 2>&1 &
+					busybox tar -czf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
 					while [ `busybox ps | busybox grep "busybox tar" | busybox grep -v "busybox grep busybox tar" | busybox awk '{print $1}'` ]; do
 						progress $part_fname.$part_fs.win
 						busybox sleep 2
 					done
 				fi
 				if [ ! -f $path/$name/$part_fname.$part_fs.win ]; then
-					busybox tar -cZf $path/$name/$part_fname.$part_fs.win $part_excludes $part_mountdir ./* > /dev/null 2>&1 &
+					busybox tar -cZf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
 					while [ `busybox ps | busybox grep "busybox tar" | busybox grep -v "busybox grep busybox tar" | busybox awk '{print $1}'` ]; do
 						progress $part_fname.$part_fs.win
 						busybox sleep 2
@@ -323,10 +323,15 @@ nandroid_fs(){
 						progress_done
 						busybox echo ""
 					elif [ "$backup_style" == "tarsplit" ]; then
+						if [ `busybox echo "$part_size" | busybox egrep "^[0-9]+$"` ]; then
+							full_size=$part_size
+						else
+							full_size=-1
+						fi
 						busybox touch $path/$name/$part_fname.$part_fs.tar
 						busybox tar -c $part_excludes $part_mountdir 2> /dev/null | split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/$part_fname.$part_fs.tar. > /dev/null 2>&1 &
 						while [ `busybox ps | busybox grep "busybox tar" | busybox grep -v "busybox grep busybox tar" | busybox awk '{print $1}'` ]; do
-							progress tarsplit_$part_fname
+							progress $part_fname.$part_fs.tar.a
 							busybox sleep 2
 						done
 						progress_done
@@ -557,13 +562,13 @@ fi
 
 ## Charging state
 if [ -f /sys/class/power_supply/ac/online ]; then
-	if [ `busybox cat /sys/class/power_supply/ac/online` == "1" ]; then
+	if [ "`busybox cat /sys/class/power_supply/ac/online`" == "1" ]; then
 		rem_power=100
 	fi
 fi
 # HTC One X
 if [ -f /sys/class/power_supply/battery/status ]; then
-	if [ `busybox cat /sys/class/power_supply/battery/status` == "Charging" ]; then
+	if [ "`busybox cat /sys/class/power_supply/battery/status`" == "Charging" ]; then
 		rem_power=100
 	fi
 fi
@@ -1118,6 +1123,7 @@ if [ "$data_fs" != "" -a "`busybox echo $adv | busybox grep 'd'`" != "" ]; then
 	for mount in $mounts; do
 		data_excludes_dedupe="$data_excludes_dedupe `busybox find -path $mount`"
 	done
+	data_excludes_dedupe="$data_excludes_dedupe `busybox find -path .\/media\/\*`"
 fi
 
 # /cache excludes
@@ -1257,7 +1263,7 @@ nandroid_dd "appslog" "appslog" "$part_appslog" "l" "$u_appslog" "4096" "$appslo
 nandroid_fs "system" "system" "s" "/system" "system" "$system_fs" "$u_system" "$system_excludes" "$system_excludes_dedupe" "yes"
 
 #### Backup /data
-nandroid_fs "data" "data" "d" "/data" "data" "$data_fs" "$u_data" "--exclude=data/media $data_excludes" "./media $data_excludes_dedupe" "yes"
+nandroid_fs "data" "data" "d" "/data" "data" "$data_fs" "$u_data" "--exclude=data/media/* $data_excludes" "$data_excludes_dedupe" "yes"
 
 #### Backup /cache
 nandroid_fs "cache" "cache" "c" "/cache" "cache" "$cache_fs" "$u_cache" "$cache_excludes" "$cache_excludes_dedupe" "yes"
