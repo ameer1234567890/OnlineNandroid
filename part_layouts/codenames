@@ -18,7 +18,7 @@ grouper	Google Nexus 7
 tass	Samsung Galaxy Mini GT-S5570
 GT-I9000	Samsung Galaxy S GT-I9000
 p999	LG G2x (T-Mobile)
-i5800	Samsung Galaxy 3 GT-I5800
+GT-I5800	Samsung Galaxy 3 GT-I5800
 GT-I9003	Samsung Galaxy SL GT-I9003
 p1000	Samsung Galaxy Tab GT-P1000
 cocktail	Alcatel One Touch Ultra 995
@@ -67,7 +67,7 @@ daytona	Motorola Droid X2
 saga	HTC Desire S
 holiday	HTC Raider 4G
 e350	Acer Liquid Gallant
-t869	Samsung Galaxy Tab 7.0 Plus (T-Mobile)
+SGH-T869	Samsung Galaxy Tab 7.0 Plus SGH-T869 (T-Mobile)
 jaspervzw	Samsung Galaxy Stellar SCH-I200
 fleming	Motorola Xoom 2
 espressowifi	Samsung Galaxy Tab 2 7.0 GT-P3110 / GT-P3113
@@ -120,7 +120,7 @@ p7100	Samsung Galaxy Tab 10.1v P7100
 p7511	Samsung Galaxy Tab 10.1N P7511
 shooteru	HTC Evo 3D (GSM)
 vigor	HTC Rezound
-s5839i	Samsung Galaxy Ace GT-S5839i
+GT-S5839I	Samsung Galaxy Ace GT-S5839I
 p4tmo	Samsung Galaxy Tab 10.1 SGH-T859 (T-Mobile)
 umts_jordan	Motorola Defy+ MB526
 jewel	HTC Evo 4G LTE (Sprint)
@@ -160,7 +160,7 @@ geehrc	LG Optimus G LS970
 mint	Sony Xperia T LT30(at/p)
 mw07	Arnova 10C G3
 p4100	Pantech Element P4100 (AT&T)
-t769	Samsung Galaxy S Blaze 4G SGH-T769 (T-Mobile)
+SGH-T769	Samsung Galaxy S Blaze 4G SGH-T769 (T-Mobile)
 tf300tl	Asus Transformer Pad TF300TL (LTE)
 GT-I9100P	Samsung Galaxy S II GT-I9100P
 md7095	Sysbay MD7095
@@ -180,8 +180,8 @@ x3	LG Optimus 4X HD P880
 GT-I9100M	Samsung Galaxy S II GT-I9100M (Bell Mobility)
 vivo	HTC Incredible S
 a2107a	Lenovo A2107A-H
-i9070	Samsung Galaxy S Advance GT-I9070
-r930	Samsung Galaxy S Aviator SCH-R930
+GT-I9070	Samsung Galaxy S Advance GT-I9070
+SCH-R930	Samsung Galaxy S Aviator SCH-R930
 vanquish	Motorola Droid Razr HD XT926
 venus2	Motorola Droid Pro XT610
 protou	HTC Desire X
@@ -192,8 +192,8 @@ a100	Acer Iconia Tab A100
 espresso10wifi	Samsung Galaxy Tab 2 Wifi GT-P5110 / GT-P5113
 triumph	Motorola Triumph WX435 (Virgin Mobile USA)
 e970	LG Optimus G LG-E970 (AT&T)
-i577	Samsung Exhilerate SGH-I577 (AT&T)
-i727r	Samsung Galaxy S II LTE SGH-I727R (Rogers)
+SGH-I577	Samsung Exhilerate SGH-I577 (AT&T)
+SGH-I727R	Samsung Galaxy S II LTE SGH-I727R (Rogers)
 jlo	Sony Xperia J ST26(i/a)
 oracle	Matsunichi Le Pan S
 p175a20	ZTE Grand X V970
@@ -218,7 +218,7 @@ atlas40	ZTE Blade III
 mediapad	Huawei MediaPad
 p920h	LG Optimus 3D P920H (Brazilian Carrier - TIM)
 pax	Motorola Admiral XT603
-r760	Samsung Galaxy S II SCH-R760 (U.S. Cellular)
+SCH-R760	Samsung Galaxy S II SCH-R760 (U.S. Cellular)
 s9081	Cynus T2
 su640	LG Optimus LTE SU640
 tinjii9300	Tinji I9300
@@ -226,4 +226,4 @@ u9200	Huawei Ascend P1 U9200
 w990	Konka W990
 a110	Micromax Canvas 2 A110
 u666e	Huawei Ascend Y201 Pro U8666E
-r760x	Samsung Galaxy S II SCH-R760X (CDMA Generic)
+SCH-R760X	Samsung Galaxy S II SCH-R760X (CDMA Generic)
