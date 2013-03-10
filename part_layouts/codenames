@@ -20,7 +20,7 @@ GT-I9000	Samsung Galaxy S GT-I9000
 p999	LG G2x (T-Mobile)
 GT-I5800	Samsung Galaxy 3 GT-I5800
 GT-I9003	Samsung Galaxy SL GT-I9003
-p1000	Samsung Galaxy Tab GT-P1000
+GT-P1000	Samsung Galaxy Tab GT-P1000
 cocktail	Alcatel One Touch Ultra 995
 e400	LG Optimus L3
 p4	Samsung Galaxy Tab 10.1 3G P7500
@@ -32,13 +32,13 @@ cooper	Samsung Galaxy Ace GT-S5830
 cooperev	Samsung Galaxy Ace GT-S5830I
 hercules	Samsung Galaxy S2 Hercules SGH-T989 (T-Mobile)
 GT-P6800	Samsung Galaxy Tab 7.7 (3G) GT-P6800
-p6810	Samsung Galaxy Tab 7.7 (Wifi)
+GT-P6810	Samsung Galaxy Tab 7.7 (Wifi) GT-P6810
 skyrocket	Samsung Galaxy S II Skyrocket SGH-I727 (AT&T)
 tenderloin	HP Touchpad (on CyanogenMod)
 tf300t	Asus Transformer Pad TF300T
 apache	Samsung Rugby Smart SGH-I847
 gio	Samsung Galaxy Gio GT-S5660
-espresso10rf	Samsung Galaxy Tab 2
+espresso10rf	Samsung Galaxy Tab 2 GT-P5100
 p990	LG Optimus 2X
 cayman	LG Lucid 4G
 arthur	ZTE Warp
@@ -101,10 +101,10 @@ crane-evb	Craig CMP741E
 d2mtr	Samsung Galaxy S III (M. PCS)
 d2usc	Samsung Galaxy S III SCH-R530U (US Cell)
 m3s	LG Optimus Elite VM696
-p6201	Samsung Galaxy Tab 7.0 Plus N
+GT-P6201	Samsung Galaxy Tab 7.0 Plus N GT-P6201
 t0ltetmo	Samsung Galaxy Note II SGH-T889 (T-Mobile)
 charge	Samsung Droid Charge SCH-I510
-p6200	Samsung Galaxy Tab 7.0 Plus GT-P6200
+GT-P6200	Samsung Galaxy Tab 7.0 Plus GT-P6200
 ville	HTC One S
 a510	Acer Iconia Tab A510
 callisto	Samsung Galaxy 551 GT-I5510
@@ -116,8 +116,8 @@ espressorf	Samsung Galaxy Tab 2 7.0 GT-P3100
 espressovzw	Samsung Galaxy Tab 2 7.0 I705 (Verizon)
 p4vzw	Samsung Galaxy Tab 10.1 LTE I905
 p4wifi	Samsung Galaxy Tab 10.1 P7510
-p7100	Samsung Galaxy Tab 10.1v P7100
-p7511	Samsung Galaxy Tab 10.1N P7511
+GT-P7100	Samsung Galaxy Tab 10.1v GT-P7100
+GT-P7511	Samsung Galaxy Tab 10.1N GT-P7511
 shooteru	HTC Evo 3D (GSM)
 vigor	HTC Rezound
 GT-S5839I	Samsung Galaxy Ace GT-S5839I
@@ -126,8 +126,8 @@ umts_jordan	Motorola Defy+ MB526
 jewel	HTC Evo 4G LTE (Sprint)
 p4noterf	Samsung Galaxy Note 10.1 GT-N8000
 p4notewifi	Samsung Galaxy Note 10.1 GT-N8013
-p5	Samsung Galaxy Tab 8.9 3G P7300
-p5wifi	Samsung Galaxy Tab 8.9 3G P7310
+p5	Samsung Galaxy Tab 8.9 3G GT-P7300
+p5wifi	Samsung Galaxy Tab 8.9 3G GT-P7310
 tostab03	Toshiba AT100 Thrive
 ls855	LG Marquee
 ms695	LG Optimus M+
@@ -172,7 +172,7 @@ bird77	Star V1277
 kronos	Motorola XPRT MB612 (Sprint)
 SGH-I927R	Samsung Galaxy S Glide SGH-I927R (Rogers)
 SGH-I997R	Samsung Infuse 4G SGH-I997R (Rogers)
-p5113	Samsung Galaxy Tab 2 10.1 (Wifi) GT-P5113
+GT-P5113	Samsung Galaxy Tab 2 10.1 (Wifi) GT-P5113
 golden	Samsung Galaxy S III mini GT-I8190
 lotus	Sony Xperia Go ST27
 otter	Amazon Kindle Fire
