@@ -1,4 +1,4 @@
-m0	Samsung Galaxy S III (International)
+m0	Samsung Galaxy S III (International) GT-I9300
 d2tmo	Samsung Galaxy S III SGH-T999 (T-Mobile)
 olympus	Motorola Atrix 4G
 picasso	Acer Iconia A500
@@ -11,7 +11,7 @@ toro	Samsung Galaxy Nexus (Verizon)
 toroplus	Samsung Galaxy Nexus (Sprint)
 GT-I9100	Samsung Galaxy S II GT-I9100
 GT-I9100G	Samsung Galaxy S II GT-I9100G
-maguro	Google Galaxy Nexus (GSM)
+maguro	Google Galaxy Nexus (GSM) GT-I9250
 GT-S6102	Samsung Galaxy Y Duos GT-S6102
 GT-S5360	Samsung Galaxy Y GT-S5360
 grouper	Google Nexus 7
@@ -23,7 +23,7 @@ GT-I9003	Samsung Galaxy SL GT-I9003
 GT-P1000	Samsung Galaxy Tab GT-P1000
 cocktail	Alcatel One Touch Ultra 995
 e400	LG Optimus L3
-p4	Samsung Galaxy Tab 10.1 3G P7500
+p4	Samsung Galaxy Tab 10.1 3G GT-P7500
 glacier	HTC myTouch 4G (T-Mobile)
 bryce	LG Revolution & LG Esteem
 a750	Lenovo A750
@@ -45,7 +45,7 @@ arthur	ZTE Warp
 cdma_spyder	Motorola Razr XT912 (CDMA)
 umts_spyder	Motorola Razr XT910 (UMTS)
 t03g	Samsung Galaxy Note II GT-N7100 (International)
-quincytmo	Samsung Galaxy Note T879 (T-Mobile)
+quincytmo	Samsung Galaxy Note SGH-T879 (T-Mobile)
 quincyatt	Samsung Galaxy Note GT-I717 (AT&T)
 d2att	Samsung Galaxy S III SGH-I747 (AT&T)
 d2can	Samsung Galaxy S III SGH-I747M
@@ -54,12 +54,12 @@ d2vzw	Samsung Galaxy S III SCH-I535 (Verizon)
 SGH-I777	Samsung Galaxy S II SGH-I777 (AT&T)
 SGH-I927	Samsung Captivate Glide SGH-I927 (AT&T)
 shooter	HTC Evo 3D (Sprint)
-b5512	Samsung Galaxy Y Pro Duos
+b5512	Samsung Galaxy Y Pro Duos GT-B5512 / GT-B5512B
 targa	Motorola Droid Bionic
 flyer	HTC Flyer / HTC EVO View 4G
 speedy	HTC Evo Shift 4G
 u8800	Huawei Ideos X
-ariesve	Samsung Galaxy S Plus i9001
+ariesve	Samsung Galaxy S Plus GT-I9001
 ms770	LG Motion 4G
 SGH-I997	Samsung Infuse 4G SGH-I997  (AT&T)
 captivate	Samsung Captivate SGH-I897 (AT&T)
@@ -71,7 +71,7 @@ SGH-T869	Samsung Galaxy Tab 7.0 Plus SGH-T869 (T-Mobile)
 jaspervzw	Samsung Galaxy Stellar SCH-I200
 fleming	Motorola Xoom 2
 espressowifi	Samsung Galaxy Tab 2 7.0 GT-P3110 / GT-P3113
-m3	Samsung Galaxy S III LTE
+m3	Samsung Galaxy S III LTE GT-I9305
 milestone2	Motorola Milestone 2 A953 / Motorola Droid 2
 crane-inet	Visual Land Connect
 evita	HTC One X (AT&T, Rogers), HTC One XL (Telstra)
@@ -114,8 +114,8 @@ endeavoru	HTC One X (GSM)
 enrc2b	HTC One X Plus
 espressorf	Samsung Galaxy Tab 2 7.0 GT-P3100
 espressovzw	Samsung Galaxy Tab 2 7.0 I705 (Verizon)
-p4vzw	Samsung Galaxy Tab 10.1 LTE I905
-p4wifi	Samsung Galaxy Tab 10.1 P7510
+p4vzw	Samsung Galaxy Tab 10.1 LTE SCH-I905
+p4wifi	Samsung Galaxy Tab 10.1 GT-P7510
 GT-P7100	Samsung Galaxy Tab 10.1v GT-P7100
 GT-P7511	Samsung Galaxy Tab 10.1N GT-P7511
 shooteru	HTC Evo 3D (GSM)
