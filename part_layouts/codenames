@@ -1,7 +1,7 @@
 m0	Samsung Galaxy S III (International) GT-I9300
 d2tmo	Samsung Galaxy S III SGH-T999 (T-Mobile)
 olympus	Motorola Atrix 4G
-picasso	Acer Iconia A500
+picasso	Acer Iconia A500 / A501
 sunfire	Motorola Photon 4G
 p970	LG Optimus Black
 SPH-D710	Samsung Galaxy S II Epic 4G Touch SPH-D710 (Sprint)
@@ -95,7 +95,7 @@ mako	Google Nexus 4
 golfu	HTC Desire C
 t0ltevzw	Samsung Galaxy Note II SCH-I605 (Verizon)
 shadow	Motorola Droid X / Motorola Milestone X
-a700	Acer Iconia A700
+picasso_mf	Acer Iconia A700
 c800	LG myTouch Q
 crane-evb	Craig CMP741E
 d2mtr	Samsung Galaxy S III (M. PCS)
@@ -106,7 +106,7 @@ t0ltetmo	Samsung Galaxy Note II SGH-T889 (T-Mobile)
 charge	Samsung Droid Charge SCH-I510
 GT-P6200	Samsung Galaxy Tab 7.0 Plus GT-P6200
 ville	HTC One S
-a510	Acer Iconia Tab A510
+picasso_m	Acer Iconia Tab A510
 callisto	Samsung Galaxy 551 GT-I5510
 codina	Samsung Galaxy Ace 2 GT-I8160
 edison	Motorola Atrix 2 MB865
@@ -188,7 +188,7 @@ protou	HTC Desire X
 doubleshot	HTC MyTouch 4G Slide
 mb886	Motorola Atrix HD MB886 (AT&T)
 s5	Advan Vandroid S5
-a100	Acer Iconia Tab A100
+vangogh	Acer Iconia Tab A100
 espresso10wifi	Samsung Galaxy Tab 2 Wifi GT-P5110 / GT-P5113
 triumph	Motorola Triumph WX435 (Virgin Mobile USA)
 e970	LG Optimus G LG-E970 (AT&T)
