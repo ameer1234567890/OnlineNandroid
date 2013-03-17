@@ -56,7 +56,7 @@ SGH-I927	Samsung Captivate Glide SGH-I927 (AT&T)
 shooter	HTC Evo 3D (Sprint)
 b5512	Samsung Galaxy Y Pro Duos GT-B5512 / GT-B5512B
 targa	Motorola Droid Bionic
-flyer	HTC Flyer / HTC EVO View 4G
+flyer	HTC Flyer
 speedy	HTC Evo Shift 4G
 u8800	Huawei Ideos X
 ariesve	Samsung Galaxy S Plus GT-I9001
@@ -113,7 +113,7 @@ edison	Motorola Atrix 2 MB865
 endeavoru	HTC One X (GSM)
 enrc2b	HTC One X Plus
 espressorf	Samsung Galaxy Tab 2 7.0 GT-P3100
-espressovzw	Samsung Galaxy Tab 2 7.0 I705 (Verizon)
+espressovzw	Samsung Galaxy Tab 2 7.0 SCH-I705 (Verizon)
 p4vzw	Samsung Galaxy Tab 10.1 LTE SCH-I905
 p4wifi	Samsung Galaxy Tab 10.1 GT-P7510
 GT-P7100	Samsung Galaxy Tab 10.1v GT-P7100
@@ -230,7 +230,8 @@ SCH-R760X	Samsung Galaxy S II SCH-R760X (CDMA Generic)
 u8815	Huawei Ascend G300 U8815
 d2spi	Samsung Galaxy S III SPH-L710 (Cspire)
 scorpion_mini	Motorola Razr M XT907
-umts_yangtze	Motorola RAZR V XT885 / XT886
+umts_yangtze	Motorola Razr V XT885 / XT886
 d2cri	Samsung Galaxy S III SCH-R530C (Cricket)
 ef34k	Pantech Sky Vega Racer IM-A770K
 kingdom	HTC EVO Design 4G
+jena	Samsung Galaxy Mini 2 GT-S6500 / GT-S6500D
