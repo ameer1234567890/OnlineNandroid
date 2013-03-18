@@ -25,6 +25,6 @@ Online Nandroid backups the below partitions to ``/sdcard/clockworkmod/backup`` 
 * .android_secure
 * sd-ext
 
-The date format used for folder name is the same used by CWM itself and nandroid backups created with Online Nandroid can safely be restored using CWM.
+The date format used for folder name is the same used by CWM itself and nandroid backups created with Online Nandroid can safely be restored using CWM, TWRP and 4EXT recoveries.
 
 Feedback (especially ideas to improve) are most welcome.
