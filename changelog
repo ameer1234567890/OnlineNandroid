@@ -172,3 +172,22 @@ v7.53 - Bug Fix: Unknown operand bug in power level detection.
         Bug Fix: Restore not working on some Android 4.2 devices.
         Bug Fix: Progress percentage for split backup mode.
         Bug Fix: Double backup of /data/data directory in TWRP mode.
+v8.00 - Added: License to script file.
+        Added: Ability to specify path to busybox via command line flag.
+        Added: Ability to specify path to busybox via onandroid.busybox file.
+        Added: Partition layout detection for MediaTek (MTK) based devices without patch file.
+        Added: Proper sd-ext detection if sd-ext is mounted at /data.
+        Added: A second help screen with -h2 / --help2 .
+        Added: Information to log file about installed recovery.
+        Added: /custpack partition backup, for Alcatel devices. (Partition letter "h".)
+        Added: /mobile_info partition backup, for Alcatel devices. (Partition letter "i".)
+        Added: TWRP setting TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID support.
+        Added: TWRP setting TW_FORCE_CPUINFO_FOR_DEVICE_ID support.
+        Added: Exclude Google Music cache files.
+        Added: Replace the string "romname" in custom backup name, with name of ROM.
+        Improved: Excludes detection.
+        Improved: Excludes in incremental backup mode.
+        Added: TWRP compression using gzip (use -cg flag).
+        Bug Fix: Unmounting and removing temporary mounts fail at times.
+        Bug Fix: Progress percentage stuck during split backup on some devices.
+        Bug Fix: Exit code for busybox not found.
