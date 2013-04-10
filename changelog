@@ -191,3 +191,8 @@ v8.00 - Added: License to script file.
         Bug Fix: Unmounting and removing temporary mounts fail at times.
         Bug Fix: Progress percentage stuck during split backup on some devices.
         Bug Fix: Exit code for busybox not found.
+v8.10 - Added: /data/data partition backup (partition letter "j").
+        Added: Output which busybox is being used.
+        Bug Fix: TWRP default backup name to use hyphen instead of dot.
+        Bug Fix: Minor bug in excludes detection.
+        Bug Fix: Premature end of backup process.
