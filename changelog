@@ -196,3 +196,6 @@ v8.10 - Added: /data/data partition backup (partition letter "j").
         Bug Fix: TWRP default backup name to use hyphen instead of dot.
         Bug Fix: Minor bug in excludes detection.
         Bug Fix: Premature end of backup process.
+v8.11 - Bug Fix: The infamous cat write error.
+        Bug Fix: Gzip compression not working on some devices.
+        Bug Fix: Unknown operand error with some busybox versions.

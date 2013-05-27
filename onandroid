@@ -34,7 +34,7 @@
 ######################################################################
 
 #### Define constants
-version="8.10"
+version="8.11"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -313,7 +313,7 @@ nandroid_dd(){
 			fi
 			if $bb [ "$part_start" == "" ]; then
 				$bb dd if=$part_path/$part_dev of=$path/$name/$part_fname.$img_ext bs=$part_bs 2> /dev/null &
-				while $bb [ `$bb ps w | $bb grep "$bb dd" | $bb grep -v "$bb grep $bb dd" | $bb awk '{print $1}'` ]; do
+				while $bb [ `$bb ps w | $bb grep "$bb dd" | $bb grep -v "$bb grep $bb dd" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 					progress $part_fname.$img_ext
 					$bb sleep 2
 				done
@@ -323,7 +323,7 @@ nandroid_dd(){
 				part_start=`$bb expr $part_start / $part_bs`
 				part_count=`$bb expr $part_count / $part_bs`
 				$bb dd if=$part_path/$part_dev of=$path/$name/$part_fname.$img_ext bs=$part_bs skip=$part_start count=$part_count 2> /dev/null &
-				while $bb [ `$bb ps w | $bb grep "$bb dd" | $bb grep -v "$bb grep $bb dd" | $bb awk '{print $1}'` ]; do
+				while $bb [ `$bb ps w | $bb grep "$bb dd" | $bb grep -v "$bb grep $bb dd" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 					progress $part_fname.$img_ext
 					$bb sleep 2
 				done
@@ -365,14 +365,14 @@ nandroid_fs(){
 				if $bb [ "$compress_backup" == "yes" ]; then
 					$bb tar -czf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
 					$bb sleep 2
-					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb awk '{print $1}'` ]; do
+					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 						progress $part_fname.$part_fs.win
 						$bb sleep 2
 					done
 					if $bb [ ! -f $path/$name/$part_fname.$part_fs.win ]; then
 						$bb tar -cZf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
 						$bb sleep 2
-						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb awk '{print $1}'` ]; do
+						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 							progress $part_fname.$part_fs.win
 							$bb sleep 2
 						done
@@ -380,9 +380,9 @@ nandroid_fs(){
 					progress_done
 					$bb echo ""
 				elif $bb [ "$compress_backup" == "gzip" ]; then
-					$bb tar -c $part_excludes ./* | $bb gzip -c > $path/$name/$part_fname.$part_fs.win > /dev/null 2>&1 &
+					$bb tar -c $part_excludes ./* | $bb gzip -c > $path/$name/$part_fname.$part_fs.win 2> /dev/null &
 					$bb sleep 2
-					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb awk '{print $1}'` ]; do
+					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 						progress $part_fname.$part_fs.win
 						$bb sleep 2
 					done
@@ -391,7 +391,7 @@ nandroid_fs(){
 				else
 					$bb tar -cf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
 					$bb sleep 2
-					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb awk '{print $1}'` ]; do
+					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 						progress $part_fname.$part_fs.win
 						$bb sleep 2
 					done
@@ -436,7 +436,7 @@ nandroid_fs(){
 						$bb touch $path/$name/$part_fname.$part_fs.tar
 						$bb tar -c $part_excludes $part_mountdir 2> /dev/null | $bb split -a 1 -b 1000000000 /proc/self/fd/0 $path/$name/$part_fname.$part_fs.tar. > /dev/null 2>&1 &
 						$bb sleep 2
-						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb awk '{print $1}'` ]; do
+						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 							progress $part_fname.$part_fs.tar
 							$bb sleep 2
 						done
@@ -450,7 +450,7 @@ nandroid_fs(){
 						fi
 						$bb tar -cf $path/$name/$part_fname.$part_fs.tar $part_excludes $part_mountdir > /dev/null 2>&1 &
 						$bb sleep 2
-						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb awk '{print $1}'` ]; do
+						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 							progress $part_fname.$part_fs.tar
 							$bb sleep 2
 						done
@@ -652,14 +652,14 @@ logerror "###########################" ""
 
 #### Spit details about the recovery installed
 if $bb [ -f /cache/recovery/last_log ]; then
-	if $bb [ "`$bb cat /cache/recovery/last_log | $bb grep -i "cwm-based recovery" 2> /dev/nul`" != "" ]; then
-		logerror "Recovery:" "`$bb cat /cache/recovery/last_log | $bb grep -i "cwm-based recovery" 2> /dev/nul`"
-	elif $bb [ "`$bb cat /cache/recovery/last_log | $bb grep -i "clockworkmod recovery" 2> /dev/nul`" != "" ]; then
-		logerror "Recovery:" "`$bb cat /cache/recovery/last_log | $bb grep -i "clockworkmod recovery" 2> /dev/nul`"
-	elif $bb [ "`$bb cat /cache/recovery/last_log | $bb head -n 1 | $bb awk '{print $2}' 2> /dev/nul`" == "TWRP" ]; then
-		logerror "Recovery:" "`$bb cat /cache/recovery/last_log | $bb head -n 1 | $bb awk '{print $2}' 2> /dev/nul` `$bb cat /cache/recovery/last_log | $bb head -n 1 | $bb awk '{print $3}' 2> /dev/nul`"
-	elif $bb [ "`$bb cat /cache/recovery/last_log | $bb grep -i "philz touch" 2> /dev/nul`" != "" ]; then
-		logerror "Recovery:" "`$bb cat /cache/recovery/last_log | $bb grep -i "philz touch" 2> /dev/nul`"
+	if $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "cwm-based recovery" 2> /dev/nul`" != "" ]; then
+		logerror "Recovery:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "cwm-based recovery" 2> /dev/nul`"
+	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "clockworkmod recovery" 2> /dev/nul`" != "" ]; then
+		logerror "Recovery:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "clockworkmod recovery" 2> /dev/nul`"
+	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb head -n 1 | $bb awk '{print $2}' 2> /dev/nul`" == "TWRP" ]; then
+		logerror "Recovery:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb head -n 1 | $bb awk '{print $2}' 2> /dev/nul` `$bb cat /cache/recovery/last_log | $bb head -n 1 | $bb awk '{print $3}' 2> /dev/nul`"
+	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "philz touch" 2> /dev/nul`" != "" ]; then
+		logerror "Recovery:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "philz touch" 2> /dev/nul`"
 	else
 		logerror "Recovery:" "Generic recovery."
 	fi
@@ -1433,7 +1433,7 @@ set_excludes "sdext" "$extm" "$sdext_fs" "x"
 logmsg "Backing up to $path/$name"
 
 #### Change to backup directory
-cd -- $path/$name
+cd $path/$name
 
 #### Backup mmcblk0_start (for Acer devices)
 if $bb [ "$flexrom_fs" ]; then
@@ -1538,7 +1538,7 @@ if $bb [ "$backup_style" == "twrp" -a "$generate_md5" != "no" ]; then
 	for file in $files; do
 		logmsg "Generating md5sum for $file...\c"
 		$bb md5sum $file > $file.md5 2> /dev/null &
-		while $bb [ ` $bb ps w | $bb grep "$bb md5sum" | $bb grep -v "$bb grep $bb md5sum" | $bb awk '{print $1}'` ]; do
+		while $bb [ `$bb ps w | $bb grep "$bb md5sum" | $bb grep -v "$bb grep $bb md5sum" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 			progress md5sum_generate
 			$bb sleep 2
 		done
@@ -1558,7 +1558,7 @@ else
 		$bb rm nandroid.md5
 	fi
 	$bb md5sum .* * > nandroid.md5 2> /dev/null &
-	while $bb [ `$bb ps w | $bb grep "$bb md5sum" | $bb grep -v "$bb grep $bb md5sum" | $bb awk '{print $1}'` ]; do
+	while $bb [ `$bb ps w | $bb grep "$bb md5sum" | $bb grep -v "$bb grep $bb md5sum" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 		progress md5sum_generate
 		$bb sleep 2
 	done
