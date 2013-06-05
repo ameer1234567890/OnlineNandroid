@@ -24,7 +24,6 @@ Online Nandroid backups the below partitions to ``/sdcard/clockworkmod/backup`` 
 * flexrom (for Acer devices)
 * custpack (for Alcatel devices)
 * mobile_info (for Alcatel devices)
-* (cp)uid (for Acer devices)
 * .android_secure
 * sd-ext
 
