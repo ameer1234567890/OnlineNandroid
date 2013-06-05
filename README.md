@@ -9,6 +9,7 @@ The short name onandroid is meant to be pronouced as o-nandroid or o'nandroid an
 Online Nandroid backups the below partitions to ``/sdcard/clockworkmod/backup`` directory.
 
 * mmcblk0_start (for Acer devices)
+* uboot (for MTK based devices)
 * boot
 * recovery
 * wimax (for Samsung devices)
