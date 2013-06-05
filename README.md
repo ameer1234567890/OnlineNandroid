@@ -6,7 +6,7 @@ This tool, eventhough called "Online Nandroid", does not upload/save backups to 
 
 The short name onandroid is meant to be pronouced as o-nandroid or o'nandroid and NOT on-android.
 
-Online Nandroid backups the below partitions to ``/sdcard/clockworkmod/backup`` directory.
+Online Nandroid backups the below partitions to `/sdcard/clockworkmod/backup` directory.
 
 * mmcblk0_start (for Acer devices)
 * uboot (for MTK based devices)
