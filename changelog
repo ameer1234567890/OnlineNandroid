@@ -199,3 +199,5 @@ v8.10 - Added: /data/data partition backup (partition letter "j").
 v8.11 - Bug Fix: The infamous cat write error.
         Bug Fix: Gzip compression not working on some devices.
         Bug Fix: Unknown operand error with some busybox versions.
+v8.12 - Bug Fix: Recovery partition backup on HTC One (Sprint).
+        Bug Fix: Minor bug in partition size calculation.

@@ -34,7 +34,7 @@
 ######################################################################
 
 #### Define constants
-version="8.11"
+version="8.12"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -1099,22 +1099,22 @@ if $bb [ "$part_type" == "not_found" -o "$part_boot" == "" -o "`$bb echo $adv | 
 else
 	if $bb [ $part_type == "/proc/dumchar_info" ]; then
 		boot_hex=`$bb cat $part_type | $bb grep "^bootimg.*0x" | $bb awk '{print $2}'`
-		boot_dec=`$bb printf "%d \n " $boot_hex`
+		boot_dec=`$bb printf "%d \n" $boot_hex`
 		boot_count=`$bb expr $boot_dec`
 		u_boot=`$bb expr $boot_dec / $part_bytediv`
 		u_boot=`$bb expr $u_boot + 1`
 		boot_start_hex=`$bb cat $part_type | $bb grep "^bootimg.*0x" | $bb awk '{print $3}'`
-		boot_start=`$bb printf "%d \n " $boot_start_hex`
+		boot_start=`$bb printf "%d \n" $boot_start_hex`
 		boot_start=`$bb expr $boot_start`
 	else
 		boot_hex=`$bb cat $part_type | $bb grep "\"boot\"" | $bb awk '{print $2}'`
-		boot_dec=`$bb printf "%d \n " 0x$boot_hex`
+		boot_dec=`$bb printf "%d \n" 0x$boot_hex`
 		boot_count=`$bb expr $boot_dec \* 1024`
 		u_boot=`$bb expr $boot_dec / $part_bytediv`
 		u_boot=`$bb expr $u_boot + 1`
 		if $bb [ "`$bb cat $part_type | $bb grep "\"boot\"" | $bb awk '{print $5}'`" != "" ]; then
 			boot_start_hex=`$bb cat $part_type | $bb grep "\"boot\"" | $bb awk '{print $5}'`
-			boot_start=`$bb printf "%d \n " 0x$boot_start_hex`
+			boot_start=`$bb printf "%d \n" 0x$boot_start_hex`
 			boot_start=`$bb expr $boot_start \* 1024`
 		fi
 	fi
@@ -1126,22 +1126,22 @@ if $bb [ "$part_type" == "not_found" -o "$part_recovery" == "" -o "`$bb echo $ad
 else
 	if $bb [ $part_type == "/proc/dumchar_info" ]; then
 		recovery_hex=`$bb cat $part_type | $bb grep "^recovery.*0x" | $bb awk '{print $2}'`
-		recovery_dec=`$bb printf "%d \n " $recovery_hex`
+		recovery_dec=`$bb printf "%d \n" $recovery_hex`
 		recovery_count=`$bb expr $recovery_dec`
 		u_recovery=`$bb expr $recovery_dec / $part_bytediv`
 		u_recovery=`$bb expr $u_recovery + 1`
 		recovery_start_hex=`$bb cat $part_type | $bb grep "^recovery.*0x" | $bb awk '{print $3}'`
-		recovery_start=`$bb printf "%d \n " $recovery_start_hex`
+		recovery_start=`$bb printf "%d \n" $recovery_start_hex`
 		recovery_start=`$bb expr $recovery_start`
 	else
 		recovery_hex=`$bb cat $part_type | $bb grep "\"recovery\"" | $bb awk '{print $2}'`
-		recovery_dec=`$bb printf "%d \n " 0x$recovery_hex`
+		recovery_dec=`$bb printf "%d \n" 0x$recovery_hex`
 		recovery_count=`$bb expr $recovery_dec \* 1024`
 		u_recovery=`$bb expr $recovery_dec / $part_bytediv`
 		u_recovery=`$bb expr $u_recovery + 1`
 		if $bb [ "`$bb cat $part_type | $bb grep "\"recovery\"" | $bb awk '{print $5}'`" != "" ]; then
 			recovery_start_hex=`$bb cat $part_type | $bb grep "\"recovery\"" | $bb awk '{print $5}'`
-			recovery_start=`$bb printf "%d \n " 0x$recovery_start_hex`
+			recovery_start=`$bb printf "%d \n" 0x$recovery_start_hex`
 			recovery_start=`$bb expr $recovery_start \* 1024`
 		fi
 	fi
@@ -1153,22 +1153,22 @@ if $bb [ "$part_type" == "not_found" -o "$part_wimax" == "" -o "`$bb echo $adv |
 else
 	if $bb [ $part_type == "/proc/dumchar_info" ]; then
 		wimax_hex=`$bb cat $part_type | $bb grep "^wimax.*0x" | $bb awk '{print $2}'`
-		wimax_dec=`$bb printf "%d \n " $wimax_hex`
+		wimax_dec=`$bb printf "%d \n" $wimax_hex`
 		wimax_count=`$bb expr $wimax_dec`
 		u_wimax=`$bb expr $wimax_dec / $part_bytediv`
 		u_wimax=`$bb expr $u_wimax + 1`
 		wimax_start_hex=`$bb cat $part_type | $bb grep "^wimax.*0x" | $bb awk '{print $3}'`
-		wimax_start=`$bb printf "%d \n " $wimax_start_hex`
+		wimax_start=`$bb printf "%d \n" $wimax_start_hex`
 		wimax_start=`$bb expr $wimax_start`
 	else
 		wimax_hex=`$bb cat $part_type | $bb grep "\"wimax\"" | $bb awk '{print $2}'`
-		wimax_dec=`$bb printf "%d \n " 0x$wimax_hex`
+		wimax_dec=`$bb printf "%d \n" 0x$wimax_hex`
 		wimax_count=`$bb expr $wimax_dec \* 1024`
 		u_wimax=`$bb expr $wimax_dec / $part_bytediv`
 		u_wimax=`$bb expr $u_wimax + 1`
 		if $bb [ "`$bb cat $part_type | $bb grep "\"wimax\"" | $bb awk '{print $5}'`" != "" ]; then
 			wimax_start_hex=`$bb cat $part_type | $bb grep "\"wimax\"" | $bb awk '{print $5}'`
-			wimax_start=`$bb printf "%d \n " 0x$wimax_start_hex`
+			wimax_start=`$bb printf "%d \n" 0x$wimax_start_hex`
 			wimax_start=`$bb expr $wimax_start \* 1024`
 		fi
 	fi
@@ -1180,22 +1180,22 @@ if $bb [ "$part_type" == "not_found" -o "$part_appslog" == "" -o "`$bb echo $adv
 else
 	if $bb [ $part_type == "/proc/dumchar_info" ]; then
 		appslog_hex=`$bb cat $part_type | $bb grep "^appslog.*0x" | $bb awk '{print $2}'`
-		appslog_dec=`$bb printf "%d \n " $appslog_hex`
+		appslog_dec=`$bb printf "%d \n" $appslog_hex`
 		appslog_count=`$bb expr $appslog_dec`
 		u_appslog=`$bb expr $appslog_dec / $part_bytediv`
 		u_appslog=`$bb expr $u_appslog + 1`
 		appslog_start_hex=`$bb cat $part_type | $bb grep "^appslog.*0x" | $bb awk '{print $3}'`
-		appslog_start=`$bb printf "%d \n " $appslog_start_hex`
+		appslog_start=`$bb printf "%d \n" $appslog_start_hex`
 		appslog_start=`$bb expr $appslog_start`
 	else
 		appslog_hex=`$bb cat $part_type | $bb grep "\"appslog\"" | $bb awk '{print $2}'`
-		appslog_dec=`$bb printf "%d \n " 0x$appslog_hex`
+		appslog_dec=`$bb printf "%d \n" 0x$appslog_hex`
 		appslog_count=`$bb expr $appslog_dec \* 1024`
 		u_appslog=`$bb expr $appslog_dec / $part_bytediv`
 		u_appslog=`$bb expr $u_appslog + 1`
 		if $bb [ "`$bb cat $part_type | $bb grep "\"appslog\"" | $bb awk '{print $5}'`" != "" ]; then
 			appslog_start_hex=`$bb cat $part_type | $bb grep "\"appslog\"" | $bb awk '{print $5}'`
-			appslog_start=`$bb printf "%d \n " 0x$appslog_start_hex`
+			appslog_start=`$bb printf "%d \n" 0x$appslog_start_hex`
 			appslog_start=`$bb expr $appslog_start \* 1024`
 		fi
 	fi
@@ -1442,7 +1442,7 @@ fi
 
 #### Backup boot
 if $bb [ "$is_hptouchpad" != "yes" -a "$custbkp_fs" == "" ]; then
-	nandroid_dd "boot" "boot" "$part_boot" "b" "$u_boot" "4096" "$boot_count" "$boot_start" "yes"
+	nandroid_dd "boot" "boot" "$part_boot" "b" "$u_boot" "1024" "$boot_count" "$boot_start" "yes"
 fi
 
 #### Notice to install patch file, if boot partition is not found.
@@ -1451,13 +1451,13 @@ if $bb [ $part_type == "not_found" -o "$part_boot" == "" ]; then
 fi
 
 #### Backup recovery
-nandroid_dd "recovery" "recovery" "$part_recovery" "r" "$u_recovery" "4096" "$recovery_count" "$recovery_start" "yes"
+nandroid_dd "recovery" "recovery" "$part_recovery" "r" "$u_recovery" "1024" "$recovery_count" "$recovery_start" "yes"
 
 #### Backup wimax (for Samsung devices)
-nandroid_dd "wimax" "wimax" "$part_wimax" "w" "$u_wimax" "4096" "$wimax_count" "$wimax_start" "no"
+nandroid_dd "wimax" "wimax" "$part_wimax" "w" "$u_wimax" "1024" "$wimax_count" "$wimax_start" "no"
 
 #### Backup appslog (for HTC and Sony (Ericsson) devices)
-nandroid_dd "appslog" "appslog" "$part_appslog" "l" "$u_appslog" "4096" "$appslog_count" "$appslog_start" "no"
+nandroid_dd "appslog" "appslog" "$part_appslog" "l" "$u_appslog" "1024" "$appslog_count" "$appslog_start" "no"
 
 #### Backup /system
 nandroid_fs "system" "system" "s" "/system" "system" "$system_fs" "$u_system" "$system_excludes" "$system_excludes_dedupe" "yes"
