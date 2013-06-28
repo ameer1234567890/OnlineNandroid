@@ -201,3 +201,5 @@ v8.11 - Bug Fix: The infamous cat write error.
         Bug Fix: Unknown operand error with some busybox versions.
 v8.12 - Bug Fix: Recovery partition backup on HTC One (Sprint).
         Bug Fix: Minor bug in partition size calculation.
+v8.20 - Added: Return device ID used by TWRP (-d flag).
+        Removed: (cp)uid from list of partitions help screen.

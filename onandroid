@@ -34,7 +34,7 @@
 ######################################################################
 
 #### Define constants
-version="8.12"
+version="8.20"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -210,6 +210,7 @@ usage2(){
 	$bb echo "  -pp, --progress-percent       show percentage progress indicator (default)"
 	$bb echo "  -pd, --progress-dot           show dot progress indicator"
 	$bb echo "  -b, --busybox-path PATH       manually set path to busybox"
+	$bb echo "  -d, --device-id               return device id used by TWRP"
 	$bb echo ""
 	exit 0
 }
@@ -238,7 +239,6 @@ advmapping(){
 	$bb echo "  h: custpack (for Alcatel devices)"
 	$bb echo "  i: mobile_info (for Alcatel devices)"
 	$bb echo "  p: boot (for HP Touchpad)"
-	$bb echo "  i: (cp)uid (for Acer devices)"
 	$bb echo "  a: android_secure"
 	$bb echo "  x: sd-ext"
 	$bb echo ""
@@ -503,6 +503,25 @@ rtt(){
 #### Output PID
 $bb echo "$$" >$pidfile
 
+#### Devise device ID for TWRP
+if $bb [ -f $sdcard/TWRP/.twrps ]; then
+	if $bb [ "`$bb cat $sdcard/TWRP/.twrps | $bb grep -i "TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID"`" ]; then
+		android_id="`$bb cat /system/build.prop | $bb grep "^ro.product.model" | $bb cut -d '=' -f 2 | $bb sed s/' '/'_'/g`"
+	elif $bb [ "`$bb cat $sdcard/TWRP/.twrps | $bb grep -i "TW_FORCE_CPUINFO_FOR_DEVICE_ID"`" ]; then
+		android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
+	else
+		android_id=`$bb cat /proc/cmdline | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
+		if $bb [ ! "$android_id" ]; then
+			android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
+		fi
+	fi
+else
+	android_id=`$bb cat /proc/cmdline | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
+	if $bb [ ! "$android_id" ]; then
+		android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
+	fi
+fi
+
 #### Process arguments
 arglist=$@
 argn=0
@@ -608,6 +627,9 @@ for arg in $arglist; do
 		notif_disable="yes"
 	elif $bb [ "$arg" == "-y" ] || $bb [ "$arg" == "--yaffs-override" ]; then
 		yaffs_override="yes"
+	elif $bb [ "$arg" == "-d" ] || $bb [ "$arg" == "--device-id" ]; then
+		$bb echo "$android_id"
+		exit
 	elif $bb [ "$arg" == "-~" ] || $bb [ "$arg" == "--rtt" ]; then
 		rtt
 	else
@@ -796,23 +818,6 @@ fi
 
 #### Set backup path according to the backup style
 if $bb [ "$backup_style" == "twrp" ]; then
-	if $bb [ -f $sdcard/TWRP/.twrps ]; then
-		if $bb [ "`$bb cat $sdcard/TWRP/.twrps | $bb grep -i "TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID"`" ]; then
-			android_id="`$bb cat /system/build.prop | $bb grep "^ro.product.model" | $bb cut -d '=' -f 2 | $bb sed s/' '/'_'/g`"
-		elif $bb [ "`$bb cat $sdcard/TWRP/.twrps | $bb grep -i "TW_FORCE_CPUINFO_FOR_DEVICE_ID"`" ]; then
-			android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
-		else
-			android_id=`$bb cat /proc/cmdline | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
-			if $bb [ ! "$android_id" ]; then
-				android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
-			fi
-		fi
-	else
-		android_id=`$bb cat /proc/cmdline | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
-		if $bb [ ! "$android_id" ]; then
-			android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
-		fi
-	fi
 	path="/TWRP/BACKUPS/$android_id"
 else
 	path="/clockworkmod/backup"
