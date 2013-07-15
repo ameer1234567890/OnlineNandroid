@@ -34,7 +34,7 @@
 ######################################################################
 
 #### Define constants
-version="8.20"
+version="8.21"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -834,6 +834,7 @@ if $bb [ -f "/proc/mtd" ]; then
 		part_type="/proc/mtd"
 		part_path="/dev/mtd"
 		part_bytediv=1048576
+		part_bsval=4096
 		logmsg "This is an MTD based device!"
 	else
 		part_type="not_found"
@@ -844,6 +845,7 @@ if $bb [ -f "/proc/emmc" ]; then
 		part_type="/proc/emmc"
 		part_path="/dev/block"
 		part_bytediv=1048576
+		part_bsval=1024
 		logmsg "This is an EMMC based device!"
 	else
 		part_type="not_found"
@@ -854,6 +856,7 @@ if $bb [ -f "/proc/dumchar_info" ]; then
 		part_type="/proc/dumchar_info"
 		part_path="/dev/block"
 		part_bytediv=1048576
+		part_bsval=4096
 		logmsg "This is an MTK based device!"
 	else
 		part_type="not_found"
@@ -864,6 +867,7 @@ if $bb [ -f "/system/partlayout4nandroid" ]; then
 		part_type="/system/partlayout4nandroid"
 		part_path="/dev/block"
 		part_bytediv=1048576
+		part_bsval=1024
 		logmsg "This device has a patch file installed!"
 	else
 		part_type="not_found"
@@ -1447,7 +1451,7 @@ fi
 
 #### Backup boot
 if $bb [ "$is_hptouchpad" != "yes" -a "$custbkp_fs" == "" ]; then
-	nandroid_dd "boot" "boot" "$part_boot" "b" "$u_boot" "1024" "$boot_count" "$boot_start" "yes"
+	nandroid_dd "boot" "boot" "$part_boot" "b" "$u_boot" "$part_bsval" "$boot_count" "$boot_start" "yes"
 fi
 
 #### Notice to install patch file, if boot partition is not found.
@@ -1456,13 +1460,13 @@ if $bb [ $part_type == "not_found" -o "$part_boot" == "" ]; then
 fi
 
 #### Backup recovery
-nandroid_dd "recovery" "recovery" "$part_recovery" "r" "$u_recovery" "1024" "$recovery_count" "$recovery_start" "yes"
+nandroid_dd "recovery" "recovery" "$part_recovery" "r" "$u_recovery" "$part_bsval" "$recovery_count" "$recovery_start" "yes"
 
 #### Backup wimax (for Samsung devices)
-nandroid_dd "wimax" "wimax" "$part_wimax" "w" "$u_wimax" "1024" "$wimax_count" "$wimax_start" "no"
+nandroid_dd "wimax" "wimax" "$part_wimax" "w" "$u_wimax" "$part_bsval" "$wimax_count" "$wimax_start" "no"
 
 #### Backup appslog (for HTC and Sony (Ericsson) devices)
-nandroid_dd "appslog" "appslog" "$part_appslog" "l" "$u_appslog" "1024" "$appslog_count" "$appslog_start" "no"
+nandroid_dd "appslog" "appslog" "$part_appslog" "l" "$u_appslog" "$part_bsval" "$appslog_count" "$appslog_start" "no"
 
 #### Backup /system
 nandroid_fs "system" "system" "s" "/system" "system" "$system_fs" "$u_system" "$system_excludes" "$system_excludes_dedupe" "yes"
