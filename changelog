@@ -204,3 +204,4 @@ v8.12 - Bug Fix: Recovery partition backup on HTC One (Sprint).
 v8.20 - Added: Return device ID used by TWRP (-d flag).
         Removed: (cp)uid from list of partitions help screen.
 v8.21 - Bug Fix: boot and recovery partition backup on MTD devices.
+v8.22 - Bug Fix: SD Card detection on some devices with emulated SD Card.

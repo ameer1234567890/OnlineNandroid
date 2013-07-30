@@ -34,7 +34,7 @@
 ######################################################################
 
 #### Define constants
-version="8.21"
+version="8.22"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -806,7 +806,7 @@ else
 	if $bb [ ! "$sdcard" ]; then
 		sdcard="sdcard"
 	fi
-	sdcard=`$bb mount | $bb grep -v "/mnt/asec/" | $bb egrep -i "($sdcard|sdcard|external|storage).* type (vfat|fuse)" | $bb tail -n 1 | $bb cut -d ' ' -f 3`
+	sdcard=`$bb mount | $bb grep -v "/mnt/asec/" | $bb egrep -i "($sdcard|sdcard|external|storage|shell).* type (vfat|fuse)" | $bb tail -n 1 | $bb cut -d ' ' -f 3`
 	if $bb [ ! "$sdcard" ]; then
 		logmsg "SD card not found! Exiting..."
 		logerror "Mounts:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
