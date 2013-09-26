@@ -205,3 +205,23 @@ v8.20 - Added: Return device ID used by TWRP (-d flag).
         Removed: (cp)uid from list of partitions help screen.
 v8.21 - Bug Fix: boot and recovery partition backup on MTD devices.
 v8.22 - Bug Fix: SD Card detection on some devices with emulated SD Card.
+v9.00 - Added: Option to exclude dalvik-cache from backups (-xd flag).
+        Added: AmonRA, 4EXT and Safestrap recovery detection.
+        Added: Split TWRP backups larger than 2GB.
+        Added: uboot partition backup for some MTK based devices (Partition letter "k").
+        Added: Prevent multiple instances of script from running.
+        Added: -d / --device-id flag to help screen 2.
+        Added: Localization support via external language files.
+        Added: boot partition backup on Nook Color (Partition letter "n").
+        Added: kernel partition backup (Partition letter "g").
+        Changed: onandroid.log file inside backup folder to recovery.log.
+        Changed: Made exclusion of Google Music files from backups, optional (-xg flag).
+        Changed: Log function to use log applet from toolbox.
+        Bug Fix: Specifying partition letter h (for /custpack) brings up help screen.
+        Bug Fix: Partition detection on Allwinner devices.
+        Bug Fix: Busybox version error did not exit script.
+        Bug Fix: .advanced_backup_partitions file not detected at TWRP folder.
+        Removed: Command line flag for busybox path, as it cannot be relied upon.
+        Improved: Some coding style improvements.
+        Improved: Backup replace mode now replaces once all partitions are backed up only.
+        Improved: Progress indicators.

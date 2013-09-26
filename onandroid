@@ -1,44 +1,39 @@
-######################################################################
-#                           Online Nandroid                          #
-#                           By Ameer Dawood                          #
-######################################################################
-######################################################################
-# Software License Agreement (Modified BSD License)                  #
-# Copyright (c) 2012-2013, Ameer Dawood                              #
-# All rights reserved.                                               #
-# Redistribution and use of this software in source and binary       #
-# forms, with or without modification, are permitted provided that   #
-# the following conditions are met:                                  #
-# * Redistributions of source code must retain the above copyright   #
-#   notice, this list of conditions and the following disclaimer.    #
-# * Redistributions in binary form must reproduce the above          #
-#   copyright notice, this list of conditions and the following      #
-#   disclaimer in the documentation and/or other materials provided  #
-#   with the distribution.                                           #
-# * The name of the author may not be used to endorse or promote     #
-#   products derived from this software without specific prior       #
-#   written permission.                                              #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND             #
-# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,        #
-# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF           #
-# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE           #
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS  #
-# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,           #
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED    #
-# TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,      #
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND     #
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, #
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY     #
-# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE            #
-# POSSIBILITY OF SUCH DAMAGE.                                        #
-######################################################################
+###########################################################################################################
+###########################################################################################################
+##                                                                                                       ##
+##                                             Online Nandroid                                           ##
+##                                                                                                       ##
+##                                             By Ameer Dawood                                           ##
+##                                                                                                       ##
+###########################################################################################################
+###########################################################################################################
+# Software License Agreement (Modified BSD License)                                                       #
+# Copyright (c) 2012-2013, Ameer Dawood                                                                   #
+# All rights reserved.                                                                                    #
+# Redistribution and use of this software in source and binary forms, with or without modification, are   #
+# permitted provided that the following conditions are met:                                               #
+# * Redistributions of source code must retain the above copyright notice, this list of conditions and    #
+#   the following disclaimer.                                                                             #
+# * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and #
+#   the following disclaimer in the documentation and/or other materials provided with the distribution.  #
+# * The name of the author may not be used to endorse or promote products derived from this software      #
+#   without specific prior written permission.                                                            #
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED  #
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A  #
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR  #
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT      #
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS     #
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR  #
+# TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF    #
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                                                              #
+###########################################################################################################
 
 #### Define constants
-version="8.22"
+version="9.00"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
-all_partitions="mbrwlsdctjeoufhipax"
+all_partitions="mkbrwlgsdctjeoufhipnax"
 sdcard_temp_mount="/mnt/sdcard4nandroid"
 sdext_temp_mount="/mnt/sdext4nandroid"
 custbkp_temp_mount="/mnt/custbkp4nandroid"
@@ -55,22 +50,162 @@ if $bb [ ! $bb ]; then
 fi
 
 #### Define exit codes (returned upon exit due to an error)
-err_noroot=65 # Could not acquire root permissions
-err_nobatt=66 # Sufficient battery not available
-err_bbvless=67 # BusyBox version less than 1.20 found
-err_nosdcard=68 # SD card not found
-err_killsig=69 # Killed by exit/kill signal
-err_nomkyaffs=70 # mkyaffs2image not found in path
-err_nodedupe=71 # dedupe not found in path
-err_nobusybox=75 # busybox not found in path
-err_cntcdpath=80 # Could not change to backup path
-err_cntmkname=81 # Cannot create backup directory
-err_cntrmname=82 # Cannot delete backup directory
-err_nameexist=83 # Backup name already exists
-err_cntwrname=84 # Cannot write to backup directory
-err_cntwrblobs=85 # Cannot write to blobs directory
-err_nospace=86 # Not enough disk space
-err_cntcdname=87 # Could not change to backup directory
+E_NOROOT=65 # Could not acquire root permissions
+E_NOBATT=66 # Sufficient battery not available
+E_BBVLESS=67 # BusyBox version less than 1.20 found
+E_NOSDCARD=68 # SD card not found
+E_KILLSIG=69 # Killed by exit/kill signal
+E_NOMKYAFFS=70 # mkyaffs2image not found in path
+E_NODEDUPE=71 # dedupe not found in path
+E_NOBUSYBOX=75 # busybox not found in path
+E_CNTCDPATH=80 # Could not change to backup path
+E_CNTMKNAME=81 # Cannot create backup directory
+E_CNTRMNAME=82 # Cannot delete backup directory
+E_NAMEEXIST=83 # Backup name already exists
+E_CNTWRNAME=84 # Cannot write to backup directory
+E_CNTWRBLOBS=85 # Cannot write to blobs directory
+E_NOSPACE=86 # Not enough disk space
+E_CNTCDNAME=87 # Could not change to backup directory
+E_DUPINS=88 # Another instance already running
+
+#### Define default language strings
+LANG_SCRIPTNAME="Online Nandroid Backup"
+LANG_SCRIPTHEAD1="* A tool to perform a nandroid backup"
+LANG_SCRIPTHEAD2="  without booting into recovery."
+LANG_SCRIPTHEAD3="* It is fully compatible with nandroid."
+LANG_SCRIPTHEAD4="* Type 'onandroid --help' for usage"
+LANG_SCRIPTHEAD5="  instructions."
+LANG_SCRIPTHEAD6="* Created by Ameer Dawood"
+LANG_ERROR="Error"
+LANG_EXITING="Exiting"
+LANG_FREEINGSPACE="Freeing Space"
+LANG_NOTFOUNDSKIP="not found! Skipping backup of"
+LANG_BACKINGUP="Backing up"
+LANG_FSOVER2GB="The filesystem contains a file over 2GB. The backup might not restore properly!"
+LANG_MAYXRESTORE="An error occured! Backup may not restore properly!"
+LANG_ENTERNAME="Enter backup name"
+LANG_ENTERSTORAGE="Enter storage path"
+LANG_ENTERSDEXT="Enter sd-ext path"
+LANG_ENTERPARTS="Enter partitions to backup"
+LANG_SCRIPTSNAME="Online Nandroid"
+LANG_STARTEDAT="Started at"
+LANG_RUNWITH="Run with options"
+LANG_BUSYBOX="Busybox"
+LANG_FSLAYOUT="File System Layout"
+LANG_DEVDETAILS="Device Details"
+LANG_RECOVERY="Recovery"
+LANG_GENRECOOVERY="Generic recovery."
+LANG_NORECOVERY="No recovery detected!"
+LANG_USINGBUSYBOX="Using busybox from"
+LANG_CHECKROOT="Checking for root permissions"
+LANG_ROOTOK="Root permissions acquired!"
+LANG_NOROOT="Could not acquire root permissions!"
+LANG_ANALYSEBATT="Analysing battery level"
+LANG_CANNOTBATT="Unable to check battery level! Taking a chance here"
+LANG_BATTOK="Sufficient battery available!"
+LANG_NOBATT="Sufficient battery not available!"
+LANG_BATTLEVEL="Battery Level"
+LANG_CHECKINGBB="Checking version of BusyBox installed"
+LANG_BBLESS="BusyBox version less than 1.20 found."
+LANG_BBOK="BusyBox version 1.20 or above installed!"
+LANG_BBCANNOTCHECK="Unable to check BusyBox version. Taking chances here"
+LANG_SEARCHSD="Searching for SD card"
+LANG_ALTERNATEMEDIA="Alternate storage media provided!"
+LANG_SDNOTFOUND="SD card not found!"
+LANG_MOUNTS="Mounts"
+LANG_SDFOUND="SD card found!"
+LANG_ISMTDDEV="This is an MTD based device!"
+LANG_ISEMMCDEV="This is an EMMC based device!"
+LANG_ISMTKDEV="This is an MTK based device!"
+LANG_HASPATCH="This device has a patch file installed!"
+LANG_INCREMSELECTD="Incremental backup mode selected by default!"
+LANG_INCREMSELECTR="Incremental backup mode selected at run time!"
+LANG_SPLITSELECTD="Split backup mode selected by default!"
+LANG_SPLITSELECTR="Split backup mode selected at run time!"
+LANG_TWRPSELECTR="TWRP backup mode selected at run time!"
+LANG_TWRPCOMPN="TWRP compression enabled at run time!"
+LANG_TWRPCOMPG="TWRP compression (gzip) enabled at run time!"
+LANG_ADVSELECTR="Advanced backup mode selected at run time!"
+LANG_ADVSELECTD="Advanced backup mode selected by default!"
+LANG_CHECKTOOLS="Checking for required tools"
+LANG_NOMKYAFFS2IMAGE="mkyaffs2image not found in path!"
+LANG_NODEDUPE="dedupe not found in path!"
+LANG_NOBUSYBOX="busybox not found in path!"
+LANG_ALLTOOLSOK="All required tools available!"
+LANG_CANNOTCHANGETO="Could not change to"
+LANG_CANNOTCREATE="Cannot create"
+LANG_REPLSELECTEDR="Replace backup mode selected at run time!"
+LANG_ALREADYEXISTS="already exists!"
+LANG_WANTTOREPLACE="Do you want to replace?"
+LANG_REPLSELECTP="Replace backup mode selected upon prompt!"
+LANG_CANNOTWRITETO="Cannot write to"
+LANG_GARBSELECT="Garbage Collection mode selected!"
+LANG_GARBCOMPL="Garbage Collection Completed in"
+LANG_MINUTES="minutes"
+LANG_SECONDS="seconds"
+LANG_CHECKDISKSPACE="Checking disk space"
+LANG_SDFREESPACE="SD Card Free Space"
+LANG_REQUIREDSPACE="Required Space"
+LANG_NOSPACE="Not enough disk space!"
+LANG_PARTITIONS="Partitions"
+LANG_SPACEOK="Necessary disk space available!"
+LANG_DETECTINGEXCL="Detecting mountpoints to exclude"
+LANG_BACKINGUPTO="Backing up to"
+LANG_BACKINGUPOLD="Backing up the old backup for replace operation"
+LANG_PATCHNOTICE="Consider installing patch file for your device, for a complete nandroid!"
+LANG_REPLACINGOLD="Replacing old backup with new backup"
+LANG_GENMD5SUMFOR="Generating md5sum for"
+LANG_GENMD5SUM="Generating md5sum"
+LANG_VERIFYMD5SUM="Verifying md5sum"
+LANG_BACKUPCOMPL="Online Nandroid Backup Completed in"
+LANG_FILESBKPEDUP="Files Backed-up"
+LANG_INVALIDARGS="One or more of the arguments passed are invalid!"
+LANG_USAGE="Usage"
+LANG_OPTIONS="Options"
+LANG_FLAGH="display this help message and exit"
+LANG_FLAGH2="display more help messages and exit"
+LANG_FLAGAH="display help for advanced backup mode"
+LANG_FLAGV="display version number and exit"
+LANG_FLAGP="generate backup name with phone timezone"
+LANG_FLAGU="generate backup name with UTC time (default)"
+LANG_FLAGI="CWM6 style incremental backup mode"
+LANG_FLAGA="advanced / selective backup mode"
+LANG_FLAGL="split backup mode (CWM 6+ only)"
+LANG_FLAGO="good old backup mode (default)"
+LANG_FLAGGC="run garbage collect mode"
+LANG_FLAGW="TWRP backup mode"
+LANG_FLAGME="enable md5 generation (TWRP only)"
+LANG_FLAGMD="disable md5 generation (TWRP only)"
+LANG_FLAGCE="enable compression (TWRP only)"
+LANG_FLAGCD="disable compression (TWRP only)"
+LANG_FLAGCG="enable compression and use gzip (TWRP only)"
+LANG_FLAGC="specify a custom backup name"
+LANG_FLAGS="specify an alternate storage media to backup"
+LANG_FLAGE="specify path to sd-ext partition"
+LANG_FLAGR="replace backup with same name"
+LANG_FLAGY="create tar balls instead of yaffs images for yaffs2 partitions"
+LANG_FLAGT="use /sbin as last option for busybox"
+LANG_FLAGNE="enable vibrate and LED notification (default)"
+LANG_FLAGND="disable vibrate and LED notification"
+LANG_FLAGPP="show percentage progress indicator (default)"
+LANG_FLAGPD="show dot progress indicator"
+LANG_FLAGD="return device id used by TWRP"
+LANG_FLAGXD="exclude dalvik-cache from backup"
+LANG_FLAGXG="exclude Google Music files from backup"
+LANG_LANGFILEL="Language File"
+LANG_LANGFILEN="Name"
+LANG_LANGFILEC="Code"
+LANG_LANGFILED="Description"
+LANG_LANGFILEA="Author"
+LANG_LANGFILEE="Email"
+LANG_LANGFILEV="Version"
+LANG_LANGFILEF="For Online Nandroid Version"
+LANG_LANGFILEO="Not found!"
+
+#### Read language file if it exists
+if $bb [ -f /data/local/tmp/onandroid.lang ]; then
+	eval `$bb cat /data/local/tmp/onandroid.lang`
+fi
 
 #### Logging function
 if $bb [ ! -d $logpath ]; then
@@ -90,10 +225,8 @@ logmsg(){
 logerror(){
 	$bb echo "$1" >>$logfile
 	$bb echo "$2" >>$logfile
-	if $bb [ "`$bb which log`" != "" ]; then
-		log -p i -t onandroid "$1"
-		log -p i -t onandroid "$2"
-	fi
+	toolbox log -p i -t onandroid "$1"
+	toolbox log -p i -t onandroid "$2"
 }
 
 #### Cleanup function (Unmount temporary sdcard mount & remount root as ro)
@@ -139,7 +272,11 @@ cleanup(){
 			$bb mv -f /flexrom_bkp /flexrom
 		fi
 	fi
-	if $bb [ "$as_parent" -o "$sdext_mount" != "" -o "$custbkp_fs" != "" -o "$flexrom_hinted" == 1 ]; then
+	if $bb [ "$is_nookcolor" == "yes" ]; then
+		$bb umount -lf /boot
+		$bb rmdir /boot
+	fi
+	if $bb [ "$as_parent" -o "$sdext_mount" != "" -o "$custbkp_fs" != "" -o "$flexrom_hinted" == 1 -o "$is_nookcolor" == "yes" ]; then
 		$bb mount -o remount,ro / 2> /dev/null
 	fi
 }
@@ -153,7 +290,7 @@ killalltools(){
 
 #### Garbage Collect function (used for incremental backups)
 garbagecollect(){
-	logmsg "Freeing Space...\c"
+	logmsg "$LANG_FREEINGSPACE...\c"
 	dedupe gc $blobsdir $($bb find $path -name "*.dup") &
 	while $bb [ `$bb pidof dedupe` ]; do
 		$bb echo -n "."
@@ -164,33 +301,33 @@ garbagecollect(){
 
 #### Usage instructions
 usage(){
-	$bb echo "$1"
+	$bb echo "$1" "WRONG_ARGS:$2"
 	$bb echo "Online Nandroid v$version by Ameer Dawood"
 	$bb echo ""
-	$bb echo "Usage: onandroid [options]"
+	$bb echo "$LANG_USAGE: onandroid [options]"
 	$bb echo ""
-	$bb echo "Options:"
-	$bb echo "  -h, --help                    display this help message and exit"
-	$bb echo "  -h2, --help2                  display more help messages and exit"
-	$bb echo "  -ah, --advanced-help          display help for advanced backup mode"
-	$bb echo "  -v, --version                 display version number and exit"
-	$bb echo "  -p, --phone                   generate backup name with phone timezone"
-	$bb echo "  -u, --utc                     generate backup name with UTC time (default)"
-	$bb echo "  -i, --incremental             CWM6 style incremental backup mode"
-	$bb echo "  -a, --advanced PARTITIONS     advanced / selective backup mode"
-	$bb echo "  -l, --split                   split backup mode (CWM 6+ only)"
-	$bb echo "  -o, --old                     good old backup mode (default)"
-	$bb echo "  -gc, --garbage-collect        run garbage collect mode"
-	$bb echo "  -w, --twrp                    TWRP backup mode"
-	$bb echo "  -me, --md5-enable             enable md5 generation (for TWRP only)"
-	$bb echo "  -md, --md5-disable            disable md5 generation (for TWRP only)"
-	$bb echo "  -ce, --compression-enable     enable compression (for TWRP only)"
-	$bb echo "  -cd, --compression-disable    disable compression (for TWRP only)"
-	$bb echo "  -cg, --compression-gzip       enable compression and use gzip (for TWRP only)"
-	$bb echo "  -c, --custom NAME             specify a custom backup name"
-	$bb echo "  -s, --storage MEDIA           specify an alternate storage media to backup"
-	$bb echo "  -e, --sd-ext-path PATH        specify path to sd-ext partition"
-	$bb echo "  -r, --replace                 replace backup with same name"
+	$bb echo "$LANG_OPTIONS:"
+	$bb echo "  -h, --help                    $LANG_FLAGH"
+	$bb echo "  -h2, --help2                  $LANG_FLAGH2"
+	$bb echo "  -ah, --advanced-help          $LANG_FLAGAH"
+	$bb echo "  -v, --version                 $LANG_FLAGV"
+	$bb echo "  -p, --phone                   $LANG_FLAGP"
+	$bb echo "  -u, --utc                     $LANG_FLAGU"
+	$bb echo "  -i, --incremental             $LANG_FLAGI"
+	$bb echo "  -a, --advanced PARTITIONS     $LANG_FLAGA"
+	$bb echo "  -l, --split                   $LANG_FLAGL"
+	$bb echo "  -o, --old                     $LANG_FLAGO"
+	$bb echo "  -gc, --garbage-collect        $LANG_FLAGGC"
+	$bb echo "  -w, --twrp                    $LANG_FLAGW"
+	$bb echo "  -me, --md5-enable             $LANG_FLAGME"
+	$bb echo "  -md, --md5-disable            $LANG_FLAGMD"
+	$bb echo "  -ce, --compression-enable     $LANG_FLAGCE"
+	$bb echo "  -cd, --compression-disable    $LANG_FLAGCD"
+	$bb echo "  -cg, --compression-gzip       $LANG_FLAGCG"
+	$bb echo "  -c, --custom NAME             $LANG_FLAGC"
+	$bb echo "  -s, --storage MEDIA           $LANG_FLAGS"
+	$bb echo "  -e, --sd-ext-path PATH        $LANG_FLAGE"
+	$bb echo "  -r, --replace                 $LANG_FLAGR"
 	$bb echo ""
 	exit 0
 }
@@ -200,17 +337,18 @@ usage2(){
 	$bb echo "$1"
 	$bb echo "Online Nandroid v$version by Ameer Dawood"
 	$bb echo ""
-	$bb echo "Usage: onandroid [options]"
+	$bb echo "$LANG_USAGE: onandroid [options]"
 	$bb echo ""
-	$bb echo "Options:"
-	$bb echo "  -y, --yaffs-override          create tar balls instead of yaffs images for yaffs2 partitions"
-	$bb echo "  -t, --sbin-last               use /sbin as last option for busybox"
-	$bb echo "  -ne, --notification-enable    enable vibrate and LED notification (default)"
-	$bb echo "  -nd, --notification-disable   disable vibrate and LED notification"
-	$bb echo "  -pp, --progress-percent       show percentage progress indicator (default)"
-	$bb echo "  -pd, --progress-dot           show dot progress indicator"
-	$bb echo "  -b, --busybox-path PATH       manually set path to busybox"
-	$bb echo "  -d, --device-id               return device id used by TWRP"
+	$bb echo "$LANG_OPTIONS:"
+	$bb echo "  -y, --yaffs-override          $LANG_FLAGY"
+	$bb echo "  -t, --sbin-last               $LANG_FLAGT"
+	$bb echo "  -ne, --notification-enable    $LANG_FLAGNE"
+	$bb echo "  -nd, --notification-disable   $LANG_FLAGND"
+	$bb echo "  -pp, --progress-percent       $LANG_FLAGPP"
+	$bb echo "  -pd, --progress-dot           $LANG_FLAGPD"
+	$bb echo "  -d, --device-id               $LANG_FLAGD"
+	$bb echo "  -xd, --exclude-dalvik         $LANG_FLAGXD"
+	$bb echo "  -xg, --exclude-gmusic         $LANG_FLAGXG"
 	$bb echo ""
 	exit 0
 }
@@ -223,10 +361,12 @@ advmapping(){
 	$bb echo ""
 	$bb echo "<partitions>"
 	$bb echo "  m: mmcblk0_start (for Acer devices)"
+	$bb echo "  k: uboot (for MTK based devices)"
 	$bb echo "  b: boot"
 	$bb echo "  r: recovery"
 	$bb echo "  w: wimax (for Samsung devices)"
 	$bb echo "  l: appslog (for HTC and Sony (Ericsson) devices)"
+	$bb echo "  g: kernel"
 	$bb echo "  s: system"
 	$bb echo "  d: data"
 	$bb echo "  c: cache"
@@ -239,6 +379,7 @@ advmapping(){
 	$bb echo "  h: custpack (for Alcatel devices)"
 	$bb echo "  i: mobile_info (for Alcatel devices)"
 	$bb echo "  p: boot (for HP Touchpad)"
+	$bb echo "  n: boot (for Nook Color)"
 	$bb echo "  a: android_secure"
 	$bb echo "  x: sd-ext"
 	$bb echo ""
@@ -260,9 +401,9 @@ progress(){
 				if $bb [ "$pct" -gt 99 ]; then
 					pct=99
 				elif $bb [ "$pct" -lt 10 ]; then
-					$bb echo -en "$pct%\b\b"
+					$bb echo -en " $pct%\b\b\b"
 				else
-					$bb echo -en "$pct%\b\b\b"
+					$bb echo -en " $pct%\b\b\b\b"
 				fi
 			else
 				$bb echo -en " +\b\b"
@@ -279,11 +420,7 @@ progress(){
 
 #### Progress done function
 progress_done(){
- 	if $bb [ "$progress_style" == "dot" ]; then
-		$bb echo -n "."
-	else
-		$bb echo -en "100%\b\b\b\b"
-	fi
+	$bb echo -en " 100%"
 }
 
 #### Backup Function - Disk Dump
@@ -302,10 +439,10 @@ nandroid_dd(){
 	if $bb [ "`$bb echo $adv | $bb grep $part_id`" != "" ]; then
 		if $bb [ $part_type == "not_found" -o "$part_dev" == "" ]; then
 			if $bb [ "$part_iscommon" == "yes" ]; then
-				logmsg "/$part_name not found! Skipping backup of /$part_name!"
+				logmsg "/$part_name $LANG_NOTFOUNDSKIP /$part_name!"
 			fi
 		else
-			logmsg "Backing up /$part_name...\c"
+			logmsg "$LANG_BACKINGUP /$part_name...\c"
 			if $bb [ `$bb echo "$part_size" | $bb egrep "^[0-9]+$"` ]; then
 				full_size=$part_size
 			else
@@ -353,54 +490,163 @@ nandroid_fs(){
 			if $bb [ "$backup_style" == "twrp" ]; then
 				if $bb [ "$part_excludes" != "" ]; then
 					part_m="`$bb echo $part_mount | $bb sed s/'^\/'/''/g`"
-					part_excludes="`$bb echo $part_excludes | $bb sed s/$part_m/'.'/g`"
+					part_excludes="`$bb echo $part_excludes | $bb sed s/=$part_m/'=.'/g`"
 				fi
-				logmsg "Backing up /$part_name...\c"
 				cd $part_mount
+				logmsg "$LANG_BACKINGUP /$part_name...\c"
 				if $bb [ `$bb echo "$part_size" | $bb egrep "^[0-9]+$"` ]; then
 					full_size=$part_size
 				else
 					full_size=-1
 				fi
-				if $bb [ "$compress_backup" == "yes" ]; then
-					$bb tar -czf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
-					$bb sleep 2
-					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-						progress $part_fname.$part_fs.win
+				maxfilesize=2047
+				splitfilesize=1024
+				if $bb [ $full_size -gt $maxfilesize ]; then
+					$bb touch $path/$name/.list_generating
+					while $bb [ -f $path/$name/.list_generating ]; do
+						progress none
 						$bb sleep 2
+					done &
+					$bb touch $path/$name/$part_fname.$part_fs.win
+					i=0
+					$bb mkdir -p $path/$name/tmp
+					$bb rm $path/$name/tmp/list$i 2> /dev/nul
+					exclude_dirs=`echo $part_excludes | sed s/'--exclude='/''/g | sed s/'\/\*'/''/g`
+					for dir in $exclude_dirs; do
+						if $bb [ -d $dir ]; then
+							$bb echo $dir >> $path/$name/tmp/list$i
+						fi
 					done
-					if $bb [ ! -f $path/$name/$part_fname.$part_fs.win ]; then
-						$bb tar -cZf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
+					dirlist="`find . -type d -xdev`"
+					for dir in $dirlist; do
+						if $bb [ -d $dir ]; then
+							if $bb [ "`$bb ls -A $dir`" == "" ]; then
+								$bb echo $dir >> $path/$name/tmp/list$i
+							fi
+						fi
+					done
+					filelist="`find . -type b` `find . -type c` `find . -type p` `find . -type f` `find . -type l` `find . -type s`"
+					listsize=0
+					for file in $filelist; do
+						if $bb [ -e $file ]; then
+							for dir in $exclude_dirs; do
+								dir_length=`$bb expr length $dir`
+								if $bb [ "`$bb expr substr $file 1 $dir_length`" == "$dir" ]; then
+									continue 2
+								fi
+							done
+							filesize=`$bb du -sm $file | $bb awk '{print $1}'`
+							if $bb [ `$bb expr $listsize + $filesize` -lt $splitfilesize ]; then
+								listsize=`$bb expr $listsize + $filesize`
+								$bb echo $file >> $path/$name/tmp/list$i
+							else
+								listsize=0
+								i=`$bb expr $i + 1`
+								$bb rm $path/$name/tmp/list$i 2> /dev/nul
+								listsize=`$bb expr $listsize + $filesize`
+								$bb echo $file >> $path/$name/tmp/list$i
+								if $bb [ $listsize -gt $maxfilesize ]; then
+									loglater="$LANG_ERROR: $LANG_FSOVER2GB"
+								fi
+							fi
+						fi
+					done
+					listlist=`ls $path/$name/tmp`
+					i=0
+					$bb rm $path/$name/.list_generating
+					for list in $listlist; do
+						suffix=$i
+						while $bb [ `$bb echo $suffix | $bb wc -m` -lt 4 ]; do
+							suffix="0$suffix"
+						done
+						if $bb [ "$compress_backup" == "yes" ]; then
+							$bb tar -czf $path/$name/$part_fname.$part_fs.win$suffix -T $path/$name/tmp/$list $part_excludes > /dev/null 2>&1 &
+							$bb sleep 2
+							while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+								progress $part_fname.$part_fs.win
+								$bb sleep 2
+							done
+							if $bb [ ! -f $path/$name/$part_fname.$part_fs.win$suffix ]; then
+								$bb tar -cZf $path/$name/$part_fname.$part_fs.win$suffix -T $path/$name/tmp/$list $part_excludes > /dev/null 2>&1 &
+								$bb sleep 2
+								while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+									progress $part_fname.$part_fs.win
+									$bb sleep 2
+								done
+							fi
+						elif $bb [ "$compress_backup" == "gzip" ]; then
+							echo "\n$bb tar -c $part_excludes -T $path/$name/tmp/$list | $bb gzip -c > $path/$name/$part_fname.$part_fs.win$suffix > /dev/null 2>&1 &"
+							$bb tar -c $part_excludes -T $path/$name/tmp/$list | $bb gzip -c > $path/$name/$part_fname.$part_fs.win$suffix 2> /dev/null &
+							$bb sleep 2
+							while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+								progress $part_fname.$part_fs.win
+								$bb sleep 2
+							done
+						else
+							$bb tar -cf $path/$name/$part_fname.$part_fs.win$suffix -T $path/$name/tmp/$list $part_excludes > /dev/null 2>&1 &
+							$bb sleep 2
+							while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+								progress $part_fname.$part_fs.win
+								$bb sleep 2
+							done
+						fi
+						i=`$bb expr $i + 1`
+					done
+					$bb rm -rf $path/$name/tmp
+					progress_done
+					$bb echo ""
+					if $bb [ "$loglater" != "" ]; then
+						logmsg $loglater
+					fi
+					$bb rm $path/$name/$part_fname.$part_fs.win 2> /dev/nul
+					if $bb [ $? != 0 -a -f $path/$name/$part_fname.$part_fs.win ]; then
+						$bb sleep 2
+						$bb rm $path/$name/$part_fname.$part_fs.win 2> /dev/nul
+						if $bb [ $? != 0 -a -f $path/$name/$part_fname.$part_fs.win ]; then
+							logmsg "$LANG_ERROR: $LANG_MAYXRESTORE"
+						fi
+					fi
+				else
+					if $bb [ "$compress_backup" == "yes" ]; then
+						$bb tar -czf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
 						$bb sleep 2
 						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 							progress $part_fname.$part_fs.win
 							$bb sleep 2
 						done
+						if $bb [ ! -f $path/$name/$part_fname.$part_fs.win ]; then
+							$bb tar -cZf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
+							$bb sleep 2
+							while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+								progress $part_fname.$part_fs.win
+								$bb sleep 2
+							done
+						fi
+						progress_done
+						$bb echo ""
+					elif $bb [ "$compress_backup" == "gzip" ]; then
+						$bb tar -c $part_excludes ./* | $bb gzip -c > $path/$name/$part_fname.$part_fs.win 2> /dev/null &
+						$bb sleep 2
+						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+							progress $part_fname.$part_fs.win
+							$bb sleep 2
+						done
+						progress_done
+						$bb echo ""
+					else
+						$bb tar -cf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
+						$bb sleep 2
+						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+							progress $part_fname.$part_fs.win
+							$bb sleep 2
+						done
+						progress_done
+						$bb echo ""
 					fi
-					progress_done
-					$bb echo ""
-				elif $bb [ "$compress_backup" == "gzip" ]; then
-					$bb tar -c $part_excludes ./* | $bb gzip -c > $path/$name/$part_fname.$part_fs.win 2> /dev/null &
-					$bb sleep 2
-					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-						progress $part_fname.$part_fs.win
-						$bb sleep 2
-					done
-					progress_done
-					$bb echo ""
-				else
-					$bb tar -cf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
-					$bb sleep 2
-					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-						progress $part_fname.$part_fs.win
-						$bb sleep 2
-					done
-					progress_done
-					$bb echo ""
 				fi
 			else
 				if $bb [ "$part_fs" == "yaffs2" -a "$yaffs_override" != "yes" ]; then
-					logmsg "Backing up /$part_name...\c"
+					logmsg "$LANG_BACKINGUP /$part_name...\c"
 					if $bb [ `$bb echo "$part_size" | $bb egrep "^[0-9]+$"` ]; then
 						full_size=$part_size
 					else
@@ -416,7 +662,7 @@ nandroid_fs(){
 					$bb echo ""
 				else
 					cd $part_mount/..
-					logmsg "Backing up /$part_name...\c"
+					logmsg "$LANG_BACKINGUP /$part_name...\c"
 					if $bb [ "$backup_style" == "incremental" ]; then
 						cd $part_mountdir
 						dedupe c . $blobsdir $path/$name/$part_fname.$part_fs.dup $part_excludes_dedupe > /dev/null 2>&1 &
@@ -461,7 +707,7 @@ nandroid_fs(){
 			fi
 		else
 			if $bb [ "$part_iscommon" == "yes" ]; then
-				logmsg "/$part_name not found! Skipping backup of /$part_name!"
+				logmsg "/$part_name $LANG_NOTFOUNDSKIP /$part_name!"
 			fi
 		fi
 	fi
@@ -499,6 +745,15 @@ rtt(){
 	$bb echo ""
 	exit 0
 }
+
+#### Check if another instance is running and exit if so
+if $bb [ -f $pidfile ]; then
+	pid="`$bb cat $pidfile`"
+	if $bb [ "`$bb ps | $bb awk '{print $1}' | $bb grep $pid`" != "" ]; then
+		$bb echo "$LANG_ERROR: Another instance of Online Nandroid is already running! $LANG_EXITING..."
+		exit $E_DUPINS
+	fi
+fi
 
 #### Output PID
 $bb echo "$$" >$pidfile
@@ -539,22 +794,13 @@ for arg in $arglist; do
 	elif $bb [ "$arg" == "-v" ] || $bb [ "$arg" == "--version" ]; then
 		$bb echo "$version"
 		exit 0
-	elif $bb [ "$arg" == "-b" ] || $bb [ "$arg" == "--busybox-path" ]; then
-		# Grab busybox path
-		bb_pos=`$bb expr $argn + 1`
-		eval "bb=\$$bb_pos"
-		if $bb [ ! "$bb" ]; then
-			# Prompt for busybox path
-			logmsg "Enter busybox path: \c"
-			read bb
-		fi
 	elif $bb [ "$arg" == "-c" ] || $bb [ "$arg" == "--custom" ]; then
 		# Grab custom backup name
 		name_pos=`$bb expr $argn + 1`
 		eval "name=\$$name_pos"
 		if $bb [ ! "$name" ]; then
 			# Prompt for backup name
-			logmsg "Enter backup name: \c"
+			logmsg "$LANG_ENTERNAME: \c"
 			read name
 		fi
 	elif $bb [ "$arg" == "-s" ] || $bb [ "$arg" == "--storage" ]; then
@@ -563,7 +809,7 @@ for arg in $arglist; do
 		eval "storage=\$$storage_pos"
 		if $bb [ ! "$storage" ]; then
 			# Prompt for storage path
-			logmsg "Enter storage path: \c"
+			logmsg "$LANG_ENTERSTORAGE: \c"
 			read storage
 		fi
 	elif $bb [ "$arg" == "-e" ] || $bb [ "$arg" == "--sd-ext-path" ]; then
@@ -572,7 +818,7 @@ for arg in $arglist; do
 		eval "sdextdir=\$$sdext_pos"
 		if $bb [ ! "$sdextdir" ]; then
 			# Prompt for sd-ext path
-			logmsg "Enter sd-ext path: \c"
+			logmsg "$LANG_ENTERSDEXT: \c"
 			read sdextdir
 		fi
 	elif $bb [ "$arg" == "-a" ] || $bb [ "$arg" == "--advanced" ]; then
@@ -582,12 +828,8 @@ for arg in $arglist; do
 		eval "adv=\$$adv_pos"
 		if $bb [ ! "$adv" ]; then
 			# Prompt for partitions
-			logmsg "Enter partitions to backup: \c"
+			logmsg "$LANG_ENTERPARTS: \c"
 			read adv
-		fi
-		# Show partition mapping if partition letters include an "h"
-		if $bb [ "`$bb echo $adv | $bb grep 'h'`" ]; then
-			advmapping
 		fi
 	elif $bb [ "$arg" == "-p" ] || $bb [ "$arg" == "--phone" ]; then
 		# Set timezone to phone timezone
@@ -630,6 +872,10 @@ for arg in $arglist; do
 	elif $bb [ "$arg" == "-d" ] || $bb [ "$arg" == "--device-id" ]; then
 		$bb echo "$android_id"
 		exit
+	elif $bb [ "$arg" == "-xd" ] || $bb [ "$arg" == "--exclude-dalvik" ]; then
+		exclude_dalvik="yes"
+	elif $bb [ "$arg" == "-xg" ] || $bb [ "$arg" == "--exclude-gmusic" ]; then
+		exclude_gmusic="yes"
 	elif $bb [ "$arg" == "-~" ] || $bb [ "$arg" == "--rtt" ]; then
 		rtt
 	else
@@ -640,7 +886,7 @@ for arg in $arglist; do
 			# Do not argue with me that this is unnecessary. I have tried enough.
 			null="null"
 		else
-			usage "One or more of the arguments passed are invalid!"
+			usage "$LANG_INVALIDARGS" "$arg"
 		fi
 	fi
 done
@@ -650,43 +896,60 @@ $bb [ -f $logfile ] && $bb echo "" >$logfile
 
 #### The header
 $bb echo "##########################################"
-$bb echo "Online Nandroid Backup v$version"
-$bb echo "* A tool to perform a nandroid backup"
-$bb echo "  without booting into recovery."
-$bb echo "* It is fully compatible with nandroid."
-$bb echo "* Type 'onandroid --help' for usage"
-$bb echo "  instructions."
-$bb echo "* Created by Ameer Dawood"
+$bb echo "$LANG_SCRIPTNAME v$version"
+$bb echo "$LANG_SCRIPTHEAD1"
+$bb echo "$LANG_SCRIPTHEAD2"
+$bb echo "$LANG_SCRIPTHEAD3"
+$bb echo "$LANG_SCRIPTHEAD4"
+$bb echo "$LANG_SCRIPTHEAD5"
+$bb echo "$LANG_SCRIPTHEAD6"
 $bb echo "##########################################"
 $bb echo ""
 
 #### Spit version number, date, time and other technical info to log file
-logerror "Online Nandroid v$version" "Started at `date`"
+logerror "$LANG_SCRIPTSNAME v$version" "$LANG_STARTEDAT `date`"
 logerror "###########################" ""
-logerror "Run with options: $*" ""
+logerror "$LANG_RUNWITH: $*" ""
 logerror "###########################" ""
-logerror "BusyBox: `$bb | $bb grep "BusyBox v"`" ""
+logerror "$LANG_BUSYBOX: `$bb | $bb grep "BusyBox v"`" ""
 logerror "###########################" ""
-logerror "File System Layout:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
+logerror "$LANG_FSLAYOUT:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
 logerror "###########################" ""
-logerror "Device Details:" "`$bb cat /system/build.prop | $bb grep "^ro.product." | $bb grep -v "^ro.product.locale."`"
+logerror "$LANG_DEVDETAILS:" "`$bb cat /system/build.prop | $bb grep "^ro.product." | $bb grep -v "^ro.product.locale."`"
 logerror "###########################" ""
 
 #### Spit details about the recovery installed
 if $bb [ -f /cache/recovery/last_log ]; then
 	if $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "cwm-based recovery" 2> /dev/nul`" != "" ]; then
-		logerror "Recovery:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "cwm-based recovery" 2> /dev/nul`"
+		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "cwm-based recovery" 2> /dev/nul`"
 	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "clockworkmod recovery" 2> /dev/nul`" != "" ]; then
-		logerror "Recovery:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "clockworkmod recovery" 2> /dev/nul`"
+		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "clockworkmod recovery" 2> /dev/nul`"
 	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb head -n 1 | $bb awk '{print $2}' 2> /dev/nul`" == "TWRP" ]; then
-		logerror "Recovery:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb head -n 1 | $bb awk '{print $2}' 2> /dev/nul` `$bb cat /cache/recovery/last_log | $bb head -n 1 | $bb awk '{print $3}' 2> /dev/nul`"
+		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb head -n 1 | $bb awk '{print $2}' 2> /dev/nul` `$bb cat /cache/recovery/last_log | $bb head -n 1 | $bb awk '{print $3}' 2> /dev/nul`"
 	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "philz touch" 2> /dev/nul`" != "" ]; then
-		logerror "Recovery:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "philz touch" 2> /dev/nul`"
+		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "philz touch" 2> /dev/nul`"
+	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Build : RA" 2> /dev/nul`" != "" ]; then
+		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Build : RA" 2> /dev/nul | $bb awk '{print $3}' 2> /dev/nul`"
+	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Welcome to 4EXT" 2> /dev/nul`" != "" ]; then
+		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Welcome to 4EXT" 2> /dev/nul | $bb awk '{print $3,$4,$5}' 2> /dev/nul`"
+	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Safestrap Recovery v" 2> /dev/nul`" != "" ]; then
+		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Safestrap Recovery v" 2> /dev/nul`"
 	else
-		logerror "Recovery:" "Generic recovery."
+		logerror "$LANG_RECOVERY:" "$LANG_GENRECOOVERY"
 	fi
 else
-	logerror "Recovery:" "No recovery detected!"
+	logerror "$LANG_RECOVERY:" "$LANG_NORECOVERY"
+fi
+logerror "###########################" ""
+
+#### Spit details about the language file
+if $bb [ -f /data/local/tmp/onandroid.lang ]; then
+	logerror "$LANG_LANGFILEL:" "$LANG_LANGFILEN: $LANGFILE_LANGNAME"
+	logerror "$LANG_LANGFILEC: $LANGFILE_LANGCODE" "$LANG_LANGFILED: $LANGFILE_DESC"
+	logerror "$LANG_LANGFILEA: $LANGFILE_AUTHORNAME" "$LANG_LANGFILEE: $LANGFILE_AUTHOREMAIL"
+	logerror "$LANG_LANGFILEV: $LANGFILE_VERSION" "$LANG_LANGFILEF: $LANGFILE_FORONLINENANDROIDVERSION"
+else
+	logerror "$LANG_LANGFILEL:" "$LANG_LANGFILEO"
 fi
 logerror "###########################" ""
 
@@ -705,7 +968,7 @@ else
 	fi
 fi
 
-#### Set backup name to default if backup name was not provided
+#### Set backup name to default if backup name was not provided	
 if $bb [ ! "$name" ]; then
 	name=$def_name
 fi
@@ -730,20 +993,20 @@ fi
 start_time=`$bb date +%s`
 
 #### Output busybox being used
-logmsg "Using busybox from: $bb"
+logmsg "$LANG_USINGBUSYBOX: $bb"
 
 #### Check for root permissions
-logmsg "Checking for root permissions..."
+logmsg "$LANG_CHECKROOT..."
 if $bb [ "`$bb id -u`" == "0" ]; then
-	logmsg "Root permissions acquired!"
+	logmsg "$LANG_ROOTOK"
 else
-	logmsg "Could not acquire root permissions! Exiting..."
+	logmsg "$LANG_NOROOT $LANG_EXITING..."
 	logerror "$bb id -u:" "`$bb id -u`"
-	exit $err_noroot
+	exit $E_NOROOT
 fi
 
 #### Analyse power status
-logmsg "Analysing battery level..."
+logmsg "$LANG_ANALYSEBATT..."
 rem_power=-1
 ## Battery capacity
 # Xperia Pro, Neo, Neo V, Arc, Arc S
@@ -769,37 +1032,37 @@ fi
 
 #### Check if power is sufficient
 if $bb [ $rem_power == -1 ]; then
-	logmsg "Unable to check battery level! Taking a chance here..."
+	logmsg "$LANG_CANNOTBATT..."
 elif $bb [ $rem_power -gt $req_power ]; then
-	logmsg "Sufficient battery available!"
+	logmsg "$LANG_BATTOK"
 else
-	logmsg "Sufficient battery not available! Exiting..."
-	logerror "Battery Level:" "$rem_power"
-	exit $err_nobatt
+	logmsg "$LANG_NOBATT $LANG_EXITING..."
+	logerror "$LANG_BATTLEVEL:" "$rem_power"
+	exit $E_NOBATT
 fi
 
 #### Check BusyBox version (requires version 1.20 or above)
-logmsg "Checking version of BusyBox installed..."
+logmsg "$LANG_CHECKINGBB..."
 bb_major=`$bb | $bb grep "BusyBox v" | $bb cut -d v -f 2 | $bb cut -d - -f 1 | $bb cut -d . -f 1`
 bb_minor=`$bb | $bb grep "BusyBox v" | $bb cut -d v -f 2 | $bb cut -d - -f 1 | $bb cut -d . -f 2`
 
 if $bb [ "`$bb echo $bb_major | $bb egrep "^[0-9]+$"`" -a "`$bb echo $bb_minor | $bb egrep "^[0-9]+$"`" ]; then
 	if $bb [ "$bb_major" -lt 1 -o "$bb_minor" -lt 20 ]; then
-		logmsg "Error: BusyBox version less than 1.20 found. Exiting..."
-		#exit $err_bbvless
+		logmsg "$LANG_ERROR: $LANG_BBLESS $LANG_EXITING..."
+		exit $E_BBVLESS
 	else
-		logmsg "BusyBox version 1.20 or above installed!"
+		logmsg "$LANG_BBOK"
 	fi
 else
-	logmsg "Unable to check BusyBox version. Taking chances here..."
+	logmsg "$LANG_BBCANNOTCHECK..."
 fi
 
 #### Check if SD card is mounted
-logmsg "Searching for SD card..."
+logmsg "$LANG_SEARCHSD..."
 # Use storage media / path if provided
 if $bb [ "$storage" != "" ] && $bb [ -d $storage ]; then
 	sdcard=$storage
-	logmsg "Alternate storage media provided!"
+	logmsg "$LANG_ALTERNATEMEDIA"
 else
 	# Continue the search for an sd card
 	sdcard="$EXTERNAL_STORAGE"
@@ -808,11 +1071,11 @@ else
 	fi
 	sdcard=`$bb mount | $bb grep -v "/mnt/asec/" | $bb egrep -i "($sdcard|sdcard|external|storage|shell).* type (vfat|fuse)" | $bb tail -n 1 | $bb cut -d ' ' -f 3`
 	if $bb [ ! "$sdcard" ]; then
-		logmsg "SD card not found! Exiting..."
-		logerror "Mounts:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
-		exit $err_nosdcard
+		logmsg "$LANG_SDNOTFOUND $LANG_EXITING..."
+		logerror "$LANG_MOUNTS:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
+		exit $E_NOSDCARD
 	else
-		logmsg "SD card found!"
+		logmsg "$LANG_SDFOUND"
 	fi
 fi
 
@@ -830,45 +1093,45 @@ blobsdir=$sdcard$blobsdir
 #### Detect partition layouts
 part_type="not_found"
 if $bb [ -f "/proc/mtd" ]; then
-	if $bb [ "`$bb cat /proc/mtd | $bb egrep "(mtd|mmc|bml)"`" != "" ]; then
+	if $bb [ "`$bb cat /proc/mtd | $bb egrep "(mtd|mmc|bml|nand)"`" != "" ]; then
 		part_type="/proc/mtd"
 		part_path="/dev/mtd"
 		part_bytediv=1048576
 		part_bsval=4096
-		logmsg "This is an MTD based device!"
+		logmsg "$LANG_ISMTDDEV"
 	else
 		part_type="not_found"
 	fi
 fi
 if $bb [ -f "/proc/emmc" ]; then
-	if $bb [ "`$bb cat /proc/emmc | $bb egrep "(mtd|mmc|bml)"`" != "" ]; then
+	if $bb [ "`$bb cat /proc/emmc | $bb egrep "(mtd|mmc|bml|nand)"`" != "" ]; then
 		part_type="/proc/emmc"
 		part_path="/dev/block"
 		part_bytediv=1048576
 		part_bsval=1024
-		logmsg "This is an EMMC based device!"
+		logmsg "$LANG_ISEMMCDEV"
 	else
 		part_type="not_found"
 	fi
 fi
 if $bb [ -f "/proc/dumchar_info" ]; then
-	if $bb [ "`$bb cat /proc/dumchar_info | $bb egrep "(mtd|mmc|bml)"`" != "" ]; then
+	if $bb [ "`$bb cat /proc/dumchar_info | $bb egrep "(mtd|mmc|bml|nand)"`" != "" ]; then
 		part_type="/proc/dumchar_info"
 		part_path="/dev/block"
 		part_bytediv=1048576
 		part_bsval=4096
-		logmsg "This is an MTK based device!"
+		logmsg "$LANG_ISMTKDEV"
 	else
 		part_type="not_found"
 	fi
 fi
 if $bb [ -f "/system/partlayout4nandroid" ]; then
-	if $bb [ "`$bb cat /system/partlayout4nandroid | $bb egrep "(mtd|mmc|bml)"`" != "" ]; then
+	if $bb [ "`$bb cat /system/partlayout4nandroid | $bb egrep "(mtd|mmc|bml|nand)"`" != "" ]; then
 		part_type="/system/partlayout4nandroid"
 		part_path="/dev/block"
 		part_bytediv=1048576
 		part_bsval=1024
-		logmsg "This device has a patch file installed!"
+		logmsg "$LANG_HASPATCH"
 	else
 		part_type="not_found"
 	fi
@@ -887,8 +1150,13 @@ elif $bb [ "$default_backup_format" == "tar" -a ! "$backup_style" ]; then
 fi
 
 #### Determine if advanced backup mode is defined and follow the same
-if $bb [ -f $path/../.advanced_backup_partitions ]; then
-	default_adv=`$bb cat $path/../.advanced_backup_partitions`
+if $bb [ "$backup_style" == "twrp" ]; then
+	config_path="$path/../.."
+else
+	config_path="$path/.."
+fi
+if $bb [ -f $config_path/.advanced_backup_partitions ]; then
+	default_adv=`$bb cat $config_path/.advanced_backup_partitions`
 fi
 if $bb [ "$default_adv" != "" -a "$advbkp_mode" != "run" ]; then
 	adv=$default_adv
@@ -901,15 +1169,15 @@ as_name=".android_secure"
 #### Announce backup style
 if $bb [ "$backup_style" == "incremental" ]; then
 	if $bb [ "$style_mode" == "default" ]; then
-		logmsg "Incremental backup mode selected by default!"
+		logmsg "$LANG_INCREMSELECTD"
 	else
-		logmsg "Incremental backup mode selected at run time!"
+		logmsg "$LANG_INCREMSELECTR"
 	fi
 elif $bb [ "$backup_style" == "tarsplit" ]; then
 	if $bb [ "$style_mode" == "default" ]; then
-		logmsg "Split backup mode selected by default!"
+		logmsg "$LANG_SPLITSELECTD"
 	else
-		logmsg "Split backup mode selected at run time!"
+		logmsg "$LANG_SPLITSELECTR"
 	fi
 elif $bb [ "$backup_style" == "twrp" ]; then
 	as_name="and-sec"
@@ -918,16 +1186,21 @@ elif $bb [ "$backup_style" == "twrp" ]; then
 	else
 		img_ext="emmc.win"
 	fi
-	logmsg "TWRP backup mode selected at run time!"
+	logmsg "$LANG_TWRPSELECTR"
+	if $bb [ "$compress_backup" == "yes" ]; then
+		logmsg "$LANG_TWRPCOMPN"
+	elif $bb [ "$compress_backup" == "gzip" ]; then
+		logmsg "$LANG_TWRPCOMPG"
+	fi
 fi
 if $bb [ "$advbkp_mode" == "run" ]; then
-	logmsg "Advanced backup mode selected at run time!"
+	logmsg "$LANG_ADVSELECTR"
 elif $bb [ "$default_adv" != "" ]; then
-	logmsg "Advanced backup mode selected by default!"
+	logmsg "$LANG_ADVSELECTD"
 fi
 
 #### Trap any exit/kill signals and cleanup before exiting
-trap 'cleanup; killalltools; exit $err_killsig' 1 2 3 13 15
+trap 'cleanup; killalltools; exit $E_KILLSIG' 1 2 3 13 15
 
 #### Mount /flexrom partition if it is hinted but not mouted (for Acer devices)
 if $bb [ ! "`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "/flexrom "`" ]; then
@@ -947,9 +1220,19 @@ fi
 
 #### Check for HP Touchpad (Originally on webOS, CM ported)
 if $bb [ "`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "/dev/store/cm-system "`" ]; then
-	is_hptouchpad="yes"	
+	is_hptouchpad="yes"
 else
 	is_hptouchpad="no"
+fi
+
+#### Check for Nook Color
+if $bb [ "`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "/rom "`" ]; then
+	is_nookcolor="yes"
+	$bb mount -o rw,remount /
+	$bb mkdir -p /boot
+	$bb mount /dev/block/mmcblk1p1 /boot
+else
+	is_nookcolor="no"
 fi
 
 #### Check if /data is internal or /sd-ext is mounted at /data
@@ -976,28 +1259,29 @@ flexrom_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /flexrom " | $b
 custpack_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /custpack " | $bb cut -d ' ' -f 5`"
 mobileinfo_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /mobile_info " | $bb cut -d ' ' -f 5`"
 hptpboot_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /boot " | $bb cut -d ' ' -f 5`"
+nookcolorboot_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /boot " | $bb cut -d ' ' -f 5`"
 
-if $bb [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$datadatai_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" -o "$preload_fs" == "yaffs2" -o "$custbkp_fs" == "yaffs2" -o "$flexrom_fs" == "yaffs2" -o "$custpack_fs" == "yaffs2" -o "$mobileinfo_fs" == "yaffs2" -o "$boot_fs" == "yaffs2" ]; then
+if $bb [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$datadatai_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" -o "$preload_fs" == "yaffs2" -o "$custbkp_fs" == "yaffs2" -o "$flexrom_fs" == "yaffs2" -o "$custpack_fs" == "yaffs2" -o "$mobileinfo_fs" == "yaffs2" -o "$hptpboot_fs" == "yaffs2" -o "$nookcolorboot_fs" == "yaffs2" ]; then
 	has_yaffs2="true"
 fi
 
 #### Check for required tools
-logmsg "Checking for required tools..."
+logmsg "$LANG_CHECKTOOLS..."
 if $bb [ "$has_yaffs2" == "true" -a "`$bb which mkyaffs2image`" == "" ]; then
-	logmsg "Error: mkyaffs2image not found in path! Exiting..."
-	exit $err_nomkyaffs
+	logmsg "$LANG_ERROR: $LANG_NOMKYAFFS2IMAGE $LANG_EXITING..."
+	exit $E_NOMKYAFFS
 fi
 if $bb [ "$backup_style" == "incremental" -o "$backup_style" == "gc" ]; then
 	if $bb [ "`$bb which dedupe`" == "" ]; then
-		logmsg "Error: dedupe not found in path! Exiting..."
-		exit $err_nodedupe
+		logmsg "$LANG_ERROR: $LANG_NODEDUPE $LANG_EXITING..."
+		exit $E_NODEDUPE
 	fi
 fi
-if $bb [ "`$bb which $bb`" == "" ]; then
-	logmsg "Error: busybox not found in path! Exiting..."
-	exit $err_nobb
+if $bb [ "`$bb which busybox`" == "" ]; then
+	logmsg "$LANG_ERROR: $LANG_NOBUSYBOX $LANG_EXITING..."
+	exit $E_NOBB
 fi
-logmsg "All required tools available!"
+logmsg "$LANG_ALLTOOLSOK"
 
 #### Create backup and blobs directories (if incremental backups selected)
 if $bb [ ! -d $path ]; then
@@ -1010,8 +1294,8 @@ fi
 #### Change to backup directory
 cd $path
 if $bb [ $? != 0 ]; then
-	logmsg "Error: Could not change to $path. Exiting..."
-	exit $err_cntcdpath
+	logmsg "$LANG_ERROR: $LANG_CANNOTCHANGETO $path. $LANG_EXITING..."
+	exit $E_CNTCDPATH
 fi
 
 #### Create directory for backup & do the tests
@@ -1019,39 +1303,40 @@ if $bb [ "$backup_style" != "gc" ]; then
 	if $bb [ ! -d $name ]; then
 		$bb mkdir -p -- $name
 		if $bb [ ! -d $name ]; then
-			logmsg "Error: Cannot create $name. Exiting..."
-			logerror "Mounts:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
-			exit $err_cntmkname
+			logmsg "$LANG_ERROR: $LANG_CANNOTCREATE $name. $LANG_EXITING..."
+			logerror "$LANG_MOUNTS:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
+			exit $E_CNTMKNAME
 		fi
 	else
 		if $bb [ "$replace_backup" == "yes" ]; then
-			logmsg "Replace backup mode selected at run time!"
+			logmsg "$LANG_REPLSELECTEDR"
 		else
-			logmsg "Error: $name already exists!"
-			logmsg "Do you want to replace? [y|n]: \c"
+			logmsg "$LANG_ERROR: $name $LANG_ALREADYEXISTS"
+			logmsg "$LANG_WANTTOREPLACE [y|n]: \c"
 			read answer
 			if $bb [ "$answer" == "y" -o "$answer" == "Y" -o "$answer" == "yes" -o "$answer" == "Yes" -o "$answer" == "YES" ]; then
-				logmsg "Replace backup mode selected upon prompt!"
+				logmsg "$LANG_REPLSELECTP"
+				replace_backup="yes"
 			else
-				logmsg "Error: $name already exists! Exiting..."
-				exit $err_nameexist
+				logmsg "$LANG_ERROR: $name $LANG_ALREADYEXISTS $LANG_EXITING..."
+				exit $E_NAMEEXIST
 			fi
 		fi
 	fi
 	$bb touch -- $name/.nandroidwritable
 	if $bb [ ! -e $name/.nandroidwritable ]; then
-		logmsg "Error: Cannot write to $name ! Exiting..."
-		logerror "Mounts:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
-		exit $err_cntwrname
+		logmsg "$LANG_ERROR: $LANG_CANNOTWRITETO $name ! $LANG_EXITING..."
+		logerror "$LANG_MOUNTS:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
+		exit $E_CNTWRNAME
 	fi
 	$bb rm -- $name/.nandroidwritable
 fi
 if $bb [ "$backup_style" == "incremental" ]; then
 	$bb touch -- $blobsdir/.nandroidwritable
 	if $bb [ ! -e $blobsdir/.nandroidwritable ]; then
-		logmsg "Error: Cannot write to $blobsdir ! Exiting..."
-		logerror "Mounts:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
-		exit $err_cntwrblobs
+		logmsg "$LANG_ERROR: $LANG_CANNOTWRITETO $blobsdir ! $LANG_EXITING..."
+		logerror "$LANG_MOUNTS:" "`$bb mount | $bb grep -v "/mnt/asec/"`"
+		exit $E_CNTWRBLOBS
 	fi
 	$bb rm -- $blobsdir/.nandroidwritable
 	if $bb [ ! -f $blobsdir/.nomedia ]; then
@@ -1061,7 +1346,7 @@ fi
 
 #### Garbage Collect (without backup)
 if $bb [ "$backup_style" == "gc" ]; then
-	logmsg "Garbage Collection mode selected!"
+	logmsg "$LANG_GARBSELECT"
 	garbagecollect
 	# End timer
 	end_time=`$bb date +%s`
@@ -1070,27 +1355,31 @@ if $bb [ "$backup_style" == "gc" ]; then
 	e_min=`$bb expr $elapsed / 60`
 	e_sec=`$bb expr $e_min \* 60`
 	e_sec=`$bb expr $elapsed - $e_sec`
-	logmsg "Garbage Collection Completed in $e_min minutes $e_sec seconds!"
+	logmsg "$LANG_GARBCOMPL $e_min $LANG_MINUTES $e_sec $LANG_SECONDS!"
 	exit 0
 fi
 
-#### Detect /boot, /recovery, /wimax and /appslog partitions
+#### Detect /boot, /recovery, /wimax, /appslog and /kernel partitions
 if $bb [ $part_type != "not_found" ]; then
 	if $bb [ $part_type == "/proc/dumchar_info" ]; then
+		part_uboot=`$bb cat $part_type | $bb grep "^uboot.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
 		part_boot=`$bb cat $part_type | $bb grep "^bootimg.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
 		part_recovery=`$bb cat $part_type | $bb grep "^recovery.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
 		part_wimax=`$bb cat $part_type | $bb grep "^wimax.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
 		part_appslog=`$bb cat $part_type | $bb grep "^appslog.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
+		part_kernel=`$bb cat $part_type | $bb grep "^kernel.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
 	else
+		part_uboot=`$bb cat $part_type | $bb grep "\"uboot\"" | $bb cut -d ':' -f 1`
 		part_boot=`$bb cat $part_type | $bb grep "\"boot\"" | $bb cut -d ':' -f 1`
 		part_recovery=`$bb cat $part_type | $bb grep "\"recovery\"" | $bb cut -d ':' -f 1`
 		part_wimax=`$bb cat $part_type | $bb grep "\"wimax\"" | $bb cut -d ':' -f 1`
 		part_appslog=`$bb cat $part_type | $bb grep "\"appslog\"" | $bb cut -d ':' -f 1`
+		part_kernel=`$bb cat $part_type | $bb grep "\"kernel\"" | $bb cut -d ':' -f 1`
 	fi
 fi
 
 #### Disk space check (in MB)
-logmsg "Checking disk space..."
+logmsg "$LANG_CHECKDISKSPACE..."
 
 #### /mmcblk0_start partition size (for Acer devices)
 if $bb [ "$flexrom_fs" == "" -o "`$bb echo $adv | $bb grep 'm'`" == "" ]; then
@@ -1100,6 +1389,33 @@ else
 	mmcblk0_start_count=`$bb expr $mmcblk0_start_dec \* 512`
 	u_mmcblk0_start=7
 	mmcblk0_start_start=0
+fi
+
+#### /uboot partition size
+if $bb [ "$part_type" == "not_found" -o "$part_uboot" == "" -o "`$bb echo $adv | $bb grep 'k'`" == "" ]; then
+	u_uboot=0
+else
+	if $bb [ $part_type == "/proc/dumchar_info" ]; then
+		uboot_hex=`$bb cat $part_type | $bb grep "^uboot.*0x" | $bb awk '{print $2}'`
+		uboot_dec=`$bb printf "%d \n" $uboot_hex`
+		uboot_count=`$bb expr $uboot_dec`
+		u_uboot=`$bb expr $uboot_dec / $part_bytediv`
+		u_uboot=`$bb expr $u_uboot + 1`
+		uboot_start_hex=`$bb cat $part_type | $bb grep "^uboot.*0x" | $bb awk '{print $3}'`
+		uboot_start=`$bb printf "%d \n" $uboot_start_hex`
+		uboot_start=`$bb expr $uboot_start`
+	else
+		uboot_hex=`$bb cat $part_type | $bb grep "\"uboot\"" | $bb awk '{print $2}'`
+		uboot_dec=`$bb printf "%d \n" 0x$uboot_hex`
+		uboot_count=`$bb expr $uboot_dec \* 1024`
+		u_uboot=`$bb expr $uboot_dec / $part_bytediv`
+		u_uboot=`$bb expr $u_uboot + 1`
+		if $bb [ "`$bb cat $part_type | $bb grep "\"uboot\"" | $bb awk '{print $5}'`" != "" ]; then
+			uboot_start_hex=`$bb cat $part_type | $bb grep "\"uboot\"" | $bb awk '{print $5}'`
+			uboot_start=`$bb printf "%d \n" 0x$uboot_start_hex`
+			uboot_start=`$bb expr $uboot_start \* 1024`
+		fi
+	fi
 fi
 
 #### /boot partition size
@@ -1210,6 +1526,33 @@ else
 	fi
 fi
 
+#### /kernel partition size
+if $bb [ "$part_type" == "not_found" -o "$part_kernel" == "" -o "`$bb echo $adv | $bb grep 'g'`" == "" ]; then
+	u_kernel=0
+else
+	if $bb [ $part_type == "/proc/dumchar_info" ]; then
+		kernel_hex=`$bb cat $part_type | $bb grep "^kernel.*0x" | $bb awk '{print $2}'`
+		kernel_dec=`$bb printf "%d \n" $kernel_hex`
+		kernel_count=`$bb expr $kernel_dec`
+		u_kernel=`$bb expr $kernel_dec / $part_bytediv`
+		u_kernel=`$bb expr $u_kernel + 1`
+		kernel_start_hex=`$bb cat $part_type | $bb grep "^kernel.*0x" | $bb awk '{print $3}'`
+		kernel_start=`$bb printf "%d \n" $kernel_start_hex`
+		kernel_start=`$bb expr $kernel_start`
+	else
+		kernel_hex=`$bb cat $part_type | $bb grep "\"kernel\"" | $bb awk '{print $2}'`
+		kernel_dec=`$bb printf "%d \n" 0x$kernel_hex`
+		kernel_count=`$bb expr $kernel_dec \* 1024`
+		u_kernel=`$bb expr $kernel_dec / $part_bytediv`
+		u_kernel=`$bb expr $u_kernel + 1`
+		if $bb [ "`$bb cat $part_type | $bb grep "\"kernel\"" | $bb awk '{print $5}'`" != "" ]; then
+			kernel_start_hex=`$bb cat $part_type | $bb grep "\"kernel\"" | $bb awk '{print $5}'`
+			kernel_start=`$bb printf "%d \n" 0x$kernel_start_hex`
+			kernel_start=`$bb expr $kernel_start \* 1024`
+		fi
+	fi
+fi
+
 #### /system partition size
 if $bb [ "$system_fs" == "" -o "`$bb echo $adv | $bb grep 's'`" == "" ]; then
 	u_system=0
@@ -1313,6 +1656,14 @@ else
 	u_hptpboot=`$bb expr $u_hptpboot + 1`
 fi
 
+### /boot partition size (for Nook Color)
+if $bb [ "$is_nookcolor" == "no" -o "`$bb echo $adv | $bb grep 'p'`" == "" ]; then
+	u_nookcolorboot=0
+else
+	u_nookcolorboot=`$bb df -Pm /boot | $bb tail -n 1 | $bb awk '{print $3}'`
+	u_nookcolorboot=`$bb expr $u_nookcolorboot + 1`
+fi
+
 #### Check if .android_secure exists
 as_parent="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "/.android_secure " | $bb cut -d ' ' -f 3 | $bb sed s/'\/.android_secure'/''/g`"
 
@@ -1367,34 +1718,34 @@ else
 fi
 
 #### Required space calculation
-req_space=`$bb expr $u_mmcblk0_start + $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_system + $u_data + $u_cache + $u_datadata + $u_datadatai + $u_efs + $u_preload + $u_custbkp + $u_flexrom + $u_custpack + $u_mobileinfo + $u_hptpboot + $u_as + $u_sdext`
+req_space=`$bb expr $u_mmcblk0_start + $u_uboot + $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_kernel + $u_system + $u_data + $u_cache + $u_datadata + $u_datadatai + $u_efs + $u_preload + $u_custbkp + $u_flexrom + $u_custpack + $u_mobileinfo + $u_hptpboot + $u_nookcolorboot + $u_as + $u_sdext`
 
 #### Available space calculation
 freespace=`$bb df -Pm $sdcard | $bb tail -n 1 | $bb awk '{print $4}'`
 
 #### Announce available space and required space
-logmsg "SD Card Free Space: $freespace MB"
-logmsg "Required Space: $req_space MB"
+logmsg "$LANG_SDFREESPACE: $freespace MB"
+logmsg "$LANG_REQUIREDSPACE: $req_space MB"
 if $bb [ $freespace -lt $req_space ]; then
 	cd $path
 	if $bb [ $? != 0 ]; then
-		logmsg "Error: Could not change to $path. Exiting..."
-		exit $err_cntcdpath
+		logmsg "$LANG_ERROR: $LANG_CANNOTCHANGETO $path. $LANG_EXITING..."
+		exit $E_CNTCDPATH
 	fi
 	$bb rm -rf -- $name
-	logmsg "Not enough disk space! Exiting..."
+	logmsg "$LANG_NOSPACE $LANG_EXITING..."
 	logerror "df:" "`$bb df -Pm`"
-	logerror "Partitions:" "`$bb cat $part_type`"
+	logerror "$LANG_PARTITIONS:" "`$bb cat $part_type`"
 	logerror ".android_secure:" "$u_as"
 	logerror "sd-ext:" "$u_sdext"
 	cleanup
-	exit $err_nospace
+	exit $E_NOSPACE
 else
-	logmsg "Necessary disk space available!"
+	logmsg "$LANG_SPACEOK"
 fi
 
 #### Detect and fill up excludes
-logmsg "Detecting mountpoints to exclude..."
+logmsg "$LANG_DETECTINGEXCL..."
 
 # /system excludes
 set_excludes "system" "/system" "$system_fs" "s"
@@ -1402,12 +1753,26 @@ set_excludes "system" "/system" "$system_fs" "s"
 # /data excludes
 set_excludes "data" "$data_mount" "$data_fs" "d"
 if $bb [ "$data_fs" != "" -a "`$bb echo $adv | $bb grep 'd'`" != "" ]; then
+	data_excludes="$data_excludes --exclude=data/media/*"
 	data_excludes_dedupe="$data_excludes_dedupe ./media/*"
-	data_excludes_dedupe="$data_excludes_dedupe ./data/com.google.android.music/files/*"
+	if $bb [ "$exclude_dalvik" == "yes" ]; then
+		data_excludes="$data_excludes --exclude=data/dalvik-cache/*"
+		data_excludes_dedupe="$data_excludes_dedupe ./dalvik-cache/*"
+	fi
+	if $bb [ "$exclude_gmusic" == "yes" ]; then
+		data_excludes="$data_excludes --exclude=data/data/com.google.android.music/files/*"
+		data_excludes_dedupe="$data_excludes_dedupe ./data/com.google.android.music/files/*"
+	fi
 fi
 
 # /cache excludes
 set_excludes "cache" "/cache" "$cache_fs" "c"
+if $bb [ "$cache_fs" != "" -a "`$bb echo $adv | $bb grep 'c'`" != "" ]; then
+	if $bb [ "$exclude_dalvik" == "yes" ]; then
+		cache_excludes="$cache_excludes --exclude=cache/dalvik-cache/*"
+		cache_excludes_dedupe="$cache_excludes_dedupe ./dalvik-cache/*"
+	fi
+fi
 
 # /datadata excludes (for some Samsung devices)
 set_excludes "datadata" "/datadata" "$datadata_fs" "t"
@@ -1436,10 +1801,28 @@ set_excludes "mobileinfo" "/mobile_info" "$mobileinfo_fs" "f"
 # /boot excludes (for HP Touchpad)
 set_excludes "hptpboot" "/boot" "$hptpboot_fs" "p"
 
+# /boot excludes (for Nook Color)
+set_excludes "nookcolorboot" "/boot" "$nookcolorboot_fs" "n"
+
 # sd-ext excludes
 set_excludes "sdext" "$extm" "$sdext_fs" "x"
 
-logmsg "Backing up to $path/$name"
+logmsg "$LANG_BACKINGUPTO $path/$name"
+
+#### Move the old backup to a temporary directory if replace mode is selected
+if $bb [ "$replace_backup" == "yes" ]; then
+	logmsg "$LANG_BACKINGUPOLD...\c"
+	$bb mv $path/$name $path/${name}_old &
+	$bb sleep 2
+	while $bb [ `$bb ps w | $bb grep "$bb mv" | $bb grep -v "$bb grep $bb mv" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+		progress moving_old_backup
+		$bb sleep 2
+	done
+	progress_done
+	$bb echo ""
+	# Make new directory for the current backup
+	$bb mkdir -p $path/$name
+fi
 
 #### Change to backup directory
 cd $path/$name
@@ -1449,14 +1832,17 @@ if $bb [ "$flexrom_fs" ]; then
 	nandroid_dd "mmcblk0_start" "mmcblk0_start" "mmcblk0" "m" "$u_mmcblk0_start" "512" "$mmcblk0_start_count" "$mmcblk0_start_start" "no"
 fi
 
+#### Backup uboot
+nandroid_dd "uboot" "uboot" "$part_uboot" "k" "$u_uboot" "$part_bsval" "$uboot_count" "$uboot_start" "no"
+
 #### Backup boot
-if $bb [ "$is_hptouchpad" != "yes" -a "$custbkp_fs" == "" ]; then
+if $bb [ "$is_hptouchpad" != "yes" -a "$is_nookcolor" != "yes" -a "$custbkp_fs" == "" ]; then
 	nandroid_dd "boot" "boot" "$part_boot" "b" "$u_boot" "$part_bsval" "$boot_count" "$boot_start" "yes"
 fi
 
 #### Notice to install patch file, if boot partition is not found.
 if $bb [ $part_type == "not_found" -o "$part_boot" == "" ]; then
-	logmsg "Consider installing patch file for your device, for a complete nandroid!"
+	logmsg "$LANG_PATCHNOTICE"
 fi
 
 #### Backup recovery
@@ -1468,11 +1854,14 @@ nandroid_dd "wimax" "wimax" "$part_wimax" "w" "$u_wimax" "$part_bsval" "$wimax_c
 #### Backup appslog (for HTC and Sony (Ericsson) devices)
 nandroid_dd "appslog" "appslog" "$part_appslog" "l" "$u_appslog" "$part_bsval" "$appslog_count" "$appslog_start" "no"
 
+#### Backup kernel
+nandroid_dd "kernel" "kernel" "$part_kernel" "g" "$u_kernel" "$part_bsval" "$kernel_count" "$kernel_start" "no"
+
 #### Backup /system
 nandroid_fs "system" "system" "s" "/system" "system" "$system_fs" "$u_system" "$system_excludes" "$system_excludes_dedupe" "yes"
 
 #### Backup /data
-nandroid_fs "data" "data" "d" "$data_mount" "data" "$data_fs" "$u_data" "--exclude=data/media/* --exclude=data/data/com.google.android.music/files/* $data_excludes" "$data_excludes_dedupe" "yes"
+nandroid_fs "data" "data" "d" "$data_mount" "data" "$data_fs" "$u_data" "$data_excludes" "$data_excludes_dedupe" "yes"
 
 #### Backup /cache
 nandroid_fs "cache" "cache" "c" "/cache" "cache" "$cache_fs" "$u_cache" "$cache_excludes" "$cache_excludes_dedupe" "yes"
@@ -1512,6 +1901,11 @@ if $bb [ "$is_hptouchpad" == "yes" -a "$hptpboot_fs" != "" ]; then
 	nandroid_fs "boot" "boot" "p" "/boot" "boot" "$hptpboot_fs" "$u_hptpboot" "$hptpboot_excludes" "$hptpboot_excludes_dedupe" "no"
 fi
 
+#### Backup /boot partition (for Nook Color)
+if $bb [ "$is_nookcolor" == "yes" -a "$nookcolorboot_fs" != "" ]; then
+	nandroid_fs "boot" "boot" "n" "/boot" "boot" "$nookcolorboot_fs" "$u_nookcolorboot" "$nookcolorboot_excludes" "$nookcolorboot_excludes_dedupe" "no"
+fi
+
 #### Backup .android_secure
 if $bb [ "$as_parent" ]; then
 	nandroid_fs ".android_secure" "$as_name" "a" "$sdcard_temp_mount/.android_secure" ".android_secure" "vfat" "$u_as" "" "" "no"
@@ -1531,22 +1925,39 @@ $bb sync
 $bb sleep 2
 cleanup
 
+#### Add new backup to old backup and rename, if replace mode is selected
+if $bb [ "$replace_backup" == "yes" ]; then
+	logmsg "$LANG_REPLACINGOLD...\c"
+	$bb mv $path/$name/* $path/${name}_old &
+	$bb sleep 2
+	while $bb [ `$bb ps w | $bb grep "$bb mv" | $bb grep -v "$bb grep $bb mv" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+		progress replacing_new_backup
+		$bb sleep 2
+	done
+	progress_done
+	$bb echo ""
+	# Remove new backup directory and rename temporary/old backup directory
+	$bb rm -rf $path/$name
+	$bb mv $path/${name}_old $path/$name
+fi
+
 #### Get ready to generate md5
 cd $path/$name
 if $bb [ $? != 0 ]; then
-	logmsg "Error: Could not change to $path/$name. Exiting..."
-	exit $err_cntcdpath
+	logmsg "$LANG_ERROR: $LANG_CANNOTCHANGETO $path/$name. $LANG_EXITING..."
+	exit $E_CNTCDNAME
 fi
-if $bb [ -f onandroid.log ]; then
-	$bb rm onandroid.log
+if [ -f $path/$name/recovery.log ]; then
+	$bb rm $path/$name/recovery.log
 fi
 
 #### Generate md5
 if $bb [ "$backup_style" == "twrp" -a "$generate_md5" != "no" ]; then
 	files=`$bb ls -lA1 | $bb awk '{print $7}' | $bb grep -v ".md5"`
 	for file in $files; do
-		logmsg "Generating md5sum for $file...\c"
+		logmsg "$LANG_GENMD5SUMFOR $file...\c"
 		$bb md5sum $file > $file.md5 2> /dev/null &
+		$bb sleep 2
 		while $bb [ `$bb ps w | $bb grep "$bb md5sum" | $bb grep -v "$bb grep $bb md5sum" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 			progress md5sum_generate
 			$bb sleep 2
@@ -1562,11 +1973,12 @@ if $bb [ "$backup_style" == "twrp" -a "$generate_md5" != "no" ]; then
 elif $bb [ "$backup_style" == "twrp" ]; then
 	null="null"
 else
-	logmsg "Generating md5sum...\c"
+	logmsg "$LANG_GENMD5SUM...\c"
 	if $bb [ -f nandroid.md5 ]; then
 		$bb rm nandroid.md5
 	fi
 	$bb md5sum .* * > nandroid.md5 2> /dev/null &
+	$bb sleep 2
 	while $bb [ `$bb ps w | $bb grep "$bb md5sum" | $bb grep -v "$bb grep $bb md5sum" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
 		progress md5sum_generate
 		$bb sleep 2
@@ -1575,7 +1987,7 @@ else
 	$bb echo ""
  	# Verify md5sum (to check if the file is populated)
 	if $bb [ "`$bb ls -A`" != "nandroid.md5" ]; then
-		logmsg "Verifying md5sum...\c"
+		logmsg "$LANG_VERIFYMD5SUM...\c"
 		while $bb [ `$bb stat -t nandroid.md5 | $bb awk '{print $2}'` == "0" ]; do
 			progress md5sum_validate
 			$bb sleep 2
@@ -1597,11 +2009,11 @@ elapsed=`$bb expr $end_time - $start_time`
 e_min=`$bb expr $elapsed / 60`
 e_sec=`$bb expr $e_min \* 60`
 e_sec=`$bb expr $elapsed - $e_sec`
-logmsg "Online Nandroid Backup Completed in $e_min minutes $e_sec seconds!"
+logmsg "$LANG_BACKUPCOMPL $e_min $LANG_MINUTES $e_sec $LANG_SECONDS!"
 logerror "###########################" ""
 bkp_files=`$bb ls -l1A $path/$name`
-logerror "Files Backed-up:" "\"$bkp_files\""
-$bb cp $logfile .
+logerror "$LANG_FILESBKPEDUP:" "\"$bkp_files\""
+$bb cp $logfile $path/$name/recovery.log
 
 #### LED detection
 # Xperia Pro

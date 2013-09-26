@@ -14,6 +14,7 @@ Online Nandroid backups the below partitions to `/sdcard/clockworkmod/backup` di
 * recovery
 * wimax (for Samsung devices)
 * appslog (for HTC and Sony (Ericsson) devices)
+* kernel
 * system
 * data
 * cache
