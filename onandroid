@@ -29,7 +29,7 @@
 ###########################################################################################################
 
 #### Define constants
-version="9.00"
+version="9.10"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -301,7 +301,11 @@ garbagecollect(){
 
 #### Usage instructions
 usage(){
-	$bb echo "$1" "WRONG_ARGS:$2"
+	if [ "$2" != "" ]; then
+		$bb echo "$1" "WRONG_ARGS:$2"
+	else
+		$bb echo ""
+	fi
 	$bb echo "Online Nandroid v$version by Ameer Dawood"
 	$bb echo ""
 	$bb echo "$LANG_USAGE: onandroid [options]"
@@ -473,7 +477,7 @@ nandroid_dd(){
 
 #### Backup Function - Filesystems
 nandroid_fs(){
-	part_name=$1 # Name of partition.Used only for display.
+	part_name=$1 # Name of partition. Used only for display.
 	part_fname=$2 # Backup file name.
 	part_id=$3 # Partition identification letter (used in advanced backup mode).
 	part_mount=$4 # Partition mount point.
@@ -715,10 +719,10 @@ nandroid_fs(){
 
 #### Set excludes
 set_excludes(){
-	part_name=$1
-	part_mount=$2
-	part_fs=$3
-	part_id=$4
+	part_name=$1 # Name of partition. Used only for display.
+	part_mount=$2 # Partition mount point.
+	part_fs=$3 # Filesystem type.
+	part_id=$4 # Partition identification letter (used in advanced backup mode).
 	# Usage: set_excludes $part_name $part_mount $part_fs $part_id
 	
 	if $bb [ "$part_fs" != "" -a "`$bb echo $adv | $bb grep $part_id`" != "" ]; then
@@ -765,13 +769,13 @@ if $bb [ -f $sdcard/TWRP/.twrps ]; then
 	elif $bb [ "`$bb cat $sdcard/TWRP/.twrps | $bb grep -i "TW_FORCE_CPUINFO_FOR_DEVICE_ID"`" ]; then
 		android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
 	else
-		android_id=`$bb cat /proc/cmdline | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
+		android_id=`$bb cat /proc/cmdline 2> /dev/null | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
 		if $bb [ ! "$android_id" ]; then
 			android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
 		fi
 	fi
 else
-	android_id=`$bb cat /proc/cmdline | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
+	android_id=`$bb cat /proc/cmdline 2> /dev/null | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
 	if $bb [ ! "$android_id" ]; then
 		android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
 	fi
@@ -929,9 +933,9 @@ if $bb [ -f /cache/recovery/last_log ]; then
 	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "philz touch" 2> /dev/nul`" != "" ]; then
 		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "philz touch" 2> /dev/nul`"
 	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Build : RA" 2> /dev/nul`" != "" ]; then
-		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Build : RA" 2> /dev/nul | $bb awk '{print $3}' 2> /dev/nul`"
+		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Build : RA" 2> /dev/null | $bb awk '{print $3}' 2> /dev/nul`"
 	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Welcome to 4EXT" 2> /dev/nul`" != "" ]; then
-		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Welcome to 4EXT" 2> /dev/nul | $bb awk '{print $3,$4,$5}' 2> /dev/nul`"
+		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Welcome to 4EXT" 2> /dev/null | $bb awk '{print $3,$4,$5}' 2> /dev/nul`"
 	elif $bb [ "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Safestrap Recovery v" 2> /dev/nul`" != "" ]; then
 		logerror "$LANG_RECOVERY:" "`$bb cat /cache/recovery/last_log 2> /dev/null | $bb grep -i "Safestrap Recovery v" 2> /dev/nul`"
 	else
@@ -1806,6 +1810,13 @@ set_excludes "nookcolorboot" "/boot" "$nookcolorboot_fs" "n"
 
 # sd-ext excludes
 set_excludes "sdext" "$extm" "$sdext_fs" "x"
+if $bb [ "$sdext_fs" != "" -a "`$bb echo $adv | $bb grep 'x'`" != "" ]; then
+	if $bb [ "$exclude_dalvik" == "yes" ]; then
+		extm_hl=`$bb echo $extm | $bb sed s/'^\\/'/''/g`
+		sdext_excludes="$sdext_excludes --exclude=$extm_hl/dalvik-cache/*"
+		sdext_excludes_dedupe="$sdext_excludes_dedupe ./dalvik-cache/*"
+	fi
+fi
 
 logmsg "$LANG_BACKINGUPTO $path/$name"
 
