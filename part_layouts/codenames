@@ -323,13 +323,17 @@ C5303	Sony Xperia SP C5303
 cooperve	Samsung Galaxy Ace GT-S5830M
 codinavid	Samsung Exhibit SGH-T599V (Canada)
 fiber-a31std7m1g	Bmorn Tablet m2 TP714AQ
-VS980	LG G2 (Verizon)
-g2	LG Optimus G2 F320K
+VS980	LG G2 VS980 (Verizon)
+F320K	LG G2 F320K (LTE)
 delos3geur	Samsung Galaxy Win GT-I8552
 hltetmo	Samsung Galaxy Note III (T-Mobile)
+<<<<<<< HEAD
 expresslte	Galaxy Express Samsung GT-I8730
 D802	LG G2 (Worldwide)
 hlteskt	Samsung Galaxy Note III (SK Telecom) N900S
 m7wlv	HTC HTC One (Verizon)
 goghspr	Samsung galaxy Victory SPH-L300
 raybst	Samsung Galaxy Ring SPH-M840 (Virgin Mobile)
+=======
+ghost	Motorola Moto X XT1055
+>>>>>>> dae2ed015414d86e159a93d05e9e8cab42971a88
