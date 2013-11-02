@@ -1,89 +1,89 @@
-satsuma  Sony Ericsson Xperia Active - ST17(i/a)
-anzu	Sony Ericsson Xperia Arc - LT15(i/a)
-ayame	Sony Ericsson Xperia Arc S - LT18(i/a)
-coconut	Sony Ericsson Xperia Live with Walkman - WT19(i/a)
-smultron	Sony Ericsson Xperia Mini - ST15(i/a)
-mango	Sony Ericsson Xperia Mini Pro - SK17(i/a)
-hallon	Sony Ericsson Xperia Neo - MT15(i/a)
-haida	Sony Ericsson Xperia Neo V - MT11(i/a)
-zeus	Sony Ericsson Xperia Play GSM - R800(i/a)
-zeusc	Sony Ericsson Xperia Play CDMA - R800(x/a/at)
-iyokan	Sony Ericsson Xperia Pro - MK16(i/a)
-urushi	Sony Ericsson Xperia Ray - ST18(i/a)
-es209ra	Sony Ericsson Xperia X10 (i/a)
-shakira	Sony Ericsson Xperia X8
-robyn	Sony Ericsson Xperia X10 Mini
-mimmi	Sony Ericsson Xperia X10 Mini Pro
-blade	ZTE Blade
-bravo	HTC Desire
-bravoc	HTC Desire CDMA
-buzz	HTC Wildfire
-c660	LG Optimus Pro
-captivatemtd	Samsung Captivate (MTD)
-click	HTC Tatoo
-crespo	Google Nexus S
-crespo4g	Google Nexus S 4G
-desirec	HTC Droid Eris
-epicmtd	Samsung Epic 4G
-fascinatemtd	Samsung Fascinate
-galaxysmtd	Samsung Galaxy S GT-I9000 / GT-I9000B
-showcasemtd	Samsung Showcase
-vibrantmtd	Samsung Vibrant SGH-T959
-p500	LG Optimus One P500
-hero	HTC Hero
-heroc	HTC Hero (CDMA)
-harmony	NVIDIA Tegra 250 Development Kit
-inc	HTC Droid Incredible (Verizon)
-legend	HTC Legend
-liberty	HTC Aria
-mesmerizemtd	Samsung Mesmerize
-morrison	Motorola Cliq
-motus	Motorola Backflip
-passion	Google Nexus One
-zero	Geeksphone Zero
-one	Geeksphone One
-zeppelin	Motorola MB501 CLIQ XT/Quench
-z71	Commtiva Z71
-wmid	WonderMedia WM8850-E18E
-supersonic	HTC Evo 4G PC36100 (Sprint)
-dream	HTC G1 (T-Mobile)
-marvel	HTC Wildfire S
-morr	Motorola DEXT MB220
-roamer	ZTE Avail Z990G
-sojus	Google Nexus S 4G D720
-streak	Dell Streak
-SGH-T959V	Samsung Galaxy S 4G SGH-T959V
-photon	HTC HD mini
-hwm920	Huawei Activa 4G M920
-sholes	Motorola Droid
-thunderc	LG Optimus V VM670
-cdma_ciena	Motorola Citrus WX445 (Verizon)
-GT-I9000B	Samsung Captivate (MTD) GT-I9000B
-m860	Huawei Ascend M860
-soju	Google Nexus S GT-I9020T
-GT-I9023	Google Nexus S GT-I9023
-u9200	Huawei Ascend P1 U9200
-pico	HTC Explorer
-pecan	LG Optimus Me P350
-u8815	Huawei Ascend G300
-u8160	Huawei U8160
-hwm886	Huawei Mercury M886
-xt531	Motorola Fire XT XT531
-skate	ZTE Skate
-moon	Pantech Crossover P8000
-SPH-D700	Samsung Galaxy Epic 4G SPH-D700
-hwu8665	Huawei Fusion 2 U8665
-swift	LG Optimus GT540
-tinboost	Motorola Defy Mini XT320
-dream_sapphire	HTC Dream and Magic
-ls670	LG Optimus S
-marvelc	HTC Wildfire S CDMA
-a57	Micromax A57
-a52	Micromax A52
-a54	Micromax A54
-a25	Micromax A25
-gelato	LG Optimus Q L55C
-univa	LG Univa E510
-leo	HTC HD2
-venture	Alcatel Venture
-u8150 Huawei Ideos U8150
+Alcatel	venture	Alcatel Venture
+Commtiva	z71	Commtiva Z71
+Dell	streak	Dell Streak
+Geeksphone	one	Geeksphone One
+Geeksphone	zero	Geeksphone Zero
+Google	GT-I9023	Google Nexus S GT-I9023
+Google	crespo	Google Nexus S
+Google	crespo4g	Google Nexus S 4G
+Google	passion	Google Nexus One
+Google	soju	Google Nexus S GT-I9020T
+Google	sojus	Google Nexus S 4G D720
+HTC	bravo	HTC Desire
+HTC	bravoc	HTC Desire CDMA
+HTC	buzz	HTC Wildfire
+HTC	click	HTC Tatoo
+HTC	desirec	HTC Droid Eris
+HTC	dream	HTC G1 (T-Mobile)
+HTC	dream_sapphire	HTC Dream and Magic
+HTC	hero	HTC Hero
+HTC	heroc	HTC Hero (CDMA)
+HTC	inc	HTC Droid Incredible (Verizon)
+HTC	legend	HTC Legend
+HTC	leo	HTC HD2
+HTC	liberty	HTC Aria
+HTC	marvel	HTC Wildfire S
+HTC	marvelc	HTC Wildfire S CDMA
+HTC	photon	HTC HD mini
+HTC	pico	HTC Explorer
+HTC	supersonic	HTC Evo 4G PC36100 (Sprint)
+Huawei	hwm886	Huawei Mercury M886
+Huawei	hwm920	Huawei Activa 4G M920
+Huawei	hwu8665	Huawei Fusion 2 U8665
+Huawei	m860	Huawei Ascend M860
+Huawei	u8150 Huawei Ideos U8150
+Huawei	u8160	Huawei U8160
+Huawei	u8815	Huawei Ascend G300
+Huawei	u9200	Huawei Ascend P1 U9200
+LG	c660	LG Optimus Pro
+LG	gelato	LG Optimus Q L55C
+LG	ls670	LG Optimus S
+LG	p500	LG Optimus One P500
+LG	pecan	LG Optimus Me P350
+LG	swift	LG Optimus GT540
+LG	thunderc	LG Optimus V VM670
+LG	univa	LG Univa E510
+Micromax	a25	Micromax A25
+Micromax	a52	Micromax A52
+Micromax	a54	Micromax A54
+Micromax	a57	Micromax A57
+Motorola	cdma_ciena	Motorola Citrus WX445 (Verizon)
+Motorola	morr	Motorola DEXT MB220
+Motorola	morrison	Motorola Cliq
+Motorola	motus	Motorola Backflip
+Motorola	sholes	Motorola Droid
+Motorola	tinboost	Motorola Defy Mini XT320
+Motorola	xt531	Motorola Fire XT XT531
+Motorola	zeppelin	Motorola MB501 CLIQ XT/Quench
+NVIDIA	harmony	NVIDIA Tegra 250 Development Kit
+Pantech	moon	Pantech Crossover P8000
+Samsung	GT-I9000B	Samsung Captivate (MTD) GT-I9000B
+Samsung	SGH-T959V	Samsung Galaxy S 4G SGH-T959V
+Samsung	SPH-D700	Samsung Galaxy Epic 4G SPH-D700
+Samsung	captivatemtd	Samsung Captivate (MTD)
+Samsung	epicmtd	Samsung Epic 4G
+Samsung	fascinatemtd	Samsung Fascinate
+Samsung	galaxysmtd	Samsung Galaxy S GT-I9000 / GT-I9000B
+Samsung	mesmerizemtd	Samsung Mesmerize
+Samsung	showcasemtd	Samsung Showcase
+Samsung	vibrantmtd	Samsung Vibrant SGH-T959
+Sony	anzu	Sony Ericsson Xperia Arc - LT15(i/a)
+Sony	ayame	Sony Ericsson Xperia Arc S - LT18(i/a)
+Sony	coconut	Sony Ericsson Xperia Live with Walkman - WT19(i/a)
+Sony	es209ra	Sony Ericsson Xperia X10 (i/a)
+Sony	haida	Sony Ericsson Xperia Neo V - MT11(i/a)
+Sony	hallon	Sony Ericsson Xperia Neo - MT15(i/a)
+Sony	iyokan	Sony Ericsson Xperia Pro - MK16(i/a)
+Sony	mango	Sony Ericsson Xperia Mini Pro - SK17(i/a)
+Sony	mimmi	Sony Ericsson Xperia X10 Mini Pro
+Sony	robyn	Sony Ericsson Xperia X10 Mini
+Sony	satsuma  Sony Ericsson Xperia Active - ST17(i/a)
+Sony	shakira	Sony Ericsson Xperia X8
+Sony	smultron	Sony Ericsson Xperia Mini - ST15(i/a)
+Sony	urushi	Sony Ericsson Xperia Ray - ST18(i/a)
+Sony	zeus	Sony Ericsson Xperia Play GSM - R800(i/a)
+Sony	zeusc	Sony Ericsson Xperia Play CDMA - R800(x/a/at)
+WonderMedia	wmid	WonderMedia WM8850-E18E
+ZTE	blade	ZTE Blade
+ZTE	roamer	ZTE Avail Z990G
+ZTE	skate	ZTE Skate
