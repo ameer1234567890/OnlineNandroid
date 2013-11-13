@@ -29,7 +29,7 @@
 ###########################################################################################################
 
 #### Define constants
-version="9.10"
+version="9.20"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -160,6 +160,7 @@ LANG_VERIFYMD5SUM="Verifying md5sum"
 LANG_BACKUPCOMPL="Online Nandroid Backup Completed in"
 LANG_FILESBKPEDUP="Files Backed-up"
 LANG_INVALIDARGS="One or more of the arguments passed are invalid!"
+LANG_MLTIINST="Another instance of Online Nandroid is already running!"
 LANG_USAGE="Usage"
 LANG_OPTIONS="Options"
 LANG_FLAGH="display this help message and exit"
@@ -750,14 +751,14 @@ rtt(){
 	exit 0
 }
 
-#### Check if another instance is running and exit if so
-if $bb [ -f $pidfile ]; then
-	pid="`$bb cat $pidfile`"
-	if $bb [ "`$bb ps | $bb awk '{print $1}' | $bb grep $pid`" != "" ]; then
-		$bb echo "$LANG_ERROR: Another instance of Online Nandroid is already running! $LANG_EXITING..."
-		exit $E_DUPINS
-	fi
-fi
+#### Check if another instance is running and exit if so (temporarily disabled due to bugs in apps)
+#if $bb [ -f $pidfile ]; then
+#	pid="`$bb cat $pidfile`"
+#	if $bb [ "`$bb ps | $bb awk '{print $1}' | $bb grep $pid`" != "" ]; then
+#		$bb echo "$LANG_ERROR: $LANG_MULTIINST $LANG_EXITING..."
+#		exit $E_DUPINS
+#	fi
+#fi
 
 #### Output PID
 $bb echo "$$" >$pidfile
@@ -1708,7 +1709,7 @@ if $bb [ ! "$sdextdir" ]; then
 	if $bb [ ! "$sdextdir" ]; then
 		sdextdir="/sd-ext"
 	fi
-	sdext_mount=`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep -v "sdhci" | $bb egrep "($sdextdir|sd|ext).* type ext[234]" | $bb tail -n 1`
+	sdext_mount=`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep -v "sdhci" | $bb grep -v "sdcc" | $bb egrep "($sdextdir|sd|ext).* type ext[234]" | $bb tail -n 1`
 else
 	sdext_mount=`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep -v "sdhci" | $bb egrep "$sdextdir type" | $bb tail -n 1`
 fi

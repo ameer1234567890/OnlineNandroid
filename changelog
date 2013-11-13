@@ -228,3 +228,5 @@ v9.00 - Added: Option to exclude dalvik-cache from backups (-xd flag).
 v9.10 - Added: Exclude dalvik-cache from sd-ext
         Bug Fix: WRONG_ARGS displayed on help screen.
         Bug Fix: Minor fixes and improvements.
+v9.20 - Bug Fix: Multiple instances error with some apps.
+        Bug Fix: Wrong sd-ext detection on some devices.
