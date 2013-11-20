@@ -142,11 +142,11 @@ tf101	Asus Transformer TF101
 su760	LG Optimus 3D SU760
 encore	Barnes & Noble Nook Color
 hikari	Sony Xperia Acro S LT26w
-kumquat	Sony Xperia U ST25
+kumquat	Sony Xperia U ST25(a/i)
 nozomi	Sony Xperia S LT26i
-nypon	Sony Xperia P LT22
+nypon	Sony Xperia P LT22i
 p920	LG Optimus 3D P920
-pepper	Sony Xperia Sola MT27
+pepper	Sony Xperia Sola MT27i
 manta	Google Nexus 10
 picasso_e	Acer Iconia A200
 presto	Pantech Burst P9070 (AT&T)
@@ -174,7 +174,7 @@ SGH-I927R	Samsung Galaxy S Glide SGH-I927R (Rogers)
 SGH-I997R	Samsung Infuse 4G SGH-I997R (Rogers)
 GT-P5113	Samsung Galaxy Tab 2 10.1 (Wifi) GT-P5113
 golden	Samsung Galaxy S III Mini GT-I8190
-lotus	Sony Xperia Go ST27
+lotus	Sony Xperia Go ST27(a/i)
 otter	Amazon Kindle Fire
 x3	LG Optimus 4X HD P880
 GT-I9100M	Samsung Galaxy S II GT-I9100M (Bell Mobility)
@@ -275,7 +275,7 @@ konawifi	Samsung Galaxy Note 8.0 GT-N5110
 k1	Lenovo IdeaPad K1
 kona3g	Samsung Galaxy Note 8.0 GT-N5100
 amazingtrf	Samsung Galaxy Discover SGH-S730M
-pollux_windy	Sony Xperia Tablet Z (Wifi) SGP311
+pollux_windy	Sony Xperia Tablet Z (Wifi) SGP311 / SGP312
 m7att	HTC One (AT&T)
 aries	Xiaomi MI 2
 y300	Huawei Ascend Y300
@@ -364,3 +364,4 @@ skomer	Samsung Galaxy Xcover 2 GT-S7710
 mintl	Sony Xperia TL LT30a/at (AT&T)
 cdma_shadow	Motorola Droid X (Verizon)
 meliuslte	Samsung Samsung Galaxy Mega 6.3 GT-I9205 (LTE)
+nozomi2	Sony Xperia SL LT26ii
