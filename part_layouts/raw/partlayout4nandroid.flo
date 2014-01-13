@@ -1,5 +1,5 @@
 dev: size erasesize name
-mmcblk0p1: 00155f0 0000000 "radio"
+mmcblk0p1: 00155f0 0000000 "modem"
 mmcblk0p2: 0000c00 0000000 "modemst1"
 mmcblk0p3: 0000c00 0000000 "modemst2"
 mmcblk0p4: 0003a98 0000000 "persist"

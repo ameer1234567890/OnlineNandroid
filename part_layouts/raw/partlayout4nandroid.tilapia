@@ -2,7 +2,7 @@ dev:       size      erasesize  name
 mmcblk0p1: 0003000 0000000 "recovery"
 mmcblk0p2: 0002000 0000000 "boot"
 mmcblk0p3: 00a2800 0000000 "system"
-mmcblk0p4: 0004000 0000000 "radio"
+mmcblk0p4: 0004000 0000000 "modem"
 mmcblk0p5: 006ec00 0000000 "cahce"
 mmcblk0p6: 0000200 0000000 "misc"
 mmcblk0p7: 0002800 0000000 "staging"

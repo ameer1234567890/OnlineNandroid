@@ -31,7 +31,7 @@ mmcblk0p29: 0000100 0000000 "skylink"
 mmcblk0p30: 0006400 0000000 "carrier"
 mmcblk0p31: 0011ca6 0000000 "reserve"
 mmcblk0p32: 000d3fe 0000000 "reserve2"
-mmcblk0p33: 0012c00 0000000 "radio"
+mmcblk0p33: 0012c00 0000000 "modem"
 mmcblk0p34: 0017fff 0000000 "reserve3"
 mmcblk0p35: 0004000 0000000 "boot"
 mmcblk0p36: 0003fff 0000000 "recovery" 0
