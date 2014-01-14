@@ -3,7 +3,7 @@ d2tmo	Samsung Galaxy S III SGH-T999 (T-Mobile)
 olympus	Motorola Atrix 4G MB855 / MB860
 picasso	Acer Iconia A500 / A501
 sunfire	Motorola Photon 4G MB855
-p970	LG Optimus Black
+p970	LG Optimus Black P970
 SPH-D710	Samsung Galaxy S II Epic 4G Touch SPH-D710 (Sprint)
 jordan	Motorola Defy
 GT-N7000	Samsung Galaxy Note GT-N7000 (International)
@@ -17,12 +17,12 @@ GT-S5360	Samsung Galaxy Y GT-S5360
 grouper	Google Nexus 7
 tass	Samsung Galaxy Mini GT-S5570
 GT-I9000	Samsung Galaxy S GT-I9000
-p999	LG G2x (T-Mobile)
+p999	LG G2x P999 (T-Mobile)
 GT-I5800	Samsung Galaxy 3 GT-I5800
 GT-I9003	Samsung Galaxy SL GT-I9003
 GT-P1000	Samsung Galaxy Tab GT-P1000
 cocktail	Alcatel One Touch Ultra 995
-e400	LG Optimus L3
+e400	LG Optimus L3 E400
 p4	Samsung Galaxy Tab 10.1 3G GT-P7500
 glacier	HTC myTouch 4G (T-Mobile)
 bryce	LG Revolution & LG Esteem
@@ -39,7 +39,7 @@ tf300t	Asus Transformer Pad TF300T
 apache	Samsung Rugby Smart SGH-I847
 gio	Samsung Galaxy Gio GT-S5660
 espresso10rf	Samsung Galaxy Tab 2 GT-P5100
-p990	LG Optimus 2X
+p990	LG Optimus 2X P990
 cayman	LG Lucid 4G
 arthur	ZTE Warp
 cdma_spyder	Motorola Razr XT912 (CDMA)
@@ -60,7 +60,7 @@ flyer	HTC Flyer
 speedy	HTC Evo Shift 4G
 u8800	Huawei Ideos X
 ariesve	Samsung Galaxy S Plus GT-I9001
-ms770	LG Motion 4G
+ms770	LG Motion 4G MS770
 SGH-I997	Samsung Infuse 4G SGH-I997  (AT&T)
 captivate	Samsung Captivate SGH-I897 (AT&T)
 daytona	Motorola Droid X2
@@ -79,8 +79,8 @@ everest	Motorola Xoom (3G)
 droid2we	Motorola Droid 2 Global
 acclaim	Barnes & Noble Nook Tablet
 iconvmu	Samsung Galaxy Reverb SPH-M950 (Virgin Mobile)
-vs920	LG Spectrum
-p930	LG Nitro HD
+vs920	LG Spectrum VS920
+p930	LG Nitro HD P930
 europa	Samsung Galaxy 5 GT-I5500
 tf201	Asus Transformer Prime TF201
 ace	HTC Desire HD
@@ -96,7 +96,7 @@ golfu	HTC Desire C
 t0ltevzw	Samsung Galaxy Note II SCH-I605 (Verizon)
 shadow	Motorola Droid X / Motorola Milestone X
 picasso_mf	Acer Iconia A700
-c800	LG myTouch Q (T-Mobile)
+c800	LG myTouch Q C800 (T-Mobile)
 crane-evb	Craig CMP741E
 d2mtr	Samsung Galaxy S III (M. PCS)
 d2usc	Samsung Galaxy S III SCH-R530U (US Cell)
@@ -129,8 +129,8 @@ p4notewifi	Samsung Galaxy Note 10.1 GT-N8013
 p5	Samsung Galaxy Tab 8.9 3G GT-P7300
 p5wifi	Samsung Galaxy Tab 8.9 3G GT-P7310
 tostab03	Toshiba AT100 Thrive
-ls855	LG Marquee
-ms695	LG Optimus M+
+ls855	LG Marquee LS855
+ms695	LG Optimus M+ MS695
 p4notewifiww	Samsung Galaxy Note 10.1 GT-N8010
 solana	Motorola Droid 3 XT862 (Verizon)
 vision	HTC Desire Z
@@ -156,7 +156,7 @@ smi	Motorola Razr i XT890
 wingray	Motorola Xoom (Wifi)
 tf700t	Asus Transformer Prime TF700T
 t0ltecan	Samsung Galaxy Note II SGH-I317M (Rogers)
-geehrc	LG Optimus G LS970
+ls970	LG Optimus G LS970
 mint	Sony Xperia T LT30p
 mw07	Arnova 10C G3
 p4100	Pantech Element P4100 (AT&T)
@@ -176,7 +176,7 @@ GT-P5113	Samsung Galaxy Tab 2 10.1 (Wifi) GT-P5113
 golden	Samsung Galaxy S III Mini GT-I8190
 lotus	Sony Xperia Go ST27(a/i)
 otter	Amazon Kindle Fire
-x3	LG Optimus 4X HD P880
+p880	LG Optimus 4X HD P880
 GT-I9100M	Samsung Galaxy S II GT-I9100M (Bell Mobility)
 vivo	HTC Incredible S
 a2107a	Lenovo A2107A-H
@@ -237,7 +237,7 @@ kingdom	HTC EVO Design 4G
 jena	Samsung Galaxy Mini 2 GT-S6500 / GT-S6500D
 GT-I9100T	Samsung Galaxy S II GT-I9100T
 e610	LG Optimus L5 E610
-l1m	LG Spirit 4G MS870 (MetroPCS)
+ms870	LG Spirit 4G MS870 (MetroPCS)
 u8825d	Huawei U8825D
 vivow	HTC DROID Incredible 2
 yuga	Sony Xperia Z C6602 / C6603 / C6606 / C6616
@@ -285,7 +285,7 @@ SGH-I757M	Samsung Galaxy S II HD LTE SGH-I757M
 pasteur	Motorola Droid Xyboard 10.1 MZ617 (Verizon)
 stingray	Motorola Xoom (Verizon)
 i500	Samsung Fascinate SCH-I500 (Verizon)
-u2_tmo_us	LG Optimus L9 P769
+p769	LG Optimus L9 P769
 k2u	HTC One SV (GSM)
 k2ul	HTC One SV (LTE)
 m7u	HTC One (GSM)
@@ -316,20 +316,20 @@ serranolte	Samsung Galaxy S IV Mini LTE GT-I9195
 s2vep	Samsung Galaxy S II Plus GT-I9105P
 msm8625_d9	Innos D9
 COSMOSx2	Konka V981
-fx3	LG Optimus F3 LS720
+ls720	LG Optimus F3 LS720
 togari	Sony Xperia Z Ultra C6802 / C6806 / C6843 / C6833 (LTE)
 N8000	ZTE Engage LT (Cricket)
 huashan	Sony Xperia SP C5302 / C5303 / C5306
 cooperve	Samsung Galaxy Ace GT-S5830M
 codinavid	Samsung Exhibit SGH-T599V (Canada)
 fiber-a31std7m1g	Bmorn Tablet m2 TP714AQ
-VS980	LG G2 VS980 (Verizon)
-F320K	LG G2 F320K (LTE)
+vs980	LG G2 VS980 (Verizon)
+f320k	LG G2 F320K (LTE)
 delos3geur	Samsung Galaxy Win GT-I8552
 hltetmo	Samsung Galaxy Note III (T-Mobile)
 ghost	Motorola Moto X XT1055 / XT1053
 expresslte	Samsung Galaxy Express GT-I8730
-D802	LG G2 (Worldwide)
+d802	LG G2 D802 (Worldwide)
 hlteskt	Samsung Galaxy Note III (SK Telecom) N900S
 m7wlv	HTC One (Verizon)
 goghspr	Samsung Galaxy Victory SPH-L300
@@ -396,7 +396,7 @@ C5155	Kyocera Rise C5155
 GT-I9210T	Samsung Galaxy S II 4G GT-I9210T
 cdma_kronos	Motorola XPRT MB612 (Sprint)
 cdma_targa	Motorola Droid Bionic XT875 (Verizon)
-vs840	LG VS840 4G (Verizon)
+vs840	LG Lucid 4G VS840 (Verizon)
 cdma_solana	Motorola Milestone 3 XT860
 codinamtr	Samsung Galaxy Exhibit (MetroPCS) SGH-T599N
 falcon_umts	Motorola Moto G XT1032
