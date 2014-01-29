@@ -2,7 +2,7 @@ dev: size erasesize name
 mmcblk0p1: 0003c00 0000000 "apnhlos"
 mmcblk0p2: 000e5c0 0000000 "modem"
 mmcblk0p3: 0000200 0000000 "sbl1"
-mmcblk0p4: 0000020 0000000 "boot"
+mmcblk0p4: 0000020 0000000 "dbi"
 mmcblk0p5: 0000020 0000000 "ddr"
 mmcblk0p6: 0000800 0000000 "aboot"
 mmcblk0p7: 0000200 0000000 "rpm"
