@@ -193,6 +193,7 @@ LANG_FLAGPD="show dot progress indicator"
 LANG_FLAGD="return device id used by TWRP"
 LANG_FLAGXD="exclude dalvik-cache from backup"
 LANG_FLAGXG="exclude Google Music files from backup"
+LANG_FLAGXC="exclude all app-specific caches from backup"
 LANG_LANGFILEL="Language File"
 LANG_LANGFILEN="Name"
 LANG_LANGFILEC="Code"
@@ -354,6 +355,7 @@ usage2(){
 	$bb echo "  -d, --device-id               $LANG_FLAGD"
 	$bb echo "  -xd, --exclude-dalvik         $LANG_FLAGXD"
 	$bb echo "  -xg, --exclude-gmusic         $LANG_FLAGXG"
+	$bb echo "  -xc, --exclude-app-caches     $LANG_FLAGXC"
 	$bb echo ""
 	exit 0
 }
@@ -725,7 +727,7 @@ set_excludes(){
 	part_fs=$3 # Filesystem type.
 	part_id=$4 # Partition identification letter (used in advanced backup mode).
 	# Usage: set_excludes $part_name $part_mount $part_fs $part_id
-	
+
 	if $bb [ "$part_fs" != "" -a "`$bb echo $adv | $bb grep $part_id`" != "" ]; then
 		mounts=`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "$part_mount/" | $bb cut -d ' ' -f 3 | $bb sed s/'^\/'/''/g`
 		for mount in $mounts; do
@@ -881,6 +883,8 @@ for arg in $arglist; do
 		exclude_dalvik="yes"
 	elif $bb [ "$arg" == "-xg" ] || $bb [ "$arg" == "--exclude-gmusic" ]; then
 		exclude_gmusic="yes"
+	elif $bb [ "$arg" == "-xc" ] || $bb [ "$arg" == "--exclude-app-caches" ]; then
+		exclude_app_caches="yes"
 	elif $bb [ "$arg" == "-~" ] || $bb [ "$arg" == "--rtt" ]; then
 		rtt
 	else
@@ -973,7 +977,7 @@ else
 	fi
 fi
 
-#### Set backup name to default if backup name was not provided	
+#### Set backup name to default if backup name was not provided
 if $bb [ ! "$name" ]; then
 	name=$def_name
 fi
@@ -1767,6 +1771,10 @@ if $bb [ "$data_fs" != "" -a "`$bb echo $adv | $bb grep 'd'`" != "" ]; then
 	if $bb [ "$exclude_gmusic" == "yes" ]; then
 		data_excludes="$data_excludes --exclude=data/data/com.google.android.music/files/*"
 		data_excludes_dedupe="$data_excludes_dedupe ./data/com.google.android.music/files/*"
+	fi
+	if $bb [ "$exclude_app_caches" == "yes" ]; then
+		data_excludes="$data_excludes --exclude=data/data/*/cache/*"
+		data_excludes_dedupe="$data_excludes_dedupe ./data/*/cache/*"
 	fi
 fi
 
