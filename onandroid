@@ -1776,11 +1776,11 @@ if $bb [ "$data_fs" != "" -a "`$bb echo $adv | $bb grep 'd'`" != "" ]; then
 		data_excludes="$data_excludes --exclude=data/data/*/cache/*"
 		data_excludes_dedupe="$data_excludes_dedupe ./data/*/cache/*"
 
-    # Firefox stores its cache within the profile directory.
+		# Firefox stores its cache within the profile directory.
 		data_excludes="$data_excludes --exclude=data/data/org.mozilla.firefox/files/mozilla/*/Cache/*"
 		data_excludes_dedupe="$data_excludes_dedupe ./data/org.mozilla.firefox/files/mozilla/*/Cache/*"
 
-    # TuneIn buffers audio in its top-level directory, not in the app cache.
+		# TuneIn buffers audio in its top-level directory, not in the app cache.
 		data_excludes="$data_excludes --exclude=data/data/tunein.player/cache*.buffer"
 		data_excludes_dedupe="$data_excludes_dedupe ./data/tunein.player/cache*.buffer"
 	fi
@@ -2013,7 +2013,7 @@ else
 	done
 	progress_done
 	$bb echo ""
- 	# Verify md5sum (to check if the file is populated)
+	# Verify md5sum (to check if the file is populated)
 	if $bb [ "`$bb ls -A`" != "nandroid.md5" ]; then
 		logmsg "$LANG_VERIFYMD5SUM...\c"
 		while $bb [ `$bb stat -t nandroid.md5 | $bb awk '{print $2}'` == "0" ]; do
