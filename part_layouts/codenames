@@ -327,7 +327,7 @@ vs980	LG G2 VS980 (Verizon)
 f320k	LG G2 F320K (LTE)
 delos3geur	Samsung Galaxy Win GT-I8552
 hltetmo	Samsung Galaxy Note III (T-Mobile)
-ghost	Motorola Moto X XT1055 / XT1053 / XT1060
+ghost	Motorola Moto X XT1052 / XT1053 / XT1055 / XT1056 / XT1058 / XT1060
 expresslte	Samsung Galaxy Express GT-I8730
 d802	LG G2 D802 (Worldwide)
 hlteskt	Samsung Galaxy Note III (SK Telecom) N900S
@@ -413,7 +413,7 @@ lg870	LG Optimus F7 LG870
 d500	LG Optimus F6 D500
 GT-S5282	Samsung Galaxy Star GT-S5282
 demeter	ZTE Dave 4G T83 (Telstra)
-jactivelteatt	Samsung Galaxy S4 Active SGH-I537 (AT&T)
+jactivelteatt	Samsung Galaxy S IV Active SGH-I537 (AT&T)
 l-01f	LG G2 L-01F (DoCoMo)
 ms910	LG Esteem MS910 (MetroPCS)
 s2ve	Samsung Galaxy S II Plus GT-I9105
@@ -483,7 +483,7 @@ ls860	LG Mach LS860 (Sprint)
 ms500	LG Optimus F6 MS500 (MetroPCS)
 serranolteusc	Samsung Galaxy S IV Mini SCH-R890 (US Cellular)
 goldenltebmc	Samsung Galaxy S III Mini SM-G730W8 (Canada)
-K00C	Asus Transformer Pad TF701T
+tf701t	Asus Transformer Pad TF701T
 cdma_droid2we	Motorola Droid 2 Global (Verizon)
 lw770	LG Optimus Regard LW770
 pollux	Sony Xperia Tablet Z LTE SGP321
