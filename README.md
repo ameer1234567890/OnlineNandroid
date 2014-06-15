@@ -15,10 +15,13 @@ Online Nandroid backups the below partitions to `/sdcard/clockworkmod/backup` di
 * wimax (for Samsung devices)
 * appslog (for HTC and Sony (Ericsson) devices)
 * kernel
+* modem
+* Trim Area / TA (for Sony devices)
 * system
 * data
 * cache
 * datadata (for Samsung devices)
+* data/data (for HTC devices)
 * efs (for Samsung devices)
 * preload (for Samsung devices)
 * .cust_backup (for Huawei devices)

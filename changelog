@@ -230,3 +230,14 @@ v9.10 - Added: Exclude dalvik-cache from sd-ext
         Bug Fix: Minor fixes and improvements.
 v9.20 - Bug Fix: Multiple instances error with some apps.
         Bug Fix: Wrong sd-ext detection on some devices.
+v9.50 - Added: LED notification for Samsung Galaxy Relay 4G.
+        Added: Ability to manually specify device ID for TWRP (-ds flag).
+        Added: modem partition backup (partition letter q).
+        Added: TA partition backup (partition letter v).
+        Added: Support for Action CPUs.
+        Improved: Space calculation.
+        Improved: Merged boot partition letter for different devices.
+        Bug Fix: Replace mode deletes old backup if not enough space.
+        Bug Fix: Wrong sd-ext detection on some devices.
+        Bug Fix: Partition size calculation on emmc devices.
+        Bug Fix: Slow file listing in TWRP mode on some devices.

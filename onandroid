@@ -29,11 +29,11 @@
 ###########################################################################################################
 
 #### Define constants
-version="9.20"
+version="9.50"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
-all_partitions="mkbrwlgsdctjeoufhipnax"
+all_partitions="mkbrwlgqvsdctjeoufhiax"
 sdcard_temp_mount="/mnt/sdcard4nandroid"
 sdext_temp_mount="/mnt/sdext4nandroid"
 custbkp_temp_mount="/mnt/custbkp4nandroid"
@@ -87,6 +87,7 @@ LANG_ENTERNAME="Enter backup name"
 LANG_ENTERSTORAGE="Enter storage path"
 LANG_ENTERSDEXT="Enter sd-ext path"
 LANG_ENTERPARTS="Enter partitions to backup"
+LANG_ENTERDEVID="Enter device ID"
 LANG_SCRIPTSNAME="Online Nandroid"
 LANG_STARTEDAT="Started at"
 LANG_RUNWITH="Run with options"
@@ -191,6 +192,7 @@ LANG_FLAGND="disable vibrate and LED notification"
 LANG_FLAGPP="show percentage progress indicator (default)"
 LANG_FLAGPD="show dot progress indicator"
 LANG_FLAGD="return device id used by TWRP"
+LANG_FLAGDS="set device id used by TWRP"
 LANG_FLAGXD="exclude dalvik-cache from backup"
 LANG_FLAGXG="exclude Google Music files from backup"
 LANG_LANGFILEL="Language File"
@@ -273,11 +275,11 @@ cleanup(){
 			$bb mv -f /flexrom_bkp /flexrom
 		fi
 	fi
-	if $bb [ "$is_nookcolor" == "yes" ]; then
+	if $bb [ "$is_fsboot" == "yes" ]; then
 		$bb umount -lf /boot
 		$bb rmdir /boot
 	fi
-	if $bb [ "$as_parent" -o "$sdext_mount" != "" -o "$custbkp_fs" != "" -o "$flexrom_hinted" == 1 -o "$is_nookcolor" == "yes" ]; then
+	if $bb [ "$as_parent" -o "$sdext_mount" != "" -o "$custbkp_fs" != "" -o "$flexrom_hinted" == 1 -o "$is_fsboot" == "yes" ]; then
 		$bb mount -o remount,ro / 2> /dev/null
 	fi
 }
@@ -352,6 +354,7 @@ usage2(){
 	$bb echo "  -pp, --progress-percent       $LANG_FLAGPP"
 	$bb echo "  -pd, --progress-dot           $LANG_FLAGPD"
 	$bb echo "  -d, --device-id               $LANG_FLAGD"
+	$bb echo "  -ds, --set-device-id          $LANG_FLAGDS"
 	$bb echo "  -xd, --exclude-dalvik         $LANG_FLAGXD"
 	$bb echo "  -xg, --exclude-gmusic         $LANG_FLAGXG"
 	$bb echo ""
@@ -372,6 +375,8 @@ advmapping(){
 	$bb echo "  w: wimax (for Samsung devices)"
 	$bb echo "  l: appslog (for HTC and Sony (Ericsson) devices)"
 	$bb echo "  g: kernel"
+	$bb echo "  q: modem"
+	$bb echo "  v: Trim Area / TA (for Sony devices)"
 	$bb echo "  s: system"
 	$bb echo "  d: data"
 	$bb echo "  c: cache"
@@ -383,8 +388,6 @@ advmapping(){
 	$bb echo "  f: flexrom (for Acer devices)"
 	$bb echo "  h: custpack (for Alcatel devices)"
 	$bb echo "  i: mobile_info (for Alcatel devices)"
-	$bb echo "  p: boot (for HP Touchpad)"
-	$bb echo "  n: boot (for Nook Color)"
 	$bb echo "  a: android_secure"
 	$bb echo "  x: sd-ext"
 	$bb echo ""
@@ -522,7 +525,7 @@ nandroid_fs(){
 							$bb echo $dir >> $path/$name/tmp/list$i
 						fi
 					done
-					dirlist="`find . -type d -xdev`"
+					dirlist="`$bb find . -type d -xdev`"
 					for dir in $dirlist; do
 						if $bb [ -d $dir ]; then
 							if $bb [ "`$bb ls -A $dir`" == "" ]; then
@@ -530,7 +533,7 @@ nandroid_fs(){
 							fi
 						fi
 					done
-					filelist="`find . -type b` `find . -type c` `find . -type p` `find . -type f` `find . -type l` `find . -type s`"
+					filelist="`$bb find . -type b` `$bb find . -type c` `$bb find . -type p` `$bb find . -type f` `$bb find . -type l` `$bb find . -type s`"
 					listsize=0
 					for file in $filelist; do
 						if $bb [ -e $file ]; then
@@ -725,7 +728,7 @@ set_excludes(){
 	part_fs=$3 # Filesystem type.
 	part_id=$4 # Partition identification letter (used in advanced backup mode).
 	# Usage: set_excludes $part_name $part_mount $part_fs $part_id
-	
+
 	if $bb [ "$part_fs" != "" -a "`$bb echo $adv | $bb grep $part_id`" != "" ]; then
 		mounts=`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "$part_mount/" | $bb cut -d ' ' -f 3 | $bb sed s/'^\/'/''/g`
 		for mount in $mounts; do
@@ -739,6 +742,48 @@ set_excludes(){
 			mount=`$bb echo "$mount/*"`
 			eval "${part_name}_excludes_dedupe=\"\$${part_name}_excludes_dedupe $mount\""
 		done
+	fi
+}
+
+#### Calculate Partition Sizes (Disk Dump)
+check_size_dd(){
+	part_dev=$1 # Partition device.
+	part_name=$2 # Name of partition.
+	part_id=$3 # Partition identification letter (used in advanced backup mode).
+	part_cname=$4 # Partition name in the layout file.
+	part_cnamemtk=$5 # Partition name in the layout file on MTK devices.
+	# Usage: check_size_dd $part_dev $part_name $part_id $part_cname $part_cnamemtk
+	
+	if $bb [ "$part_type" == "not_found" -o "$part_dev" == "" -o "`$bb echo $adv | $bb grep $part_id`" == "" ]; then
+		eval "u_${part_name}=0"
+	else
+		if $bb [ $part_type == "/proc/dumchar_info" ]; then
+			part_hex=`$bb cat $part_type | $bb grep "^$part_cnamemtk.*0x" | $bb awk '{print $2}'`
+			part_dec=`$bb printf "%d \n" $part_hex`
+			part_count=`$bb expr $part_dec`
+			eval "${part_name}_count=${part_count}"
+			u_part=`$bb expr $part_dec / $part_bytediv`
+			u_part=`$bb expr $u_part + 1`
+			eval "u_${part_name}=${u_part}"
+			part_start_hex=`$bb cat $part_type | $bb grep "^$part_cnamemtk.*0x" | $bb awk '{print $3}'`
+			part_start=`$bb printf "%d \n" $part_start_hex`
+			part_start=`$bb expr $part_start`
+			eval "${part_name}_start=${part_start}"
+		else
+			part_hex=`$bb cat $part_type | $bb grep "\"$part_cname\"" | $bb awk '{print $2}'`
+			part_dec=`$bb printf "%d \n" 0x$part_hex`
+			part_count=`$bb expr $part_dec \* 1024`
+			eval "${part_name}_count=${part_count}"
+			u_part=`$bb expr $part_dec / $part_bytediv`
+			u_part=`$bb expr $u_part + 1`
+			eval "u_${part_name}=${u_part}"
+			if $bb [ "`$bb cat $part_type | $bb grep "\"$part_cname\"" | $bb awk '{print $5}'`" != "" ]; then
+				part_start_hex=`$bb cat $part_type | $bb grep "\"$part_cname\"" | $bb awk '{print $5}'`
+				part_start=`$bb printf "%d \n" 0x$part_start_hex`
+				part_start=`$bb expr $part_start \* 1024`
+				eval "${part_name}_start=${part_start}"
+			fi
+		fi
 	fi
 }
 
@@ -762,25 +807,6 @@ rtt(){
 
 #### Output PID
 $bb echo "$$" >$pidfile
-
-#### Devise device ID for TWRP
-if $bb [ -f $sdcard/TWRP/.twrps ]; then
-	if $bb [ "`$bb cat $sdcard/TWRP/.twrps | $bb grep -i "TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID"`" ]; then
-		android_id="`$bb cat /system/build.prop | $bb grep "^ro.product.model" | $bb cut -d '=' -f 2 | $bb sed s/' '/'_'/g`"
-	elif $bb [ "`$bb cat $sdcard/TWRP/.twrps | $bb grep -i "TW_FORCE_CPUINFO_FOR_DEVICE_ID"`" ]; then
-		android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
-	else
-		android_id=`$bb cat /proc/cmdline 2> /dev/null | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
-		if $bb [ ! "$android_id" ]; then
-			android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
-		fi
-	fi
-else
-	android_id=`$bb cat /proc/cmdline 2> /dev/null | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
-	if $bb [ ! "$android_id" ]; then
-		android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
-	fi
-fi
 
 #### Process arguments
 arglist=$@
@@ -836,11 +862,19 @@ for arg in $arglist; do
 			logmsg "$LANG_ENTERPARTS: \c"
 			read adv
 		fi
+
+	elif $bb [ "$arg" == "-ds" ] || $bb [ "$arg" == "--set-device-id" ]; then
+		devid_pos=`$bb expr $argn + 1`
+		eval "set_android_id=\$$devid_pos"
+		if $bb [ ! "$set_android_id" ]; then
+			# Prompt for device ID
+			logmsg "$LANG_ENTERDEVID: \c"
+			read set_android_id
+		fi
+
 	elif $bb [ "$arg" == "-p" ] || $bb [ "$arg" == "--phone" ]; then
-		# Set timezone to phone timezone
 		tz="phone"
 	elif $bb [ "$arg" == "-u" ] || $bb [ "$arg" == "--utc" ]; then
-		# Set timezone to UTC
 		tz="utc"
 	elif $bb [ "$arg" == "-o" ] || $bb [ "$arg" == "--old" ]; then
 		backup_style="old"
@@ -875,8 +909,7 @@ for arg in $arglist; do
 	elif $bb [ "$arg" == "-y" ] || $bb [ "$arg" == "--yaffs-override" ]; then
 		yaffs_override="yes"
 	elif $bb [ "$arg" == "-d" ] || $bb [ "$arg" == "--device-id" ]; then
-		$bb echo "$android_id"
-		exit
+		say_android_id="yes"
 	elif $bb [ "$arg" == "-xd" ] || $bb [ "$arg" == "--exclude-dalvik" ]; then
 		exclude_dalvik="yes"
 	elif $bb [ "$arg" == "-xg" ] || $bb [ "$arg" == "--exclude-gmusic" ]; then
@@ -886,7 +919,7 @@ for arg in $arglist; do
 	else
 		argna=`$bb expr $argn - 1`
 		eval "arga=\$$argna"
-		if $bb [ "$arga" == "-c" ] || $bb [ "$arga" == "--custom" ] || $bb [ "$arga" == "-s" ] || $bb [ "$arga" == "--storage" ] || $bb [ "$arga" == "-e" ] || $bb [ "$arga" == "--sd-ext-path" ] || $bb [ "$arga" == "-a" ] || $bb [ "$arga" == "--advanced" ]; then
+		if $bb [ "$arga" == "-c" ] || $bb [ "$arga" == "--custom" ] || $bb [ "$arga" == "-s" ] || $bb [ "$arga" == "--storage" ] || $bb [ "$arga" == "-e" ] || $bb [ "$arga" == "--sd-ext-path" ] || $bb [ "$arga" == "-a" ] || $bb [ "$arga" == "--advanced" ] || $bb [ "$arga" == "-ds" ] || $bb [ "$arga" == "--set-device-id" ]; then
 			# Nothing to do here
 			# Do not argue with me that this is unnecessary. I have tried enough.
 			null="null"
@@ -895,6 +928,33 @@ for arg in $arglist; do
 		fi
 	fi
 done
+
+#### Devise device ID for TWRP
+if $bb [ "$set_android_id" != "" ]; then
+	android_id="$set_android_id"
+elif $bb [ -f $sdcard/TWRP/.twrps ]; then
+	if $bb [ "`$bb cat $sdcard/TWRP/.twrps | $bb grep -i "TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID"`" ]; then
+		android_id="`$bb cat /system/build.prop | $bb grep "^ro.product.model" | $bb cut -d '=' -f 2 | $bb sed s/' '/'_'/g`"
+	elif $bb [ "`$bb cat $sdcard/TWRP/.twrps | $bb grep -i "TW_FORCE_CPUINFO_FOR_DEVICE_ID"`" ]; then
+		android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
+	else
+		android_id=`$bb cat /proc/cmdline 2> /dev/null | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
+		if $bb [ ! "$android_id" ]; then
+			android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
+		fi
+	fi
+else
+	android_id=`$bb cat /proc/cmdline 2> /dev/null | $bb tr ' ' '\n' | $bb grep "androidboot.serialno=" | $bb tail -n 1 | $bb cut -d '=' -f 2`
+	if $bb [ ! "$android_id" ]; then
+		android_id=`$bb cat /proc/cpuinfo | $bb grep "Serial" | $bb awk '{print $3}'`
+	fi
+fi
+
+#### Output device ID if it was requested
+if $bb [ "$say_android_id" == "yes" ]; then
+	echo "$android_id"
+	exit 0
+fi
 
 #### Empty the log file before we start
 $bb [ -f $logfile ] && $bb echo "" >$logfile
@@ -973,7 +1033,7 @@ else
 	fi
 fi
 
-#### Set backup name to default if backup name was not provided	
+#### Set backup name to default if backup name was not provided
 if $bb [ ! "$name" ]; then
 	name=$def_name
 fi
@@ -1098,7 +1158,7 @@ blobsdir=$sdcard$blobsdir
 #### Detect partition layouts
 part_type="not_found"
 if $bb [ -f "/proc/mtd" ]; then
-	if $bb [ "`$bb cat /proc/mtd | $bb egrep "(mtd|mmc|bml|nand)"`" != "" ]; then
+	if $bb [ "`$bb cat /proc/mtd | $bb egrep "(mtd|mmc|bml|nand|act)"`" != "" ]; then
 		part_type="/proc/mtd"
 		part_path="/dev/mtd"
 		part_bytediv=1048576
@@ -1109,7 +1169,7 @@ if $bb [ -f "/proc/mtd" ]; then
 	fi
 fi
 if $bb [ -f "/proc/emmc" ]; then
-	if $bb [ "`$bb cat /proc/emmc | $bb egrep "(mtd|mmc|bml|nand)"`" != "" ]; then
+	if $bb [ "`$bb cat /proc/emmc | $bb egrep "(mtd|mmc|bml|nand|act)"`" != "" ]; then
 		part_type="/proc/emmc"
 		part_path="/dev/block"
 		part_bytediv=1048576
@@ -1120,7 +1180,7 @@ if $bb [ -f "/proc/emmc" ]; then
 	fi
 fi
 if $bb [ -f "/proc/dumchar_info" ]; then
-	if $bb [ "`$bb cat /proc/dumchar_info | $bb egrep "(mtd|mmc|bml|nand)"`" != "" ]; then
+	if $bb [ "`$bb cat /proc/dumchar_info | $bb egrep "(mtd|mmc|bml|nand|act)"`" != "" ]; then
 		part_type="/proc/dumchar_info"
 		part_path="/dev/block"
 		part_bytediv=1048576
@@ -1131,7 +1191,7 @@ if $bb [ -f "/proc/dumchar_info" ]; then
 	fi
 fi
 if $bb [ -f "/system/partlayout4nandroid" ]; then
-	if $bb [ "`$bb cat /system/partlayout4nandroid | $bb egrep "(mtd|mmc|bml|nand)"`" != "" ]; then
+	if $bb [ "`$bb cat /system/partlayout4nandroid | $bb egrep "(mtd|mmc|bml|nand|act)"`" != "" ]; then
 		part_type="/system/partlayout4nandroid"
 		part_path="/dev/block"
 		part_bytediv=1048576
@@ -1225,23 +1285,45 @@ fi
 
 #### Check for HP Touchpad (Originally on webOS, CM ported)
 if $bb [ "`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "/dev/store/cm-system "`" ]; then
-	is_hptouchpad="yes"
+	is_fsboot="yes"
+	is_fsrecovery="yes"
 else
-	is_hptouchpad="no"
+	is_fsboot="no"
+	is_fsrecovery="no"
 fi
 
 #### Check for Nook Color
 if $bb [ "`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "/rom "`" ]; then
-	is_nookcolor="yes"
+	is_fsboot="yes"
+	is_fsrecovery="yes"
 	$bb mount -o rw,remount /
 	$bb mkdir -p /boot
 	$bb mount /dev/block/mmcblk1p1 /boot
+	$bb mkdir -p /recovery
+	$bb mount /dev/block/mmcblk1p2 /recovery
 else
-	is_nookcolor="no"
+	is_fsboot="no"
+	is_fsrecovery="no"
+fi
+
+#### Check for Action CPU devices
+if $bb [ "`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "/dev/block/actc on /system "`" ]; then
+	is_fsboot="yes"
+	is_fsrecovery="yes"
+	$bb mount -o rw,remount /
+	$bb mkdir -p /boot
+	$bb mkdir -p /recovery
+	part_actcpuboot=`$bb cat $part_type | $bb grep "\"boot\"" | $bb cut -d ':' -f 1`
+	$bb mount $part_path/$part_actcpuboot /boot
+	part_actcpurecovery=`$bb cat $part_type | $bb grep "\"recovery\"" | $bb cut -d ':' -f 1`
+	$bb mount $part_path/$part_actcpurecovery /recovery
+else
+	is_fsboot="no"
+	is_fsrecovery="no"
 fi
 
 #### Check if /data is internal or /sd-ext is mounted at /data
-if $bb [ $($bb stat -tf /data | $bb awk '{print $2}') == "0" ]; then
+if $bb [ `$bb stat -tf /data | $bb awk '{print $2}'` == "0" ]; then
 	data_mount="/data"
 else
 	if $bb [ "`$bb mountpoint /sd-ext 2> /dev/nul`" == "/sd-ext is a mountpoint" ]; then
@@ -1263,10 +1345,10 @@ custbkp_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /.cust_backup "
 flexrom_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /flexrom " | $bb cut -d ' ' -f 5`"
 custpack_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /custpack " | $bb cut -d ' ' -f 5`"
 mobileinfo_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /mobile_info " | $bb cut -d ' ' -f 5`"
-hptpboot_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /boot " | $bb cut -d ' ' -f 5`"
-nookcolorboot_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /boot " | $bb cut -d ' ' -f 5`"
+fsboot_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /boot " | $bb cut -d ' ' -f 5`"
+fsrecovery_fs="`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep "on /recovery " | $bb cut -d ' ' -f 5`"
 
-if $bb [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$datadatai_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" -o "$preload_fs" == "yaffs2" -o "$custbkp_fs" == "yaffs2" -o "$flexrom_fs" == "yaffs2" -o "$custpack_fs" == "yaffs2" -o "$mobileinfo_fs" == "yaffs2" -o "$hptpboot_fs" == "yaffs2" -o "$nookcolorboot_fs" == "yaffs2" ]; then
+if $bb [ "$system_fs" == "yaffs2" -o "$data_fs" == "yaffs2" -o "$cache_fs" == "yaffs2" -o "$datadata_fs" == "yaffs2" -o "$datadatai_fs" == "yaffs2" -o "$efs_fs" == "yaffs2" -o "$preload_fs" == "yaffs2" -o "$custbkp_fs" == "yaffs2" -o "$flexrom_fs" == "yaffs2" -o "$custpack_fs" == "yaffs2" -o "$mobileinfo_fs" == "yaffs2" -o "$fsboot_fs" == "yaffs2" -o "$fsrecovery_fs" == "yaffs2" ]; then
 	has_yaffs2="true"
 fi
 
@@ -1364,7 +1446,7 @@ if $bb [ "$backup_style" == "gc" ]; then
 	exit 0
 fi
 
-#### Detect /boot, /recovery, /wimax, /appslog and /kernel partitions
+#### Detect /boot, /recovery, /wimax, /appslog, /kernel, /modem and /TA partitions
 if $bb [ $part_type != "not_found" ]; then
 	if $bb [ $part_type == "/proc/dumchar_info" ]; then
 		part_uboot=`$bb cat $part_type | $bb grep "^uboot.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
@@ -1373,6 +1455,8 @@ if $bb [ $part_type != "not_found" ]; then
 		part_wimax=`$bb cat $part_type | $bb grep "^wimax.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
 		part_appslog=`$bb cat $part_type | $bb grep "^appslog.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
 		part_kernel=`$bb cat $part_type | $bb grep "^kernel.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
+		part_modem=`$bb cat $part_type | $bb grep "^modem.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
+		part_ta=`$bb cat $part_type | $bb grep "^TA.*0x" | $bb awk '{print $5}' | $bb cut -d '/' -f 4`
 	else
 		part_uboot=`$bb cat $part_type | $bb grep "\"uboot\"" | $bb cut -d ':' -f 1`
 		part_boot=`$bb cat $part_type | $bb grep "\"boot\"" | $bb cut -d ':' -f 1`
@@ -1380,6 +1464,8 @@ if $bb [ $part_type != "not_found" ]; then
 		part_wimax=`$bb cat $part_type | $bb grep "\"wimax\"" | $bb cut -d ':' -f 1`
 		part_appslog=`$bb cat $part_type | $bb grep "\"appslog\"" | $bb cut -d ':' -f 1`
 		part_kernel=`$bb cat $part_type | $bb grep "\"kernel\"" | $bb cut -d ':' -f 1`
+		part_modem=`$bb cat $part_type | $bb grep "\"modem\"" | $bb cut -d ':' -f 1`
+		part_ta=`$bb cat $part_type | $bb grep "\"TA\"" | $bb cut -d ':' -f 1`
 	fi
 fi
 
@@ -1397,166 +1483,28 @@ else
 fi
 
 #### /uboot partition size
-if $bb [ "$part_type" == "not_found" -o "$part_uboot" == "" -o "`$bb echo $adv | $bb grep 'k'`" == "" ]; then
-	u_uboot=0
-else
-	if $bb [ $part_type == "/proc/dumchar_info" ]; then
-		uboot_hex=`$bb cat $part_type | $bb grep "^uboot.*0x" | $bb awk '{print $2}'`
-		uboot_dec=`$bb printf "%d \n" $uboot_hex`
-		uboot_count=`$bb expr $uboot_dec`
-		u_uboot=`$bb expr $uboot_dec / $part_bytediv`
-		u_uboot=`$bb expr $u_uboot + 1`
-		uboot_start_hex=`$bb cat $part_type | $bb grep "^uboot.*0x" | $bb awk '{print $3}'`
-		uboot_start=`$bb printf "%d \n" $uboot_start_hex`
-		uboot_start=`$bb expr $uboot_start`
-	else
-		uboot_hex=`$bb cat $part_type | $bb grep "\"uboot\"" | $bb awk '{print $2}'`
-		uboot_dec=`$bb printf "%d \n" 0x$uboot_hex`
-		uboot_count=`$bb expr $uboot_dec \* 1024`
-		u_uboot=`$bb expr $uboot_dec / $part_bytediv`
-		u_uboot=`$bb expr $u_uboot + 1`
-		if $bb [ "`$bb cat $part_type | $bb grep "\"uboot\"" | $bb awk '{print $5}'`" != "" ]; then
-			uboot_start_hex=`$bb cat $part_type | $bb grep "\"uboot\"" | $bb awk '{print $5}'`
-			uboot_start=`$bb printf "%d \n" 0x$uboot_start_hex`
-			uboot_start=`$bb expr $uboot_start \* 1024`
-		fi
-	fi
-fi
+check_size_dd "$part_uboot" "uboot" "k" "uboot" "uboot"
 
 #### /boot partition size
-if $bb [ "$part_type" == "not_found" -o "$part_boot" == "" -o "`$bb echo $adv | $bb grep 'b'`" == "" -o "$custbkp_fs" != "" -o "$is_hptouchpad" == "yes" ]; then
-	u_boot=0
-else
-	if $bb [ $part_type == "/proc/dumchar_info" ]; then
-		boot_hex=`$bb cat $part_type | $bb grep "^bootimg.*0x" | $bb awk '{print $2}'`
-		boot_dec=`$bb printf "%d \n" $boot_hex`
-		boot_count=`$bb expr $boot_dec`
-		u_boot=`$bb expr $boot_dec / $part_bytediv`
-		u_boot=`$bb expr $u_boot + 1`
-		boot_start_hex=`$bb cat $part_type | $bb grep "^bootimg.*0x" | $bb awk '{print $3}'`
-		boot_start=`$bb printf "%d \n" $boot_start_hex`
-		boot_start=`$bb expr $boot_start`
-	else
-		boot_hex=`$bb cat $part_type | $bb grep "\"boot\"" | $bb awk '{print $2}'`
-		boot_dec=`$bb printf "%d \n" 0x$boot_hex`
-		boot_count=`$bb expr $boot_dec \* 1024`
-		u_boot=`$bb expr $boot_dec / $part_bytediv`
-		u_boot=`$bb expr $u_boot + 1`
-		if $bb [ "`$bb cat $part_type | $bb grep "\"boot\"" | $bb awk '{print $5}'`" != "" ]; then
-			boot_start_hex=`$bb cat $part_type | $bb grep "\"boot\"" | $bb awk '{print $5}'`
-			boot_start=`$bb printf "%d \n" 0x$boot_start_hex`
-			boot_start=`$bb expr $boot_start \* 1024`
-		fi
-	fi
-fi
+check_size_dd "$part_boot" "boot" "b" "boot" "bootimg"
 
 #### /recovery partition size
-if $bb [ "$part_type" == "not_found" -o "$part_recovery" == "" -o "`$bb echo $adv | $bb grep 'r'`" == "" ]; then
-	u_recovery=0
-else
-	if $bb [ $part_type == "/proc/dumchar_info" ]; then
-		recovery_hex=`$bb cat $part_type | $bb grep "^recovery.*0x" | $bb awk '{print $2}'`
-		recovery_dec=`$bb printf "%d \n" $recovery_hex`
-		recovery_count=`$bb expr $recovery_dec`
-		u_recovery=`$bb expr $recovery_dec / $part_bytediv`
-		u_recovery=`$bb expr $u_recovery + 1`
-		recovery_start_hex=`$bb cat $part_type | $bb grep "^recovery.*0x" | $bb awk '{print $3}'`
-		recovery_start=`$bb printf "%d \n" $recovery_start_hex`
-		recovery_start=`$bb expr $recovery_start`
-	else
-		recovery_hex=`$bb cat $part_type | $bb grep "\"recovery\"" | $bb awk '{print $2}'`
-		recovery_dec=`$bb printf "%d \n" 0x$recovery_hex`
-		recovery_count=`$bb expr $recovery_dec \* 1024`
-		u_recovery=`$bb expr $recovery_dec / $part_bytediv`
-		u_recovery=`$bb expr $u_recovery + 1`
-		if $bb [ "`$bb cat $part_type | $bb grep "\"recovery\"" | $bb awk '{print $5}'`" != "" ]; then
-			recovery_start_hex=`$bb cat $part_type | $bb grep "\"recovery\"" | $bb awk '{print $5}'`
-			recovery_start=`$bb printf "%d \n" 0x$recovery_start_hex`
-			recovery_start=`$bb expr $recovery_start \* 1024`
-		fi
-	fi
-fi
+check_size_dd "$part_recovery" "recovery" "r" "recovery" "recovery"
 
 #### /wimax partition size (for Samsung devices)
-if $bb [ "$part_type" == "not_found" -o "$part_wimax" == "" -o "`$bb echo $adv | $bb grep 'w'`" == "" ]; then
-	u_wimax=0
-else
-	if $bb [ $part_type == "/proc/dumchar_info" ]; then
-		wimax_hex=`$bb cat $part_type | $bb grep "^wimax.*0x" | $bb awk '{print $2}'`
-		wimax_dec=`$bb printf "%d \n" $wimax_hex`
-		wimax_count=`$bb expr $wimax_dec`
-		u_wimax=`$bb expr $wimax_dec / $part_bytediv`
-		u_wimax=`$bb expr $u_wimax + 1`
-		wimax_start_hex=`$bb cat $part_type | $bb grep "^wimax.*0x" | $bb awk '{print $3}'`
-		wimax_start=`$bb printf "%d \n" $wimax_start_hex`
-		wimax_start=`$bb expr $wimax_start`
-	else
-		wimax_hex=`$bb cat $part_type | $bb grep "\"wimax\"" | $bb awk '{print $2}'`
-		wimax_dec=`$bb printf "%d \n" 0x$wimax_hex`
-		wimax_count=`$bb expr $wimax_dec \* 1024`
-		u_wimax=`$bb expr $wimax_dec / $part_bytediv`
-		u_wimax=`$bb expr $u_wimax + 1`
-		if $bb [ "`$bb cat $part_type | $bb grep "\"wimax\"" | $bb awk '{print $5}'`" != "" ]; then
-			wimax_start_hex=`$bb cat $part_type | $bb grep "\"wimax\"" | $bb awk '{print $5}'`
-			wimax_start=`$bb printf "%d \n" 0x$wimax_start_hex`
-			wimax_start=`$bb expr $wimax_start \* 1024`
-		fi
-	fi
-fi
+check_size_dd "$part_wimax" "wimax" "w" "wimax" "wimax"
 
 #### /appslog partition size (for HTC and Sony (Erricsson) devices)
-if $bb [ "$part_type" == "not_found" -o "$part_appslog" == "" -o "`$bb echo $adv | $bb grep 'l'`" == "" ]; then
-	u_appslog=0
-else
-	if $bb [ $part_type == "/proc/dumchar_info" ]; then
-		appslog_hex=`$bb cat $part_type | $bb grep "^appslog.*0x" | $bb awk '{print $2}'`
-		appslog_dec=`$bb printf "%d \n" $appslog_hex`
-		appslog_count=`$bb expr $appslog_dec`
-		u_appslog=`$bb expr $appslog_dec / $part_bytediv`
-		u_appslog=`$bb expr $u_appslog + 1`
-		appslog_start_hex=`$bb cat $part_type | $bb grep "^appslog.*0x" | $bb awk '{print $3}'`
-		appslog_start=`$bb printf "%d \n" $appslog_start_hex`
-		appslog_start=`$bb expr $appslog_start`
-	else
-		appslog_hex=`$bb cat $part_type | $bb grep "\"appslog\"" | $bb awk '{print $2}'`
-		appslog_dec=`$bb printf "%d \n" 0x$appslog_hex`
-		appslog_count=`$bb expr $appslog_dec \* 1024`
-		u_appslog=`$bb expr $appslog_dec / $part_bytediv`
-		u_appslog=`$bb expr $u_appslog + 1`
-		if $bb [ "`$bb cat $part_type | $bb grep "\"appslog\"" | $bb awk '{print $5}'`" != "" ]; then
-			appslog_start_hex=`$bb cat $part_type | $bb grep "\"appslog\"" | $bb awk '{print $5}'`
-			appslog_start=`$bb printf "%d \n" 0x$appslog_start_hex`
-			appslog_start=`$bb expr $appslog_start \* 1024`
-		fi
-	fi
-fi
+check_size_dd "$part_appslog" "appslog" "l" "appslog" "appslog"
 
 #### /kernel partition size
-if $bb [ "$part_type" == "not_found" -o "$part_kernel" == "" -o "`$bb echo $adv | $bb grep 'g'`" == "" ]; then
-	u_kernel=0
-else
-	if $bb [ $part_type == "/proc/dumchar_info" ]; then
-		kernel_hex=`$bb cat $part_type | $bb grep "^kernel.*0x" | $bb awk '{print $2}'`
-		kernel_dec=`$bb printf "%d \n" $kernel_hex`
-		kernel_count=`$bb expr $kernel_dec`
-		u_kernel=`$bb expr $kernel_dec / $part_bytediv`
-		u_kernel=`$bb expr $u_kernel + 1`
-		kernel_start_hex=`$bb cat $part_type | $bb grep "^kernel.*0x" | $bb awk '{print $3}'`
-		kernel_start=`$bb printf "%d \n" $kernel_start_hex`
-		kernel_start=`$bb expr $kernel_start`
-	else
-		kernel_hex=`$bb cat $part_type | $bb grep "\"kernel\"" | $bb awk '{print $2}'`
-		kernel_dec=`$bb printf "%d \n" 0x$kernel_hex`
-		kernel_count=`$bb expr $kernel_dec \* 1024`
-		u_kernel=`$bb expr $kernel_dec / $part_bytediv`
-		u_kernel=`$bb expr $u_kernel + 1`
-		if $bb [ "`$bb cat $part_type | $bb grep "\"kernel\"" | $bb awk '{print $5}'`" != "" ]; then
-			kernel_start_hex=`$bb cat $part_type | $bb grep "\"kernel\"" | $bb awk '{print $5}'`
-			kernel_start=`$bb printf "%d \n" 0x$kernel_start_hex`
-			kernel_start=`$bb expr $kernel_start \* 1024`
-		fi
-	fi
-fi
+check_size_dd "$part_kernel" "kernel" "g" "kernel" "kernel"
+
+#### /modem partition size
+check_size_dd "$part_modem" "modem" "q" "modem" "modem"
+
+#### /ta partition size
+check_size_dd "$part_ta" "ta" "v" "TA" "TA"
 
 #### /system partition size
 if $bb [ "$system_fs" == "" -o "`$bb echo $adv | $bb grep 's'`" == "" ]; then
@@ -1653,20 +1601,20 @@ else
 	u_mobileinfo=`$bb expr $u_mobileinfo + 1`
 fi
 
-### /boot partition size (for HP Touchpad)
-if $bb [ "$is_hptouchpad" == "no" -o "`$bb echo $adv | $bb grep 'p'`" == "" ]; then
-	u_hptpboot=0
+### /boot partition size (for HP Touchpad, Nook Color & Action CPUs)
+if $bb [ "$is_fsboot" == "no" -o "`$bb echo $adv | $bb grep 'b'`" == "" ]; then
+	u_fsboot=0
 else
-	u_hptpboot=`$bb df -Pm /boot | $bb tail -n 1 | $bb awk '{print $3}'`
-	u_hptpboot=`$bb expr $u_hptpboot + 1`
+	u_fsboot=`$bb df -Pm /boot | $bb tail -n 1 | $bb awk '{print $3}'`
+	u_fsboot=`$bb expr $u_fsboot + 1`
 fi
 
-### /boot partition size (for Nook Color)
-if $bb [ "$is_nookcolor" == "no" -o "`$bb echo $adv | $bb grep 'p'`" == "" ]; then
-	u_nookcolorboot=0
+### /recovery partition size (for HP Touchpad, Nook Color & Action CPUs)
+if $bb [ "$is_fsrecovery" == "no" -o "`$bb echo $adv | $bb grep 'r'`" == "" ]; then
+	u_fsrecovery=0
 else
-	u_nookcolorboot=`$bb df -Pm /boot | $bb tail -n 1 | $bb awk '{print $3}'`
-	u_nookcolorboot=`$bb expr $u_nookcolorboot + 1`
+	u_fsrecovery=`$bb df -Pm /recovery | $bb tail -n 1 | $bb awk '{print $3}'`
+	u_fsrecovery=`$bb expr $u_fsrecovery + 1`
 fi
 
 #### Check if .android_secure exists
@@ -1709,7 +1657,7 @@ if $bb [ ! "$sdextdir" ]; then
 	if $bb [ ! "$sdextdir" ]; then
 		sdextdir="/sd-ext"
 	fi
-	sdext_mount=`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep -v "sdhci" | $bb grep -v "sdcc" | $bb egrep "($sdextdir|sd|ext).* type ext[234]" | $bb tail -n 1`
+	sdext_mount=`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep -v "sdhci" | $bb grep -v "sdcc" | $bb egrep "($sdextdir|/sd|ext).* type ext[234]" | $bb tail -n 1`
 else
 	sdext_mount=`$bb mount | $bb grep -v "/mnt/asec/" | $bb grep -v "sdhci" | $bb egrep "$sdextdir type" | $bb tail -n 1`
 fi
@@ -1723,7 +1671,7 @@ else
 fi
 
 #### Required space calculation
-req_space=`$bb expr $u_mmcblk0_start + $u_uboot + $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_kernel + $u_system + $u_data + $u_cache + $u_datadata + $u_datadatai + $u_efs + $u_preload + $u_custbkp + $u_flexrom + $u_custpack + $u_mobileinfo + $u_hptpboot + $u_nookcolorboot + $u_as + $u_sdext`
+req_space=`$bb expr $u_mmcblk0_start + $u_uboot + $u_boot + $u_recovery + $u_wimax + $u_appslog + $u_kernel + $u_modem + $u_ta + $u_system + $u_data + $u_cache + $u_datadata + $u_datadatai + $u_efs + $u_preload + $u_custbkp + $u_flexrom + $u_custpack + $u_mobileinfo + $u_fsboot + $u_fsrecovery + $u_as + $u_sdext`
 
 #### Available space calculation
 freespace=`$bb df -Pm $sdcard | $bb tail -n 1 | $bb awk '{print $4}'`
@@ -1737,7 +1685,9 @@ if $bb [ $freespace -lt $req_space ]; then
 		logmsg "$LANG_ERROR: $LANG_CANNOTCHANGETO $path. $LANG_EXITING..."
 		exit $E_CNTCDPATH
 	fi
-	$bb rm -rf -- $name
+	if $bb [ "$replace_backup" != "yes" ]; then
+		$bb rm -rf -- $name
+	fi
 	logmsg "$LANG_NOSPACE $LANG_EXITING..."
 	logerror "df:" "`$bb df -Pm`"
 	logerror "$LANG_PARTITIONS:" "`$bb cat $part_type`"
@@ -1803,11 +1753,11 @@ set_excludes "custpack" "/custpack" "$custpack_fs" "h"
 # /mobile_info excludes (for Alcatel devices)
 set_excludes "mobileinfo" "/mobile_info" "$mobileinfo_fs" "f"
 
-# /boot excludes (for HP Touchpad)
-set_excludes "hptpboot" "/boot" "$hptpboot_fs" "p"
+# /boot excludes (for HP Touchpad, Nook Color & Action CPUs)
+set_excludes "fsboot" "/boot" "$fsboot_fs" "b"
 
-# /boot excludes (for Nook Color)
-set_excludes "nookcolorboot" "/boot" "$nookcolorboot_fs" "n"
+# /recovery excludes (for HP Touchpad, Nook Color & Action CPUs)
+set_excludes "fsrecovery" "/recovery" "$fsrecovery_fs" "r"
 
 # sd-ext excludes
 set_excludes "sdext" "$extm" "$sdext_fs" "x"
@@ -1848,7 +1798,7 @@ fi
 nandroid_dd "uboot" "uboot" "$part_uboot" "k" "$u_uboot" "$part_bsval" "$uboot_count" "$uboot_start" "no"
 
 #### Backup boot
-if $bb [ "$is_hptouchpad" != "yes" -a "$is_nookcolor" != "yes" -a "$custbkp_fs" == "" ]; then
+if $bb [ "$is_fsboot" != "yes" -a "$custbkp_fs" == "" ]; then
 	nandroid_dd "boot" "boot" "$part_boot" "b" "$u_boot" "$part_bsval" "$boot_count" "$boot_start" "yes"
 fi
 
@@ -1858,7 +1808,9 @@ if $bb [ $part_type == "not_found" -o "$part_boot" == "" ]; then
 fi
 
 #### Backup recovery
-nandroid_dd "recovery" "recovery" "$part_recovery" "r" "$u_recovery" "$part_bsval" "$recovery_count" "$recovery_start" "yes"
+if $bb [ "$is_fsrecovery" != "yes" ]; then
+	nandroid_dd "recovery" "recovery" "$part_recovery" "r" "$u_recovery" "$part_bsval" "$recovery_count" "$recovery_start" "yes"
+fi
 
 #### Backup wimax (for Samsung devices)
 nandroid_dd "wimax" "wimax" "$part_wimax" "w" "$u_wimax" "$part_bsval" "$wimax_count" "$wimax_start" "no"
@@ -1868,6 +1820,12 @@ nandroid_dd "appslog" "appslog" "$part_appslog" "l" "$u_appslog" "$part_bsval" "
 
 #### Backup kernel
 nandroid_dd "kernel" "kernel" "$part_kernel" "g" "$u_kernel" "$part_bsval" "$kernel_count" "$kernel_start" "no"
+
+#### Backup modem
+nandroid_dd "modem" "modem" "$part_modem" "q" "$u_modem" "$part_bsval" "$modem_count" "$modem_start" "no"
+
+#### Backup TA
+nandroid_dd "TA" "ta" "$part_ta" "v" "$u_ta" "$part_bsval" "$ta_count" "$ta_start" "no"
 
 #### Backup /system
 nandroid_fs "system" "system" "s" "/system" "system" "$system_fs" "$u_system" "$system_excludes" "$system_excludes_dedupe" "yes"
@@ -1907,15 +1865,14 @@ nandroid_fs "custpack" "custpack" "h" "/custpack" "custpack" "$custpack_fs" "$u_
 #### Backup /mobile_info partition (for Alcatel devices)
 nandroid_fs "mobile_info" "mobile_info" "i" "/mobile_info" "mobile_info" "$mobileinfo_fs" "$u_mobileinfo" "$mobileinfo_excludes" "$mobileinfo_excludes_dedupe" "no"
 
-
-#### Backup /boot partition (for HP Touchpad)
-if $bb [ "$is_hptouchpad" == "yes" -a "$hptpboot_fs" != "" ]; then
-	nandroid_fs "boot" "boot" "p" "/boot" "boot" "$hptpboot_fs" "$u_hptpboot" "$hptpboot_excludes" "$hptpboot_excludes_dedupe" "no"
+#### Backup /boot partition (for HP Touchpad, Nook Color & Action CPUs)
+if $bb [ "$is_fsboot" == "yes" -a "$fsboot_fs" != "" ]; then
+	nandroid_fs "boot" "boot" "b" "/boot" "boot" "$fsboot_fs" "$u_fsboot" "$fsboot_excludes" "$fsboot_excludes_dedupe" "no"
 fi
 
-#### Backup /boot partition (for Nook Color)
-if $bb [ "$is_nookcolor" == "yes" -a "$nookcolorboot_fs" != "" ]; then
-	nandroid_fs "boot" "boot" "n" "/boot" "boot" "$nookcolorboot_fs" "$u_nookcolorboot" "$nookcolorboot_excludes" "$nookcolorboot_excludes_dedupe" "no"
+#### Backup /recovery partition (for HP Touchpad, Nook Color & Action CPUs)
+if $bb [ "$is_fsrecovery" == "yes" -a "$fsrecovery_fs" != "" ]; then
+	nandroid_fs "recovery" "recovery" "r" "/recovery" "recovery" "$fsrecovery_fs" "$u_fsrecovery" "$fsrecovery_excludes" "$fsrecovery_excludes_dedupe" "no"
 fi
 
 #### Backup .android_secure
@@ -1997,7 +1954,7 @@ else
 	done
 	progress_done
 	$bb echo ""
- 	# Verify md5sum (to check if the file is populated)
+	# Verify md5sum (to check if the file is populated)
 	if $bb [ "`$bb ls -A`" != "nandroid.md5" ]; then
 		logmsg "$LANG_VERIFYMD5SUM...\c"
 		while $bb [ `$bb stat -t nandroid.md5 | $bb awk '{print $2}'` == "0" ]; do
@@ -2034,6 +1991,9 @@ if $bb [ -f /sys/class/leds/green/brightness ]; then
 # Xperia U
 elif $bb [ -f /sys/class/leds/m-key-green/brightness ]; then
 	led="/sys/class/leds/m-key-green/brightness"
+# Galaxy S Relay 4G
+elif $bb [ -f /sys/class/sec/led/led_g ]; then
+	led="/sys/class/sec/led/led_g"
 else
 	led="none"
 fi
