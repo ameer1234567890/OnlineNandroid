@@ -54,25 +54,25 @@ sojus	Google Nexus S 4G D720
 streak	Dell Streak
 SGH-T959V	Samsung Galaxy S 4G SGH-T959V
 photon	HTC HD mini
-hwm920	Huawei Activa 4G M920
+hwm920	Huawei Activa 4G
 sholes	Motorola Droid
 thunderc	LG Optimus V VM670
 cdma_ciena	Motorola Citrus WX445 (Verizon)
 GT-I9000B	Samsung Captivate (MTD) GT-I9000B
-m860	Huawei Ascend M860
+hwm860	Huawei Ascend M860
 soju	Google Nexus S GT-I9020T
 GT-I9023	Google Nexus S GT-I9023
-u9200	Huawei Ascend P1 U9200
+hwu9200	Huawei Ascend P1
 pico	HTC Explorer
 pecan	LG Optimus Me P350
-u8815	Huawei Ascend G300
-u8160	Huawei U8160
-hwm886	Huawei Mercury M886
+hwu8815	Huawei Ascend G300
+hwu8160	Huawei U8160
+hwm886	Huawei Mercury
 xt531	Motorola Fire XT XT531
 skate	ZTE Skate
 moon	Pantech Crossover P8000
 SPH-D700	Samsung Galaxy Epic 4G SPH-D700
-hwu8665	Huawei Fusion 2 U8665
+hwu8665	Huawei Fusion 2
 swift	LG Optimus GT540
 tinboost	Motorola Defy Mini XT320
 dream_sapphire	HTC Dream and Magic
@@ -86,4 +86,4 @@ gelato	LG Optimus Q L55C
 univa	LG Univa E510
 leo	HTC HD2
 venture	Alcatel Venture
-u8150	Huawei Ideos U8150
+hwu8150	Huawei Ideos U8150

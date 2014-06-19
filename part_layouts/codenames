@@ -58,7 +58,7 @@ b5512	Samsung Galaxy Y Pro Duos GT-B5512 / GT-B5512B
 targa	Motorola Droid Bionic
 flyer	HTC Flyer
 speedy	HTC Evo Shift 4G
-u8800	Huawei Ideos X
+hwu8800	Huawei Ideos X
 ariesve	Samsung Galaxy S Plus GT-I9001
 ms770	LG Motion 4G MS770
 SGH-I997	Samsung Infuse 4G SGH-I997  (AT&T)
@@ -215,19 +215,18 @@ p700	LG Optimus L7 P700
 amid-9743g	Bauhn AMID-9743G
 apexqtmo	Samsung Galaxy S Relay 4G SGH-T699 (T-Mobile)
 atlas40	ZTE Blade III
-mediapad	Huawei MediaPad
+hwmediapad	Huawei MediaPad
 p920h	LG Optimus 3D P920H (Brazilian Carrier - TIM)
 pax	Motorola Admiral XT603
 SCH-R760	Samsung Galaxy S II SCH-R760 (U.S. Cellular)
 s9081	Cynus T2
 su640	LG Optimus LTE SU640
 tinjii9300	Tinji I9300
-u9200	Huawei Ascend P1 U9200
+hwu9200	Huawei Ascend P1
 w990	Konka W990
 a110	Micromax Canvas 2 A110
-u666e	Huawei Ascend Y201 Pro U8666E
 SCH-R760X	Samsung Galaxy S II SCH-R760X (CDMA Generic)
-u8815	Huawei Ascend G300 U8815
+hwu8815	Huawei Ascend G300
 d2spi	Samsung Galaxy S III SPH-L710 (Cspire)
 scorpion_mini	Motorola Razr M XT907
 umts_yangtze	Motorola Razr V XT885 / XT886
@@ -238,7 +237,7 @@ jena	Samsung Galaxy Mini 2 GT-S6500 / GT-S6500D
 GT-I9100T	Samsung Galaxy S II GT-I9100T
 e610	LG Optimus L5 E610
 ms870	LG Spirit 4G MS870 (MetroPCS)
-u8825d	Huawei U8825D
+hwu8825d	Huawei Ascend G330D
 vivow	HTC DROID Incredible 2
 yuga	Sony Xperia Z C6602 / C6603 / C6606 / C6616
 fireball	HTC DROID Incredible 4G LTE
@@ -249,13 +248,13 @@ asanti_c	Motorola Photon Q 4G LTE XT897
 ancora_tmo	Samsung Exhibit II 4G SGH-T679 (T-Mobile)
 m7	HTC One
 baffin	Samsung Galaxy Grand GT-I9082
-u8800pro	Huawei Ideos X5 U8800 Pro
-u8860	Huawei Honor U8860
+hwu8800pro	Huawei Ideos X5 Pro
+hwu8860	Huawei Honor
 hayabusa	Sony Xperia TX LT29i
 m7spr	HTC One (Sprint)
 p4notelte	Samsung Galaxy Note 10.1 LTE GT-N8020
 mx532	Fujitsu Stylistic M532
-u9508	Huawei Honor 2 U9508
+hwu9508	Huawei Honor 2
 v55	ZTE Optik V55
 jfltespr	Samsung Galaxy S IV SPH-L720 (Sprint)
 jflte	Samsung Galaxy S IV GT-I9505
@@ -267,7 +266,7 @@ jflteatt	Samsung Galaxy S IV (AT&T)
 ja3g	Samsung Galaxy S IV GT-I9500 (International)
 p760	LG Optimus L9 P760
 magnus	Pantech Discover P9090 (AT&T)
-m931	Huawei Premia 4G M931 (MetroPCS)
+hwm931	Huawei Premia 4G (MetroPCS)
 roy	Samsung Galaxy Young GT-S6312
 jfltevzw	Samsung Galaxy S IV SCH-I545 (Verizon)
 q203	Blu Dash 4.0
@@ -278,7 +277,7 @@ amazingtrf	Samsung Galaxy Discover SGH-S730M
 pollux_windy	Sony Xperia Tablet Z (Wifi) SGP311 / SGP312
 m7att	HTC One (AT&T)
 aries	Xiaomi MI 2
-y300	Huawei Ascend Y300
+hwy300	Huawei Ascend Y300
 m7tmo	HTC One (T-Mobile)
 m7ul	HTC One (GSM/LTE)
 SGH-I757M	Samsung Galaxy S II HD LTE SGH-I757M
@@ -293,12 +292,12 @@ crane-a088	Crane A088
 jfltecri	Samsung Galaxy S IV (Cricket)
 stuttgart	Lenovo K860
 ovation	Barnes & Noble Nook HD+
-u8950-1	Huawei Ascend G600 U8950-1
-u8666e-51	Huawei Ascend Y201 U8666E-51
+hwu8950	Huawei Ascend G600
+hwu8666e	Huawei Ascend Y201
 a68	Asus PadFone 2 A68
 jactivelte	Samsung Galaxy S IV Active GT-I9295
 victor	LG Optimus Sol E730
-hwmt1-u06	Huawei Ascend Mate MT1-U06
+hwmt1	Huawei Ascend Mate MT1
 comancheatt	Samsung Rugby Pro SGH-I547
 goghcri	Samsung Galaxy Admire 2 SCH-R830C
 flo	Google Nexus 7 Razr
@@ -369,9 +368,9 @@ taoshan	Sony Xperia L C2104 / C2105
 e975	LG Optimus G E975
 hltecan	Samsung Galaxy Note III SM-N900W8 (Rogers)
 quantum7	Nuqleo Quantum 7
-p6-u06	Huawei Ascend P6
+hwp6	Huawei Ascend P6
 hummingbird	Barnes & Noble Nook HD
-u9500	Huawei Ascend D1 U9500
+hwu9500	Huawei Ascend D1
 k2cl	HTC One SV C525c (Boost Mobile)
 expressatt	Samsung Galaxy Express SGH-I437 (AT&T)
 meliusltecan	Samsung Galaxy Mega SGH-I527M (Rogers)
@@ -400,8 +399,8 @@ vs840	LG Lucid 4G VS840 (Verizon)
 cdma_solana	Motorola Milestone 3 XT860
 codinamtr	Samsung Galaxy Exhibit (MetroPCS) SGH-T599N
 falcon_umts	Motorola Moto G XT1032
-u8951	Huawei Ascend G510
-u8665	Huawei Fusion 2 U8665
+hwu8951	Huawei Ascend G510
+hwu8665	Huawei Fusion 2
 lt03lte	Samsung Galaxy Note 10.1 LTE SM-P605
 hw_w910	Haier HW-W910
 GT-S6802	Samsung Galaxy Ace Duos GT-S6802
@@ -460,7 +459,7 @@ c1ktt	Samsung Galaxy S III SHV-E210K (Korean Version)
 v510	LG G Pad 8.3 V510 (Google Play Edition)
 becky	ZTE Overture Z995
 kyleprods	Samsung Galaxy S Duos 2 GT-S7582
-Y301A2	Huawei Vitria Y301A2 (MetroPCS)
+hwy301a2	Huawei Vitria (MetroPCS)
 zara	HTC Desire 601
 d2vmu	Samsung Galaxy S III SPH-L710 (Virgin Mobile)
 p659	LG Optimus F3 P659
@@ -468,13 +467,13 @@ comanchecan	Samsung Rugby Pro SGH-I547C (Canada)
 lt02ltespr	Samsung Galaxy Tab 3 7.0 SM-T217S (Sprint)
 p765	LG Optimus L9 P765
 warplte	ZTE Boost Warp 4G N9510
-u8686	Huawei Prism II
-Y301A1	Huawei Valiant (MetroPCS)
+hwu8686	Huawei Prism II
+hwy301a1	Huawei Valiant (MetroPCS)
 d958	LG G Flex D958
 lt033g	Samsung Galaxy Note 10.1 SM-P601
-G740-L00	Huawei Ascend G740-L00
+hwg740	Huawei Ascend G740
 p870	LG Escape P870
-u9510e	Huawei Ascend D1 quad XL U9510E
+hwu9510e	Huawei Ascend D1 Quad XL
 SPH-D710VMUB	Samsung Galaxy S II (Virgin Mobile)
 hlteusc	Samsung Galaxy Note III SM-N900R4 (US Cellular)
 amami	Sony Xperia Z1 Compact D5503
@@ -491,14 +490,14 @@ C6522N	Kyocera Hydro XTRM (MetroPCS)
 cs02	Samsung Galaxy Core Plus SM-G350
 hayes	ZTE Force N9100
 ivoryss	Samsung Galaxy Music GT-S6010 / GT-S6010L
-u8666E-1	Huawei Ascend Y201 Pro
+hwu8666epro	Huawei Ascend Y201 Pro
 lt02lte	Samsung Galaxy Tab 3 7.0 SM-T215
 oceanus	ZTE Blade Apex
 lt013g	Samsung Galaxy Tab 3 8.0 SM-T311
 d802t	LG G2 D802T
 x907	Oppo Finder X907
 metis	ZTE Radiant Z740
-hn3-u00	Huawei Honor 3 HN3-U00
+hwhn3	Huawei Honor 3
 umts_irock	Motorola IronRock XT626
 serranoltebmc	Samsung Galaxy S IV Mini SGH-I257M
 P-02E	Panasonic Eluga X (Docomo)
@@ -546,7 +545,7 @@ SC-02C	Samsung Galaxy S II (Docomo)
 kltecan	Samsung Galaxy S 5 SM-G900W8 (Canada)
 htdlte	Samsung Galaxy Note III SM-N9007
 viennalte	Samsung Galaxy Note Pro 12.2 LTE SM-P905
-p2-6011	Huawei Ascend P2 P2-6011
+hwp2	Huawei Ascend P2
 k3g	Samsung Galaxy S 5 SM-G900H
 logan	Samsung Galaxy Ace 3 3G GT-S7270L
 picassolte	Samsung Galaxy tab Pro 10.1 LTE SM-T525
@@ -576,6 +575,6 @@ C6916	Sony Z1s (T-Mobile)
 v2lte	Samsung Galaxy Tab Pro 12.2 LTE SM-T905
 kylessopen	Samsung Galaxy Ace II X GT-S7560M
 d620	LG G2 Mini D620
-y530	Huawei Ascend Y530
+hwy530	Huawei Ascend Y530
 d410	LG L90 Dual D410
 c1skt	Samsung Galaxy S III LTE SHV-E210S
