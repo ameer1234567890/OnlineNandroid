@@ -32,8 +32,8 @@
 #### Extract information from an Android device for
 #### making new partition layouts for Online Nandroid
 #### By Ameer Dawood
-#### Version 1.00
-#### Last Updated: 10/06/2014 15:44 UTC+6
+#### Version 1.0.0
+#### Last Updated: 20/06/2014 18:20 UTC+6
 
 #### Output device info
 echo -e "Extracting device info... \c"

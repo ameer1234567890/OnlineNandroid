@@ -31,8 +31,8 @@
 #### gogit.sh
 #### Add new partition layouts to Online Nandroid
 #### By Ameer Dawood
-#### Version 1.10
-#### Last Updated: 20/06/2014 17:16 UTC+6
+#### Version 1.0.0
+#### Last Updated: 20/06/2014 18:20 UTC+6
 
 #### Constants (All paths should be relative)
 repodir="OnlineNandroid"

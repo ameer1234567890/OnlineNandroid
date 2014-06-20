@@ -31,11 +31,11 @@
 #### partlayout.sh
 #### Generate partition layouts for Online Nandroid
 #### By Ameer Dawood
-#### Version 1.10
-#### Last Updated: 20/06/2014 17:32 UTC+6
+#### Version 1.0.0
+#### Last Updated: 20/06/2014 18:20 UTC+6
 
 #### Version
-version="1.10"
+version="1.0.0"
 
 #### Help screen
 if [ "$1" == "--help" -o "$1" == "-h" ]; then
