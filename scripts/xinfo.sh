@@ -1,0 +1,53 @@
+###########################################################################################################
+###########################################################################################################
+##                                                                                                       ##
+##                              Online Nandroid - Partition Layout Extractor                             ##
+##                                                                                                       ##
+##                                             By Ameer Dawood                                           ##
+##                                                                                                       ##
+###########################################################################################################
+###########################################################################################################
+# Software License Agreement (Modified BSD License)                                                       #
+# Copyright (c) 2012-2014, Ameer Dawood                                                                   #
+# All rights reserved.                                                                                    #
+# Redistribution and use of this software in source and binary forms, with or without modification, are   #
+# permitted provided that the following conditions are met:                                               #
+# * Redistributions of source code must retain the above copyright notice, this list of conditions and    #
+#   the following disclaimer.                                                                             #
+# * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and #
+#   the following disclaimer in the documentation and/or other materials provided with the distribution.  #
+# * The name of the author may not be used to endorse or promote products derived from this software      #
+#   without specific prior written permission.                                                            #
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED  #
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A  #
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR  #
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT      #
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS     #
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR  #
+# TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF    #
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                                                              #
+###########################################################################################################
+
+#### xinfo.sh
+#### Extract information from an Android device for
+#### making new partition layouts for Online Nandroid
+#### By Ameer Dawood
+#### Version 1.00
+#### Last Updated: 10/06/2014 15:44 UTC+6
+
+#### Output device info
+echo -e "Extracting device info... \c"
+cat /system/build.prop | grep "^ro.product." | grep -v "^ro.product.locale." > xinfo.txt
+echo "" >> xinfo.txt
+echo -e "Done!"
+
+#### Output /proc/partitions
+echo -e "Extracting list of partitions... \c"
+cat /proc/partitions >> xinfo.txt
+echo "" >> xinfo.txt
+echo -e "Done!"
+
+#### Output block devices by-name
+echo -e "Extracting partition info... \c"
+ls -l /dev/block/platform/*/by-name >> xinfo.txt
+echo -e "Done!"
