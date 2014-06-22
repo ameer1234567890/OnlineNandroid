@@ -31,8 +31,8 @@
 #### gogit.sh
 #### Add new partition layouts to Online Nandroid
 #### By Ameer Dawood
-#### Version 1.0.0
-#### Last Updated: 20/06/2014 18:20 UTC+6
+#### Version 1.1.0
+#### Last Updated: 22/06/2014 12:22 UTC+6
 
 #### Constants (All paths should be relative)
 repodir="OnlineNandroid"
@@ -102,7 +102,7 @@ while [ "$i" -lt "$lines" ]; do
 	if [ "$line" != "" ]; then
 		codename=`echo $line | awk '{print $1}'`
 		devicename=`echo $line | sed s/"$codename\s"/''/g`
-		devicem="$devicem| $devicename | $codename | [Download](https://github.com/ameer1234567890/OnlineNandroid/blob/master/part_layouts/zip/part_detect_tool.$codename.zip?raw=true)|\n"
+		devicem="$devicem| $devicename | $codename | [Download](https://raw.githubusercontent.com/ameer1234567890/OnlineNandroid/master/part_layouts/zip/part_detect_tool.$codename.zip?raw=true)|\n"
 	fi
 done
 echo -e "Done!"
