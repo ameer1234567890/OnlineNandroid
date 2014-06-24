@@ -31,8 +31,8 @@
 #### partlayout.sh
 #### Generate partition layouts for Online Nandroid
 #### By Ameer Dawood
-#### Version 1.0.0
-#### Last Updated: 20/06/2014 18:20 UTC+6
+#### Version 1.0.1
+#### Last Updated: 24/06/2014 11:06 UTC+6
 
 #### Version
 version="1.0.0"
@@ -91,8 +91,6 @@ if [ "`which 7za`" == "" ]; then
 	exit
 fi
 echo -e "Done!"
-
-exit
 
 ##################### Making Partition Layout #####################
 echo "#### Making Partition Layout"
