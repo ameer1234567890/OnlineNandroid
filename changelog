@@ -241,3 +241,6 @@ v9.50 - Added: LED notification for Samsung Galaxy Relay 4G.
         Bug Fix: Wrong sd-ext detection on some devices.
         Bug Fix: Partition size calculation on emmc devices.
         Bug Fix: Slow file listing in TWRP mode on some devices.
+v9.51 - Added: Preservation of SELinux contexts.
+        Bug Fix: Data partition size calculated incorrectly when excluding Google Music cache.
+        Bug Fix: TWRP backups taking too long for file list.
