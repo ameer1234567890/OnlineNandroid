@@ -68,7 +68,7 @@ saga	HTC Desire S
 holiday	HTC Raider 4G
 e350	Acer Liquid Gallant
 SGH-T869	Samsung Galaxy Tab 7.0 Plus SGH-T869 (T-Mobile)
-jaspervzw	Samsung Galaxy Stellar SCH-I200
+jaspervzw	Samsung Galaxy Stellar SCH-I200 (Verizon)
 fleming	Motorola Xoom 2
 espressowifi	Samsung Galaxy Tab 2 7.0 Wifi GT-P3110 / GT-P3113
 m3	Samsung Galaxy S III LTE GT-I9305
@@ -114,7 +114,7 @@ endeavoru	HTC One X GSM
 enrc2b	HTC One X Plus
 espressorf	Samsung Galaxy Tab 2 7.0 GT-P3100
 espressovzw	Samsung Galaxy Tab 2 7.0 SCH-I705 (Verizon)
-p4vzw	Samsung Galaxy Tab 10.1 LTE SCH-I905
+p4vzw	Samsung Galaxy Tab 10.1 LTE SCH-I905 (Verizon)
 p4wifi	Samsung Galaxy Tab 10.1 Wifi GT-P7510
 GT-P7100	Samsung Galaxy Tab 10.1v GT-P7100
 GT-P7511	Samsung Galaxy Tab 10.1N GT-P7511
@@ -190,7 +190,7 @@ qinara	Motorola Atrix HD MB886 (AT&T)
 s5	Advan Vandroid S5
 vangogh	Acer Iconia Tab A100
 espresso10wifi	Samsung Galaxy Tab 2 Wifi GT-P5110 / GT-P5113
-triumph	Motorola Triumph WX435 (Virgin Mobile USA)
+triumph	Motorola Triumph WX435 (Virgin Mobile)
 e970	LG Optimus G E970 (AT&T)
 SGH-I577	Samsung Exhilarate SGH-I577 (AT&T)
 SGH-I727R	Samsung Galaxy S II LTE SGH-I727R (Rogers)
@@ -216,7 +216,7 @@ amid-9743g	Bauhn AMID-9743G
 apexqtmo	Samsung Galaxy S Relay 4G SGH-T699 (T-Mobile)
 atlas40	ZTE Blade III
 hwmediapad	Huawei MediaPad
-p920h	LG Optimus 3D P920H (Brazilian Carrier - TIM)
+p920h	LG Optimus 3D P920H (TIM Brazil)
 pax	Motorola Admiral XT603
 SCH-R760	Samsung Galaxy S II SCH-R760 (U.S. Cellular)
 s9081	Cynus T2
@@ -298,8 +298,8 @@ a68	Asus PadFone 2 A68
 jactivelte	Samsung Galaxy S IV Active GT-I9295
 victor	LG Optimus Sol E730
 hwmt1	Huawei Ascend Mate MT1
-comancheatt	Samsung Rugby Pro SGH-I547
-goghcri	Samsung Galaxy Admire 2 SCH-R830C
+comancheatt	Samsung Rugby Pro SGH-I547 (AT&T)
+goghcri	Samsung Galaxy Admire 2 SCH-R830C (Cricket)
 flo	Google Nexus 7 Razr
 jgedlte	Samsung Galaxy S IV GT-9505G (Google Play Edition)
 find5	Oppo Find 5 X909
@@ -418,7 +418,7 @@ ms910	LG Esteem MS910 (MetroPCS)
 s2ve	Samsung Galaxy S II Plus GT-I9105
 serrano3g	Samsung Galaxy S IV Mini GT-I9190
 ivory	Samsung Galaxy Music Duos GT-S6012
-hlteatt	Samsung Galaxy Note III LTE SM-N900A
+hlteatt	Samsung Galaxy Note III LTE SM-N900A (AT&T)
 ms659	LG Optimus F3 MS659 (MetroPCS)
 d801	LG G2 D801 (T-Mobile)
 espresso10tmo	Samsung Galaxy Tab 2 10.1 SGH-T779 (T-Mobile)
@@ -501,7 +501,7 @@ hwhn3	Huawei Honor 3
 umts_irock	Motorola IronRock XT626
 serranoltebmc	Samsung Galaxy S IV Mini SGH-I257M
 P-02E	Panasonic Eluga X (Docomo)
-gardaltetmo	Samsung Galaxy Light SGH-T399
+gardaltetmo	Samsung Galaxy Light SGH-T399 (T-Mobile)
 jflterefreshspr	Samsung Galaxy S IV SPH-L720T (Sprint)
 kylepro	Samsung Galaxy Trend Plus GT-S7580
 jem	Amazon Kindle Fire HD 8.9
@@ -517,7 +517,7 @@ a80	Asus PadFone Infinity A80
 v1awifi	Samsung Galaxy Note Pro 12.2 Wifi SM-P900
 m0chn	Samsung Galaxy S III GT-I9300 (China Unicom)
 m8whl	HTC One M8 831C
-goldenlteatt	Samsung Galaxy S III Mini SM-G730A
+goldenlteatt	Samsung Galaxy S III Mini SM-G730A (AT&T)
 umts_kobe	Motorola Bravo MB520
 d959	LG G Flex D959
 e430	LG Optimus L3 II E430
