@@ -11,7 +11,7 @@ toro	Samsung Galaxy Nexus (Verizon)
 toroplus	Samsung Galaxy Nexus (Sprint)
 GT-I9100	Samsung Galaxy S II GT-I9100
 GT-I9100G	Samsung Galaxy S II GT-I9100G
-maguro	Google Galaxy Nexus (GSM) GT-I9250
+maguro	Google Galaxy Nexus GSM GT-I9250
 GT-S6102	Samsung Galaxy Y Duos GT-S6102
 GT-S5360	Samsung Galaxy Y GT-S5360
 grouper	Google Nexus 7
@@ -31,8 +31,8 @@ ancora	Samsung Galaxy W (Wonder) GT-I8150
 cooper	Samsung Galaxy Ace GT-S5830
 cooperev	Samsung Galaxy Ace GT-S5830i
 hercules	Samsung Galaxy S2 Hercules SGH-T989 (T-Mobile)
-GT-P6800	Samsung Galaxy Tab 7.7 (3G) GT-P6800
-GT-P6810	Samsung Galaxy Tab 7.7 (Wifi) GT-P6810
+GT-P6800	Samsung Galaxy Tab 7.7 3G GT-P6800
+GT-P6810	Samsung Galaxy Tab 7.7 Wifi GT-P6810
 skyrocket	Samsung Galaxy S II Skyrocket SGH-I727 (AT&T)
 tenderloin	HP Touchpad (on CyanogenMod)
 tf300t	Asus Transformer Pad TF300T
@@ -70,12 +70,12 @@ e350	Acer Liquid Gallant
 SGH-T869	Samsung Galaxy Tab 7.0 Plus SGH-T869 (T-Mobile)
 jaspervzw	Samsung Galaxy Stellar SCH-I200
 fleming	Motorola Xoom 2
-espressowifi	Samsung Galaxy Tab 2 7.0 GT-P3110 / GT-P3113
+espressowifi	Samsung Galaxy Tab 2 7.0 Wifi GT-P3110 / GT-P3113
 m3	Samsung Galaxy S III LTE GT-I9305
 milestone2	Motorola Milestone 2 A953 / Motorola Droid 2
 crane-inet	Visual Land Connect
 evita	HTC One X (AT&T, Rogers), HTC One XL (Telstra)
-everest	Motorola Xoom (3G)
+everest	Motorola Xoom 3G
 droid2we	Motorola Droid 2 Global
 acclaim	Barnes & Noble Nook Tablet
 iconvmu	Samsung Galaxy Reverb SPH-M950 (Virgin Mobile)
@@ -110,28 +110,28 @@ picasso_m	Acer Iconia Tab A510
 callisto	Samsung Galaxy 551 GT-I5510
 codina	Samsung Galaxy Ace 2 GT-I8160
 edison	Motorola Atrix 2 MB865
-endeavoru	HTC One X (GSM)
+endeavoru	HTC One X GSM
 enrc2b	HTC One X Plus
 espressorf	Samsung Galaxy Tab 2 7.0 GT-P3100
 espressovzw	Samsung Galaxy Tab 2 7.0 SCH-I705 (Verizon)
 p4vzw	Samsung Galaxy Tab 10.1 LTE SCH-I905
-p4wifi	Samsung Galaxy Tab 10.1 GT-P7510
+p4wifi	Samsung Galaxy Tab 10.1 Wifi GT-P7510
 GT-P7100	Samsung Galaxy Tab 10.1v GT-P7100
 GT-P7511	Samsung Galaxy Tab 10.1N GT-P7511
-shooteru	HTC Evo 3D (GSM)
+shooteru	HTC Evo 3D GSM
 vigor	HTC Rezound
 GT-S5839I	Samsung Galaxy Ace GT-S5839I
 p4tmo	Samsung Galaxy Tab 10.1 SGH-T859 (T-Mobile)
 umts_jordan	Motorola Defy+ MB526
 jewel	HTC Evo 4G LTE (Sprint)
 p4noterf	Samsung Galaxy Note 10.1 GT-N8000
-p4notewifi	Samsung Galaxy Note 10.1 GT-N8013
+p4notewifi	Samsung Galaxy Note Wifi 10.1 GT-N8013
 p5	Samsung Galaxy Tab 8.9 3G GT-P7300
-p5wifi	Samsung Galaxy Tab 8.9 3G GT-P7310
+p5wifi	Samsung Galaxy Tab 8.9 Wifi GT-P7310
 tostab03	Toshiba AT100 Thrive
 ls855	LG Marquee LS855
 ms695	LG Optimus M+ MS695
-p4notewifiww	Samsung Galaxy Note 10.1 GT-N8010
+p4notewifiww	Samsung Galaxy Note 10.1 Wifi GT-N8010
 solana	Motorola Droid 3 XT862 (Verizon)
 vision	HTC Desire Z
 dlx	HTC Droid DNA
@@ -153,7 +153,7 @@ presto	Pantech Burst P9070 (AT&T)
 primou	HTC One V
 t0lteusc	Samsung Galaxy Note II SCH-R950 (Sprint)
 smi	Motorola Razr i XT890
-wingray	Motorola Xoom (Wifi)
+wingray	Motorola Xoom Wifi
 tf700t	Asus Transformer Prime TF700T
 t0ltecan	Samsung Galaxy Note II SGH-I317M (Rogers)
 ls970	LG Optimus G LS970
@@ -161,10 +161,10 @@ mint	Sony Xperia T LT30p
 mw07	Arnova 10C G3
 p4100	Pantech Element P4100 (AT&T)
 SGH-T769	Samsung Galaxy S Blaze 4G SGH-T769 (T-Mobile)
-tf300tl	Asus Transformer Pad TF300TL (LTE)
+tf300tl	Asus Transformer Pad LTE TF300TL
 GT-I9100P	Samsung Galaxy S II GT-I9100P
 md7095	Sysbay MD7095
-tf300tg	Asus Transformer Pad TF300TG (3G)
+tf300tg	Asus Transformer Pad 3G TF300TG
 p925	LG Thrill 4G P925 (AT&T)
 aoba	Sony Xperia Ion LT28(at/i/h)
 at100	Toshiba AT100
@@ -172,7 +172,7 @@ bird77	Star V1277
 kronos	Motorola XPRT MB612 (Sprint)
 SGH-I927R	Samsung Galaxy S Glide SGH-I927R (Rogers)
 SGH-I997R	Samsung Infuse 4G SGH-I997R (Rogers)
-GT-P5113	Samsung Galaxy Tab 2 10.1 (Wifi) GT-P5113
+GT-P5113	Samsung Galaxy Tab 2 10.1 Wifi GT-P5113
 golden	Samsung Galaxy S III Mini GT-I8190
 lotus	Sony Xperia Go ST27(a/i)
 otter	Amazon Kindle Fire
@@ -270,24 +270,24 @@ hwm931	Huawei Premia 4G (MetroPCS)
 roy	Samsung Galaxy Young GT-S6312
 jfltevzw	Samsung Galaxy S IV SCH-I545 (Verizon)
 q203	Blu Dash 4.0
-konawifi	Samsung Galaxy Note 8.0 GT-N5110 (Wifi)
+konawifi	Samsung Galaxy Note 8.0 Wifi GT-N5110
 k1	Lenovo IdeaPad K1
-kona3g	Samsung Galaxy Note 8.0 GT-N5100 (3G)
+kona3g	Samsung Galaxy Note 8.0 3G GT-N5100
 amazingtrf	Samsung Galaxy Discover SGH-S730M
-pollux_windy	Sony Xperia Tablet Z (Wifi) SGP311 / SGP312
+pollux_windy	Sony Xperia Tablet Z Wifi SGP311 / SGP312
 m7att	HTC One (AT&T)
 aries	Xiaomi MI 2
 hwy300	Huawei Ascend Y300
 m7tmo	HTC One (T-Mobile)
-m7ul	HTC One (GSM/LTE)
+m7ul	HTC One GSM/LTE
 SGH-I757M	Samsung Galaxy S II HD LTE SGH-I757M
 pasteur	Motorola Droid Xyboard 10.1 MZ617 (Verizon)
 stingray	Motorola Xoom (Verizon)
 i500	Samsung Fascinate SCH-I500 (Verizon)
 p769	LG Optimus L9 P769
-k2u	HTC One SV (GSM)
-k2ul	HTC One SV (LTE)
-m7u	HTC One (GSM)
+k2u	HTC One SV GSM
+k2ul	HTC One SV LTE
+m7u	HTC One GSM
 crane-a088	Crane A088
 jfltecri	Samsung Galaxy S IV (Cricket)
 stuttgart	Lenovo K860
@@ -307,7 +307,7 @@ cdma_yangtze	Motorola Electrify 2 XT881 (US Cellular)
 dlxu	HTC Butterfly
 GT-I8530	Samsung Galaxy Beam GT-I8530
 konalte	Samsung Galaxy Note 8.0 LTE GT-N5120
-lt01wifi	Samsung Galaxy Tab 3 8.0 SM-T310
+lt01wifi	Samsung Galaxy Tab 3 8.0 Wifi SM-T310
 beni	Samsung Galaxy Fit GT-S5670
 SPH-M930BST	Samsung Transform Ultra (Boost Mobile)
 a9	Acer CloudMobile S500
@@ -316,14 +316,14 @@ s2vep	Samsung Galaxy S II Plus GT-I9105P
 msm8625_d9	Innos D9
 COSMOSx2	Konka V981
 ls720	LG Optimus F3 LS720
-togari	Sony Xperia Z Ultra C6802 / C6806 / C6843 / C6833 (LTE)
+togari	Sony Xperia Z Ultra LTE C6802 / C6806 / C6843 / C6833
 N8000	ZTE Engage LT (Cricket)
 huashan	Sony Xperia SP C5302 / C5303 / C5306
 cooperve	Samsung Galaxy Ace GT-S5830M
 codinavid	Samsung Exhibit SGH-T599V (Canada)
 fiber-a31std7m1g	Bmorn Tablet m2 TP714AQ
 vs980	LG G2 VS980 (Verizon)
-f320k	LG G2 F320K (LTE)
+f320k	LG G2 LTE F320K
 delos3geur	Samsung Galaxy Win GT-I8552
 hltetmo	Samsung Galaxy Note III (T-Mobile)
 ghost	Motorola Moto X XT1052 / XT1053 / XT1055 / XT1056 / XT1058 / XT1060
@@ -334,7 +334,7 @@ m7wlv	HTC One (Verizon)
 goghspr	Samsung Galaxy Victory SPH-L300
 raybst	Samsung Galaxy Ring SPH-M840 (Virgin Mobile)
 elden	ZTE Avid 4G N9120
-lt02wifi	Samsung Galaxy Tab 3 7.0 SM-T210
+lt02wifi	Samsung Galaxy Tab 3 7.0 Wifi SM-T210
 deb	Google Nexus 7 LTE
 hlte	Samsung Galaxy Note III SM-N9000 / SM-N9002 / SM-N9005 (International)
 obake-maxx	Motorola Droid Ultra XT1080
@@ -347,7 +347,7 @@ tsubasa	Sony Xperia V LT25i
 hammerhead	Google Nexus 5
 odin	Sony Xperia ZL C6502 / C6503 / C6506
 e980	LG Optimus G Pro E980
-lt03wifiue	Samsung Galaxy Note 10.1 SM-P600 (Wifi)
+lt03wifiue	Samsung Galaxy Note 10.1 Wifi SM-P600
 lexikon	HTC Merge ADR6325 (Verizon)
 evitareul	HTC One X+ (AT&T)
 d800	LG G2 D800 (AT&T)
@@ -362,7 +362,7 @@ nanhu	Sony Xperia E C1504 / C1505
 skomer	Samsung Galaxy Xcover 2 GT-S7710
 mintl	Sony Xperia TL LT30a/at (AT&T)
 cdma_shadow	Motorola Droid X (Verizon)
-meliuslte	Samsung Galaxy Mega 6.3 GT-I9205 (LTE)
+meliuslte	Samsung Galaxy Mega 6.3 LTE GT-I9205
 nozomi2	Sony Xperia SL LT26ii
 taoshan	Sony Xperia L C2104 / C2105
 e975	LG Optimus G E975
@@ -375,7 +375,7 @@ k2cl	HTC One SV C525c (Boost Mobile)
 expressatt	Samsung Galaxy Express SGH-I437 (AT&T)
 meliusltecan	Samsung Galaxy Mega SGH-I527M (Rogers)
 meliusltespr	Samsung Galaxy Mega SPH-L600 (Sprint)
-santos10wifi	Samsung Galaxy Tab 3 10.1 GT-P5210
+santos10wifi	Samsung Galaxy Tab 3 10.1 Wifi GT-P5210
 crater	Samsung Galaxy Mega 5.8 GT-I9152
 nicki	Sony Xperia M C1904 / C1905
 a66	Asus PadFone A66
@@ -506,7 +506,7 @@ jflterefreshspr	Samsung Galaxy S IV SPH-L720T (Sprint)
 kylepro	Samsung Galaxy Trend Plus GT-S7580
 jem	Amazon Kindle Fire HD 8.9
 iris	ZTE Grand S Flex
-mondrianwifi	Samsung Galaxy Tab Pro 8.4 SM-T320
+mondrianwifi	Samsung Galaxy Tab Pro 8.4 Wifi SM-T320
 falcon_cdma	Motorola Moto G XT1031
 a86	Asus PadFone Infinity A86 T004
 d605	LG Optimus L9 II D605
@@ -514,7 +514,7 @@ loganrelte	Samsung Galaxy Ace 3 GT-S7275R
 mproject3g	Samsung Galaxy S IV Zoom SM-C101
 d803	LG G2 D803
 a80	Asus PadFone Infinity A80
-v1awifi	Samsung Galaxy Note Pro 12.2 SM-P900
+v1awifi	Samsung Galaxy Note Pro 12.2 Wifi SM-P900
 m0chn	Samsung Galaxy S III GT-I9300 (China)
 m8whl	HTC One M8 831C
 goldenlteatt	Samsung Galaxy S III Mini SM-G730A
@@ -523,7 +523,7 @@ d959	LG G Flex D959
 e430	LG Optimus L3 II E430
 vs930	LG Spectrum II 4G VS930 (Verizon)
 klte	Samsung Galaxy S 5 SM-G900F / SM-G900I
-picassowifi	Samsung Galaxy Tab Pro 10.1 SM-T520
+picassowifi	Samsung Galaxy Tab Pro 10.1 Wifi SM-T520
 amazing3gcri	Samsung Galaxy Discover SCH-R740C (Cricket)
 coriplus	Samsung Galaxy Pocket Plus GT-S5301
 m8	HTC One M8
@@ -559,7 +559,7 @@ oppoN1	Oppo N1
 nokiax	Nokia X
 nokiaxl	Nokia XL
 condor_umts	Motorola Moto E XT1021
-lt03wifi	Samsung Galaxy Note 10.1 SM-P600 (2014 Edition)
+lt03wifi	Samsung Galaxy Note 10.1 Wifi SM-P600 (2014 Edition)
 p895	LG Optimus Vu P895
 castor	Sony Xperia Z2 Tablet SGP521 / SPG541 / SPG551
 m4	HTC One Mini
