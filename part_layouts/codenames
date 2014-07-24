@@ -98,7 +98,7 @@ shadow	Motorola Droid X / Motorola Milestone X
 picasso_mf	Acer Iconia A700
 c800	LG myTouch Q C800 (T-Mobile)
 crane-evb	Craig CMP741E
-d2mtr	Samsung Galaxy S III (M. PCS)
+d2mtr	Samsung Galaxy S III (MetroPCS)
 d2usc	Samsung Galaxy S III SCH-R530U (US Cellular)
 m3s	LG Optimus Elite VM696
 GT-P6201	Samsung Galaxy Tab 7.0 Plus N GT-P6201
@@ -206,7 +206,7 @@ e1911	Alps U920+
 g3	Jiayu G3
 mesona	Sony Xperia Miro ST23(a/i)
 warp2	ZTE Warp Sequent (Boost Mobile)
-prevail2spr	Samsung Galaxy Rush SPH-M830
+prevail2spr	Samsung Galaxy Rush SPH-M830 (Sprint)
 oscar	Pantech Flex P8010 (AT&T)
 spyder	Motorola Droid Razr Maxx (Verizon)
 droid2	Motorola Droid 2 (Verizon)
@@ -331,7 +331,7 @@ expresslte	Samsung Galaxy Express GT-I8730
 d802	LG G2 D802 (Worldwide)
 hlteskt	Samsung Galaxy Note III N900S (SK Telecom)
 m7wlv	HTC One (Verizon)
-goghspr	Samsung Galaxy Victory SPH-L300
+goghspr	Samsung Galaxy Victory SPH-L300 (Sprint)
 raybst	Samsung Galaxy Ring SPH-M840 (Virgin Mobile)
 elden	ZTE Avid 4G N9120
 lt02wifi	Samsung Galaxy Tab 3 7.0 Wifi SM-T210
@@ -397,7 +397,7 @@ cdma_kronos	Motorola XPRT MB612 (Sprint)
 cdma_targa	Motorola Droid Bionic XT875 (Verizon)
 vs840	LG Lucid 4G VS840 (Verizon)
 cdma_solana	Motorola Milestone 3 XT860
-codinamtr	Samsung Galaxy Exhibit (MetroPCS) SGH-T599N
+codinamtr	Samsung Galaxy Exhibit SGH-T599N (MetroPCS)
 falcon_umts	Motorola Moto G XT1032
 hwu8951	Huawei Ascend G510
 hwu8665	Huawei Fusion 2
