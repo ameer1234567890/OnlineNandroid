@@ -48,7 +48,7 @@ t03g	Samsung Galaxy Note II GT-N7100 (International)
 quincytmo	Samsung Galaxy Note SGH-T879 (T-Mobile)
 quincyatt	Samsung Galaxy Note GT-I717 (AT&T)
 d2att	Samsung Galaxy S III SGH-I747 (AT&T)
-d2can	Samsung Galaxy S III SGH-I747M
+d2can	Samsung Galaxy S III SGH-I747M (Rogers)
 d2spr	Samsung Galaxy S III SPH-L710 (Sprint)
 d2vzw	Samsung Galaxy S III SCH-I535 (Verizon)
 SGH-I777	Samsung Galaxy S II SGH-I777 (AT&T)
@@ -99,7 +99,7 @@ picasso_mf	Acer Iconia A700
 c800	LG myTouch Q C800 (T-Mobile)
 crane-evb	Craig CMP741E
 d2mtr	Samsung Galaxy S III (M. PCS)
-d2usc	Samsung Galaxy S III SCH-R530U (US Cell)
+d2usc	Samsung Galaxy S III SCH-R530U (US Cellular)
 m3s	LG Optimus Elite VM696
 GT-P6201	Samsung Galaxy Tab 7.0 Plus N GT-P6201
 t0ltetmo	Samsung Galaxy Note II SGH-T889 (T-Mobile)
@@ -151,7 +151,7 @@ manta	Google Nexus 10
 picasso_e	Acer Iconia A200
 presto	Pantech Burst P9070 (AT&T)
 primou	HTC One V
-t0lteusc	Samsung Galaxy Note II SCH-R950 (Sprint)
+t0lteusc	Samsung Galaxy Note II SCH-R950 (US Cellular)
 smi	Motorola Razr i XT890
 wingray	Motorola Xoom Wifi
 tf700t	Asus Transformer Prime TF700T
@@ -259,7 +259,7 @@ v55	ZTE Optik V55
 jfltespr	Samsung Galaxy S IV SPH-L720 (Sprint)
 jflte	Samsung Galaxy S IV GT-I9505
 m4ds	LG Optimus L5 Dual E615
-jfltecan	Samsung Galaxy S IV (Bell Mobility)
+jfltecan	Samsung Galaxy S IV (Canada)
 jflteusc	Samsung Galaxy S IV (US Cellular)
 jfltetmo	Samsung Galaxy S IV SGH-M919 (T-Mobile)
 jflteatt	Samsung Galaxy S IV SGH-I337 (AT&T)
@@ -431,11 +431,11 @@ ks01lteskt	Samsung Galaxy S IV LTE-A SHV-E330S
 umts_solana	Motorola Milestone 3 ME863
 d2tfnvzw	Samsung Galaxy S III SCH-S968C (Straight Talk)
 kinetic	Kyocera Hydro Elite C6750
-hltelgt	Samsung Galaxy Note III SM-N900L (Korean Version)
+hltelgt	Samsung Galaxy Note III SM-N900L (Korea)
 n5	ZTE Nubia 5 N5
 p710	LG LG Optimus L7 II P710
 crane_MID9742_sc3052	Coby Kyros MID9742-8
-f320l	LG G2 LTE F320L (Korean)
+f320l	LG G2 LTE F320L (Korea)
 X40E	Enspert Lazer X40E
 iliamna	ZTE Grand X LTE T81
 C5215	Kyocera Hydro Edge (Boost Mobile)
@@ -454,8 +454,8 @@ SCH-S720C	Samsung Galaxy Proclaim SCH-S720C
 aegis2vzw	Samsung Galaxy Stratosphere II SCH-I415 (Verizon)
 serranods	Samsung Galaxy S IV Mini Duos GT-I9192
 lt023g	Samsung Galaxy Tab 3 7.0 SM-T211
-jaltektt	Samsung Galaxy S IV SHV-E300K (Korean Version)
-c1ktt	Samsung Galaxy S III SHV-E210K (Korean Version)
+jaltektt	Samsung Galaxy S IV SHV-E300K (Korea)
+c1ktt	Samsung Galaxy S III SHV-E210K (Korea)
 v510	LG G Pad 8.3 V510 (Google Play Edition)
 becky	ZTE Overture Z995
 kyleprods	Samsung Galaxy S Duos 2 GT-S7582
@@ -586,7 +586,7 @@ kltelra	Samsung Galaxy S 5 SM-G900R6 (Appalachian Wireless)
 matisselteatt	Samsung Galaxy Tab 4 10.1 SM-T537A (AT&T)
 hl3gds	Samsung Galaxy Note III Neo Duos SM-N7502
 a0001	OnePlus One
-m0skt	Samsung galaxy S III SHW-M440S (Korean)
+m0skt	Samsung galaxy S III SHW-M440S (Korea)
 lt02lteatt	Samsung Galaxy Tab 3 7.0 SM-T217A (AT&T)
 hl3g	Samsung Galaxy Note III Neo SM-N750
 ls740	LG Volt LS740
