@@ -30,7 +30,7 @@ a750	Lenovo A750
 ancora	Samsung Galaxy W (Wonder) GT-I8150
 cooper	Samsung Galaxy Ace GT-S5830
 cooperev	Samsung Galaxy Ace GT-S5830i
-hercules	Samsung Galaxy S2 Hercules SGH-T989 (T-Mobile)
+hercules	Samsung Galaxy S II Hercules SGH-T989 (T-Mobile)
 GT-P6800	Samsung Galaxy Tab 7.7 3G GT-P6800
 GT-P6810	Samsung Galaxy Tab 7.7 Wifi GT-P6810
 skyrocket	Samsung Galaxy S II Skyrocket SGH-I727 (AT&T)
@@ -336,7 +336,7 @@ raybst	Samsung Galaxy Ring SPH-M840 (Virgin Mobile)
 elden	ZTE Avid 4G N9120
 lt02wifi	Samsung Galaxy Tab 3 7.0 Wifi SM-T210
 deb	Google Nexus 7 LTE
-hlte	Samsung Galaxy Note III SM-N9000 / SM-N9002 / SM-N9005 (International)
+hlte	Samsung Galaxy Note III SM-N9000 / SM-N9002 / SM-N9005 / SM-N900A (International)
 obake-maxx	Motorola Droid Ultra XT1080
 dogo	Sony Xperia ZR C5502 / C5503 / SO-04E (Docomo)
 obakem	Motorola Droid Mini XT1030
@@ -553,7 +553,6 @@ e988	LG Optimus G Pro E988
 d405	LG L90 D405
 kltevzw	Samsung Galaxy S 5 SM-G900V (Verizon)
 d400	LG L90 D400
-d805	LG G2 D805
 find7a	Oppo Find 7a
 n1	Oppo N1
 nokiax	Nokia X
@@ -597,7 +596,7 @@ ms013g	Samsung Galaxy Grand 2 SM-G7102
 milletlte	Samsung Galaxy Tab 4 8.0 LTE SM-T335
 milletwifiue	Samsung Galaxy Tab 4 8.0 Wifi SM-T330NU
 kiton	Lenovo Vibe Z K910
-ms323	Optimus L70 MS323 (MetroPCS)
+ms323	LG Optimus L70 MS323 (MetroPCS)
 klteattactive	Samsung Galaxy S 5 Active SM-G870A (AT&T)
 eagle	Sony Xperia M2 D2303 / D2305 / D2306
 mocha	Xiaomi MI Pad 7.9
