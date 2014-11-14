@@ -29,7 +29,7 @@
 ###########################################################################################################
 
 #### Define constants
-version="9.51"
+version="9.52"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
@@ -507,150 +507,41 @@ nandroid_fs(){
 				else
 					full_size=-1
 				fi
-				maxfilesize=2047
-				splitfilesize=1024
-				if $bb [ $full_size -gt $maxfilesize ]; then
-					$bb touch $path/$name/.list_generating
-					while $bb [ -f $path/$name/.list_generating ]; do
-						progress none
+				if $bb [ "$compress_backup" == "yes" ]; then
+					$bb tar -cpzf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
+					$bb sleep 2
+					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+						progress $part_fname.$part_fs.win
 						$bb sleep 2
-					done &
-					$bb touch $path/$name/$part_fname.$part_fs.win
-					i=0
-					$bb mkdir -p $path/$name/tmp
-					$bb rm $path/$name/tmp/list$i 2> /dev/nul
-					exclude_dirs=`$bb echo $part_excludes | sed s/'--exclude='/''/g | sed s/'\/\*'/''/g`
-					for dir in $exclude_dirs; do
-						if $bb [ -d $dir ]; then
-							$bb echo $dir >> $path/$name/tmp/list$i
-						fi
 					done
-					dirlist="`$bb find . -type d -xdev`"
-					for dir in $dirlist; do
-						if $bb [ -d $dir ]; then
-							if $bb [ "`$bb ls -A $dir`" == "" ]; then
-								$bb echo $dir >> $path/$name/tmp/list$i
-							fi
-						fi
-					done
-					filelist="`$bb find . -type b` `$bb find . -type c` `$bb find . -type p` `$bb find . -type f` `$bb find . -type l` `$bb find . -type s`"
-					listsize=0
-					for file in $filelist; do
-						if $bb [ -e $file ]; then
-							for dir in $exclude_dirs; do
-								dir_length=`$bb expr length $dir`
-								if $bb [ "`$bb expr substr $file 1 $dir_length`" == "$dir" ]; then
-									continue 2
-								fi
-							done
-							filesize=`$bb du -sm $file | $bb awk '{print $1}'`
-							if $bb [ `$bb expr $listsize + $filesize` -lt $splitfilesize ]; then
-								listsize=`$bb expr $listsize + $filesize`
-								$bb echo $file >> $path/$name/tmp/list$i
-							else
-								listsize=0
-								i=`$bb expr $i + 1`
-								$bb rm $path/$name/tmp/list$i 2> /dev/nul
-								listsize=`$bb expr $listsize + $filesize`
-								$bb echo $file >> $path/$name/tmp/list$i
-								if $bb [ $listsize -gt $maxfilesize ]; then
-									loglater="$LANG_ERROR: $LANG_FSOVER2GB"
-								fi
-							fi
-						fi
-					done
-					listlist=`ls $path/$name/tmp`
-					i=0
-					$bb rm $path/$name/.list_generating
-					for list in $listlist; do
-						suffix=$i
-						while $bb [ `$bb echo $suffix | $bb wc -m` -lt 4 ]; do
-							suffix="0$suffix"
+					if $bb [ ! -f $path/$name/$part_fname.$part_fs.win ]; then
+						$bb tar -cpZf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
+						$bb sleep 2
+						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+							progress $part_fname.$part_fs.win
+							$bb sleep 2
 						done
-						if $bb [ "$compress_backup" == "yes" ]; then
-							$bb tar -cpzf $path/$name/$part_fname.$part_fs.win$suffix -T $path/$name/tmp/$list $part_excludes > /dev/null 2>&1 &
-							$bb sleep 2
-							while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-								progress $part_fname.$part_fs.win
-								$bb sleep 2
-							done
-							if $bb [ ! -f $path/$name/$part_fname.$part_fs.win$suffix ]; then
-								$bb tar -cpZf $path/$name/$part_fname.$part_fs.win$suffix -T $path/$name/tmp/$list $part_excludes > /dev/null 2>&1 &
-								$bb sleep 2
-								while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-									progress $part_fname.$part_fs.win
-									$bb sleep 2
-								done
-							fi
-						elif $bb [ "$compress_backup" == "gzip" ]; then
-							$bb echo "\n$bb tar -cp $part_excludes -T $path/$name/tmp/$list | $bb gzip -c > $path/$name/$part_fname.$part_fs.win$suffix > /dev/null 2>&1 &"
-							$bb tar -cp $part_excludes -T $path/$name/tmp/$list | $bb gzip -c > $path/$name/$part_fname.$part_fs.win$suffix 2> /dev/null &
-							$bb sleep 2
-							while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-								progress $part_fname.$part_fs.win
-								$bb sleep 2
-							done
-						else
-							$bb tar -cpf $path/$name/$part_fname.$part_fs.win$suffix -T $path/$name/tmp/$list $part_excludes > /dev/null 2>&1 &
-							$bb sleep 2
-							while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-								progress $part_fname.$part_fs.win
-								$bb sleep 2
-							done
-						fi
-						i=`$bb expr $i + 1`
-					done
-					$bb rm -rf $path/$name/tmp
+					fi
 					progress_done
 					$bb echo ""
-					if $bb [ "$loglater" != "" ]; then
-						logmsg $loglater
-					fi
-					$bb rm $path/$name/$part_fname.$part_fs.win 2> /dev/nul
-					if $bb [ $? != 0 -a -f $path/$name/$part_fname.$part_fs.win ]; then
+				elif $bb [ "$compress_backup" == "gzip" ]; then
+					$bb tar -cp $part_excludes ./* | $bb gzip -c > $path/$name/$part_fname.$part_fs.win 2> /dev/null &
+					$bb sleep 2
+					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+						progress $part_fname.$part_fs.win
 						$bb sleep 2
-						$bb rm $path/$name/$part_fname.$part_fs.win 2> /dev/nul
-						if $bb [ $? != 0 -a -f $path/$name/$part_fname.$part_fs.win ]; then
-							logmsg "$LANG_ERROR: $LANG_MAYXRESTORE"
-						fi
-					fi
+					done
+					progress_done
+					$bb echo ""
 				else
-					if $bb [ "$compress_backup" == "yes" ]; then
-						$bb tar -cpzf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
+					$bb tar -cpf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
+					$bb sleep 2
+					while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
+						progress $part_fname.$part_fs.win
 						$bb sleep 2
-						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-							progress $part_fname.$part_fs.win
-							$bb sleep 2
-						done
-						if $bb [ ! -f $path/$name/$part_fname.$part_fs.win ]; then
-							$bb tar -cpZf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
-							$bb sleep 2
-							while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-								progress $part_fname.$part_fs.win
-								$bb sleep 2
-							done
-						fi
-						progress_done
-						$bb echo ""
-					elif $bb [ "$compress_backup" == "gzip" ]; then
-						$bb tar -cp $part_excludes ./* | $bb gzip -c > $path/$name/$part_fname.$part_fs.win 2> /dev/null &
-						$bb sleep 2
-						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-							progress $part_fname.$part_fs.win
-							$bb sleep 2
-						done
-						progress_done
-						$bb echo ""
-					else
-						$bb tar -cpf $path/$name/$part_fname.$part_fs.win $part_excludes ./* > /dev/null 2>&1 &
-						$bb sleep 2
-						while $bb [ `$bb ps w | $bb grep "$bb tar" | $bb grep -v "$bb grep $bb tar" | $bb tail -n 1 | $bb awk '{print $1}'` ]; do
-							progress $part_fname.$part_fs.win
-							$bb sleep 2
-						done
-						progress_done
-						$bb echo ""
-					fi
+					done
+					progress_done
+					$bb echo ""
 				fi
 			else
 				if $bb [ "$part_fs" == "yaffs2" -a "$yaffs_override" != "yes" ]; then
