@@ -245,3 +245,4 @@ v9.51 - Added: Preservation of SELinux contexts.
         Bug Fix: Data partition size calculated incorrectly when excluding Google Music cache.
         Bug Fix: TWRP backups taking too long for file list.
 v9.52 - Bug Fix: TWRP backups taking too long for file list.
+mikko - Added: nvram partition backup (partition letter n).

@@ -29,11 +29,11 @@
 ###########################################################################################################
 
 #### Define constants
-version="9.52"
+version="mikko-alpha1"
 blobsdir="/clockworkmod/blobs"
 tz="utc"
 req_power=10
-all_partitions="mkbrwlgqvsdctjeoufhiax"
+all_partitions="mkbrwlgqvnsdctjeoufhiax"
 sdcard_temp_mount="/mnt/sdcard4nandroid"
 sdext_temp_mount="/mnt/sdext4nandroid"
 custbkp_temp_mount="/mnt/custbkp4nandroid"
@@ -377,6 +377,7 @@ advmapping(){
 	$bb echo "  g: kernel"
 	$bb echo "  q: modem"
 	$bb echo "  v: Trim Area / TA (for Sony devices)"
+	$bb echo "  n: nvram (for MTK devices)"
 	$bb echo "  s: system"
 	$bb echo "  d: data"
 	$bb echo "  c: cache"
@@ -1397,6 +1398,9 @@ check_size_dd "$part_modem" "modem" "q" "modem" "modem"
 #### /ta partition size
 check_size_dd "$part_ta" "ta" "v" "TA" "TA"
 
+#### /nvram partition size (for MTK devices)
+check_size_dd "$part_nvram" "nvram" "n" "nvram" "nvram"
+
 #### /system partition size
 if $bb [ "$system_fs" == "" -o "`$bb echo $adv | $bb grep 's'`" == "" ]; then
 	u_system=0
@@ -1721,6 +1725,9 @@ nandroid_dd "modem" "modem" "$part_modem" "q" "$u_modem" "$part_bsval" "$modem_c
 
 #### Backup TA
 nandroid_dd "TA" "ta" "$part_ta" "v" "$u_ta" "$part_bsval" "$ta_count" "$ta_start" "no"
+
+#### Backup nvram (for MTK devices)
+nandroid_dd "nvram" "nvram" "$part_nvram" "n" "$u_nvram" "$part_bsval" "$nvram_count" "$nvram_start" "no"
 
 #### Backup /system
 nandroid_fs "system" "system" "s" "/system" "system" "$system_fs" "$u_system" "$system_excludes" "$system_excludes_dedupe" "yes"
