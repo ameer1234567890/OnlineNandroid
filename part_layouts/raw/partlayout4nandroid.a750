@@ -1,7 +1,0 @@
-dev:       size   erasesize  name
-mmcblk0p1: 000001 000000 "recovery"
-mmcblk0p2: 080000 000000 "cache"
-mmcblk0p3: 0c0000 000000 "userdata"
-mmcblk0p4: 1d9470 000000 "emmc"
-mmcblk0p5: 001400 000000 "unknown"
-mmcblk0p6: 080000 000000 "system"
