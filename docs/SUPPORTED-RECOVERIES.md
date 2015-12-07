@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 * Below is a list of custom recoveries detected and supported by Online Nandroid. Detected simply means that Online Nandroid has the ability to detect if the specific recovery is installed, and output the same to log file. Supported means backups done with Online Nandroid can be restored in the specific recovery.
 
 | Recovery | Detected? | Supported? | Remarks |

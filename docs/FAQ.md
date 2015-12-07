@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 **Q:** Why does Online Nandroid require partition layout / patch files on some devices?    
 **A:** Some devices does not have a reliable way to automatically detect certain partitions like boot, recovery, etc... Thus, these devices require a manually generated partition layout / patch file for Online Nandroid to function properly.
 

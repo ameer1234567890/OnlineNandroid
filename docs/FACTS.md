@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 * Almost all of the coding for Online Nandroid was done on a Sony Ericsson Xperia Pro, an excellent keyboard phone from the Sony Ericsson era.
 * Almost all partition layout files for Online Nandroid were also done on the above mentioned phone.
 * Partition layout files and corresponding recovery flash-able zip files for Online Nandroid are being generated using a shell script named `partlayout.sh`.

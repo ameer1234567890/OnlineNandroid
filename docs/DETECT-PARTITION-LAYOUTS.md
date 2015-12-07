@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 Detecting partition layout is key to any app using Online Nandroid. Online Nandroid, as of v8.xx, has support for detecting partition layout in 4 different ways, which are:
 * `/proc/mtd` on MTD based devices
 * `/proc/emmc` on some EMMC based devices

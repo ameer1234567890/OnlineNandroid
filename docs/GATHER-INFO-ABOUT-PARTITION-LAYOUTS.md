@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 > Note: I have obtained the below information with great effort and difficulty. I value this information very much and thus am sharing this for other like minded developers to find.
 
 ### Introduction

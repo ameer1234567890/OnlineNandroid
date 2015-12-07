@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 ### Update Functions &amp; Patch File URLs:
 * Update Check URL: `https://raw.githubusercontent.com/ameer1234567890/OnlineNandroid/master/version`
 * Download URL: `https://raw.githubusercontent.com/ameer1234567890/OnlineNandroid/master/onandroid`

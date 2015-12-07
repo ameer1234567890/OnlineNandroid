@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 Starting from v9.00, Online Nandroid has support for localization using external language files. Language file should be provided at `/data/local/tmp/onandroid.lang` for Online Nandroid to parse the file and display the provided language strings. A sample language file for English (US) is provided below:
 ```shell
 LANGFILE_LANGNAME="English (US)"

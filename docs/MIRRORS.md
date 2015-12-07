@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 Online Nandroid's git repository is also mirrored at:
 * https://github.com/ameer1234567890/OnlineNandroid [Primary]
 * https://gitlab.com/ameer1234567890/onlinenandroid

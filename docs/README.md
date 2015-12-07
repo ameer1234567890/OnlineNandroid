@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 Welcome to **Online Nandroid** - an open-source shell script for performing nandroid backups on Android devices, without rebooting to recovery mode.
 
 This wiki is the main source of documentation for **users** as well as **developers** working with, or contributing to the Online Nandroid project. If this is the first time you heard about Online Nandroid, it is recommended to visit [Online Nandroid](http://forum.xda-developers.com/showthread.php?t=1620255)'s forum thread at XDA-Developers.

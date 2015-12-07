@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 Online Nandroid uses a file named ``partlayout4nandroid`` for detection unmountable/unmounted partitions such as boot and recovery. This is a guide of how to make the ``partlayout4nandroid`` file for various devices.
 
 1. The file should be in text format.

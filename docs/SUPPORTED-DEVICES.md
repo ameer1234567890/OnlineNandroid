@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 * **EMMC Based devices** - Online Nandroid Officially Supports the below EMMC based devices. These devices require a patch file to be installed, in order for boot and recovery partitions to be detected properly. The patch file needs to be flashed in recovery mode.
 
   * **WARNING: Do not flash a zip file which is not for your device. If you are unsure, ask me [here](https://github.com/ameer1234567890/OnlineNandroid/issues/2)**

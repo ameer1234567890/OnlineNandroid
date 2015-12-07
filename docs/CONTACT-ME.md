@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 Twitter: [@OnlineNandroid](https://twitter.com/OnlineNandroid)
 
 Email: [ameer1234567890@gmail.com](mailto:ameer1234567890@gmail.com)

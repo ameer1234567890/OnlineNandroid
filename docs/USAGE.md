@@ -1,7 +1,3 @@
-#### [↰](README.md) ONLINE NANDROID DOCUMENTATION
-
----
-
 ### Basic Usage:
 
 1. Open terminal emulator
