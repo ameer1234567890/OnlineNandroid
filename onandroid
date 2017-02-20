@@ -195,6 +195,7 @@ LANG_FLAGD="return device id used by TWRP"
 LANG_FLAGDS="set device id used by TWRP"
 LANG_FLAGXD="exclude dalvik-cache from backup"
 LANG_FLAGXG="exclude Google Music files from backup"
+LANG_FLAGXC="exclude all app-specific caches from backup"
 LANG_LANGFILEL="Language File"
 LANG_LANGFILEN="Name"
 LANG_LANGFILEC="Code"
@@ -357,6 +358,7 @@ usage2(){
 	$bb echo "  -ds, --set-device-id          $LANG_FLAGDS"
 	$bb echo "  -xd, --exclude-dalvik         $LANG_FLAGXD"
 	$bb echo "  -xg, --exclude-gmusic         $LANG_FLAGXG"
+	$bb echo "  -xc, --exclude-app-caches     $LANG_FLAGXC"
 	$bb echo ""
 	exit 0
 }
@@ -805,6 +807,8 @@ for arg in $arglist; do
 		exclude_dalvik="yes"
 	elif $bb [ "$arg" == "-xg" ] || $bb [ "$arg" == "--exclude-gmusic" ]; then
 		exclude_gmusic="yes"
+	elif $bb [ "$arg" == "-xc" ] || $bb [ "$arg" == "--exclude-app-caches" ]; then
+		exclude_app_caches="yes"
 	elif $bb [ "$arg" == "-~" ] || $bb [ "$arg" == "--rtt" ]; then
 		rtt
 	else
@@ -1612,6 +1616,18 @@ if $bb [ "$data_fs" != "" -a "`$bb echo $adv | $bb grep 'd'`" != "" ]; then
 	if $bb [ "$exclude_gmusic" == "yes" ]; then
 		data_excludes="$data_excludes --exclude=data/data/com.google.android.music/files/*"
 		data_excludes_dedupe="$data_excludes_dedupe ./data/com.google.android.music/files/*"
+	fi
+	if $bb [ "$exclude_app_caches" == "yes" ]; then
+		data_excludes="$data_excludes --exclude=data/data/*/cache/*"
+		data_excludes_dedupe="$data_excludes_dedupe ./data/*/cache/*"
+
+		# Firefox stores its cache within the profile directory.
+		data_excludes="$data_excludes --exclude=data/data/org.mozilla.firefox/files/mozilla/*/Cache/*"
+		data_excludes_dedupe="$data_excludes_dedupe ./data/org.mozilla.firefox/files/mozilla/*/Cache/*"
+
+		# TuneIn buffers audio in its top-level directory, not in the app cache.
+		data_excludes="$data_excludes --exclude=data/data/tunein.player/cache*.buffer"
+		data_excludes_dedupe="$data_excludes_dedupe ./data/tunein.player/cache*.buffer"
 	fi
 fi
 
